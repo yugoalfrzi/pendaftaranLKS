@@ -35,10 +35,7 @@ class AnnouncementController extends Controller
                 ];
             })->toArray();
 
-        // If no regulations in database, use default data
-        if (empty($regulations)) {
-            $regulations = $this->getDefaultRegulations();
-        }
+       
 
         return view('announcements.regulasi', compact('regulations'));
     }
@@ -78,11 +75,6 @@ class AnnouncementController extends Controller
 
         $totalSize = $this->formatBytes($totalSize);
 
-        // If no guides in database, use default data
-        if (empty($guides)) {
-            $guides = $this->getDefaultGuides();
-            $totalSize = '10.0 MB';
-        }
 
         return view('announcements.panduan', compact('guides', 'totalSize'));
     }
@@ -116,11 +108,6 @@ class AnnouncementController extends Controller
 
         $currentYear = date('Y');
         $activeTemplates = count($letters);
-
-        // If no letters in database, use default data
-        if (empty($letters)) {
-            $letters = $this->getDefaultLetters();
-        }
 
         return view('announcements.surat', compact('letters', 'currentYear', 'activeTemplates'));
     }
