@@ -23,15 +23,14 @@ class AdminMiddleware
             return redirect()->route('login.show');
         }
 
+        // Check if user has admin or super_admin role
         $isAdmin = false;
-        if (isset($user->is_admin)) {
-            $isAdmin = (bool) $user->is_admin;
-        } elseif (isset($user->role)) {
-            $isAdmin = ($user->role === 'admin');
+        if (isset($user->role)) {
+            $isAdmin = in_array($user->role, ['admin', 'super_admin']);
         }
 
-        if (! $isAdmin) {
-            abort(403);
+        if (!$isAdmin) {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin admin.');
         }
 
         return $next($request);

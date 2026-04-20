@@ -4,7 +4,7 @@
 
 @section('content')
 <style>
-    /* Gaya modern khas SIPINJAM - versi ungu (Kemensos) */
+    
     .stat-card {
         background: #ffffff;
         border-radius: 1.25rem;
@@ -26,7 +26,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6f42c1;
+        color: #0d6efd;
         font-size: 1.4rem;
     }
     .stat-value {
@@ -57,13 +57,13 @@
         margin-right: 0.5rem;
     }
     .nav-pills-custom .nav-link.active {
-        background: #6f42c1;
+        background: #0d6efd;
         color: white;
         box-shadow: 0 2px 8px rgba(111,66,193,0.2);
     }
     .nav-pills-custom .nav-link:not(.active):hover {
         background: #f3e8ff;
-        color: #6f42c1;
+        color: #0d6efd;
     }
     .table-modern {
         margin-bottom: 0;
@@ -99,14 +99,14 @@
     .badge-cabang { background: #fef3c7; color: #b45309; }
     .badge-pelayanan {
         background: #f3e8ff;
-        color: #6f42c1;
+        color: #0d6efd;
         font-size: 0.7rem;
         padding: 0.2rem 0.7rem;
         border-radius: 2rem;
     }
     .info-alert {
         background: #f3e8ff;
-        border-left: 4px solid #6f42c1;
+        border-left: 4px solid #0d6efd;
         border-radius: 1rem;
         padding: 1rem;
         margin-bottom: 1.5rem;
@@ -136,7 +136,7 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
     <div>
         <h2 class="h3 fw-semibold mb-1">
-            <i class="bi bi-house-gear-fill me-2" style="color: #6f42c1;"></i> Data Kewenangan Kemensos
+            <i class="bi bi-house-gear-fill me-2" style="color: #0d6efd;"></i> Data Kewenangan Kemensos
         </h2>
         <p class="text-muted small mb-0">Kelola data kewenangan LKS tingkat nasional (Kementerian Sosial)</p>
     </div>
@@ -144,7 +144,7 @@
         <a href="{{ route('kewenangan-kemensos.export-excel') }}?search={{ request('search') }}" class="btn btn-success rounded-pill px-3">
             <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
         </a>
-        <a href="{{ route('kewenangan-kemensos.create') }}" class="btn btn-primary rounded-pill px-3" style="background: #6f42c1; border-color: #6f42c1;">
+        <a href="{{ route('kewenangan-kemensos.create') }}" class="btn btn-primary rounded-pill px-3" style="background: #0d6efd; border-color: #0d6efd;">
             <i class="bi bi-plus-circle me-1"></i> Tambah Data
         </a>
     </div>
@@ -302,7 +302,7 @@
                 <div class="col-md-7">
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0 ps-0" 
+                        <input type="text" name="search" class="form-control border-start-0 ps-0"
                                placeholder="Cari nama yayasan, LKS, atau kabupaten/kota..." value="{{ request('search') }}">
                     </div>
                 </div>
@@ -374,7 +374,7 @@
                                 <a href="{{ route('kewenangan-kemensos.edit', $item->id) }}" class="btn btn-sm btn-outline-warning rounded-pill me-1" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill"
                                         title="Hapus" onclick="confirmDelete({{ $item->id }}, '{{ $item->Nama_Lembaga_Yayasan }}')">
                                     <i class="bi bi-trash3"></i>
                                 </button>

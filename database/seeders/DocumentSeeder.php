@@ -98,7 +98,7 @@ class DocumentSeeder extends Seeder
                 'wajib' => true,
                 'urutan' => 14,
             ],
-            
+
             [
                 'nama_dokumen' => 'Tanda Pendaftaran sebagai LKS dari Dinas Sosial Kab/Kota yang menjadi Wilayah Kerja Provinsi (lebih dari 1 Kab./Kota)',
                 'deskripsi' => 'Tanda pendaftaran dari Dinas Sosial Kab/Kota',

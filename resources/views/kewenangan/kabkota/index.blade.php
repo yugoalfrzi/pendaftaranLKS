@@ -127,11 +127,11 @@
         <p class="text-muted small mb-0">Kelola data kewenangan LKS tingkat Kabupaten/Kota se-Jawa Barat</p>
     </div>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
-        <a href="{{ route('kewenangan-kabkota.export-excel') }}?search={{ request('search') }}" class="btn btn-success rounded-pill px-3">
-            <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
-        </a>
         @auth
-            @if(Auth::user()->hasRole('admin'))
+            @if(Auth::user()->hasRole(['super_admin', 'admin']))
+                <a href="{{ route('kewenangan-kabkota.export-excel') }}?search={{ request('search') }}" class="btn btn-success rounded-pill px-3">
+                    <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+                </a>
                 <a href="{{ route('kewenangan-kabkota.create') }}" class="btn btn-primary rounded-pill px-3">
                     <i class="bi bi-plus-circle me-1"></i> Tambah Data
                 </a>
@@ -365,12 +365,12 @@
                             </div>
                         </td>
                         @auth
-                            @if(Auth::user()->hasRole('admin'))
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('kewenangan-kabkota.show', $item->id) }}" class="btn btn-sm btn-outline-info rounded-pill me-1" title="Detail">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('kewenangan-kabkota.show', $item->id) }}" class="btn btn-sm btn-outline-info rounded-pill me-1" title="Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if(Auth::user()->hasRole(['super_admin', 'admin']))
                                         <a href="{{ route('kewenangan-kabkota.edit', $item->id) }}" class="btn btn-sm btn-outline-warning rounded-pill me-1" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
@@ -378,9 +378,9 @@
                                                 title="Hapus" onclick="confirmDelete({{ $item->id }}, '{{ $item->Nama_Lembaga_Yayasan }}')">
                                             <i class="bi bi-trash3"></i>
                                         </button>
-                                    </div>
-                                </td>
-                            @endif
+                                    @endif
+                                </div>
+                            </td>
                         @endauth
                     </tr>
                     @empty
@@ -410,7 +410,7 @@
 
 <!-- Modal Konfirmasi Hapus -->
 @auth
-    @if(Auth::user()->hasRole('admin'))
+    @if(Auth::user()->hasRole(['super_admin', 'admin']))
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">

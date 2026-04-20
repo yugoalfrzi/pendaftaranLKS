@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - Sistem Manajemen LKS</title>
+    <title>Registrasi LKS - Sistem Manajemen LKS</title>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
@@ -28,7 +28,6 @@
             position: relative;
         }
 
-        /* Pola background halus */
         body::before {
             content: '';
             position: fixed;
@@ -43,37 +42,36 @@
             z-index: 0;
         }
 
-        .login-container {
+        .register-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
             position: relative;
             z-index: 1;
         }
 
-        .login-card {
+        .register-card {
             background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(12px);
             border-radius: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.15);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            max-width: 460px;
+            max-width: 560px;
             width: 100%;
         }
 
-        .login-card:hover {
+        .register-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.2);
         }
 
-        .login-form-container {
+        .register-form-container {
             padding: 2.2rem 2rem 2.5rem 2rem;
         }
 
-        /* Logo container */
         .logo-container {
             display: flex;
             justify-content: center;
@@ -82,8 +80,8 @@
         }
 
         .logo-img {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 1.5rem;
             object-fit: cover;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -97,7 +95,7 @@
         }
 
         h2 {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 700;
             text-align: center;
             margin-bottom: 0.5rem;
@@ -159,7 +157,6 @@
             border-radius: 1rem;
         }
 
-        /* Password toggle */
         .password-input-group {
             position: relative;
         }
@@ -195,25 +192,7 @@
             color: #2563eb;
         }
 
-        /* Checkbox styling */
-        .form-check-input {
-            border-radius: 0.3rem;
-            border: 1.5px solid #cbd5e1;
-            cursor: pointer;
-        }
-
-        .form-check-input:checked {
-            background-color: #2563eb;
-            border-color: #2563eb;
-        }
-
-        .form-check-label {
-            font-size: 0.85rem;
-            color: #475569;
-        }
-
-        /* Button login */
-        .btn-login {
+        .btn-register {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border: none;
             border-radius: 2rem;
@@ -226,18 +205,17 @@
             cursor: pointer;
         }
 
-        .btn-login:hover {
+        .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
             background: linear-gradient(135deg, #1d4ed8, #1e40af);
         }
 
-        .btn-login:disabled {
+        .btn-register:disabled {
             opacity: 0.7;
             transform: none;
         }
 
-        /* Alert styling */
         .alert-custom {
             border: none;
             border-radius: 1rem;
@@ -258,51 +236,49 @@
             border-left: 4px solid #2e7d32;
         }
 
-        /* Spinner */
         .spinner-border-sm {
             width: 1rem;
             height: 1rem;
             margin-left: 0.5rem;
         }
 
-        /* Link register */
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 1.5rem;
             font-size: 0.85rem;
             color: #5b6e8c;
         }
 
-        .register-link a {
+        .login-link a {
             color: #2563eb;
             text-decoration: none;
             font-weight: 600;
             transition: 0.2s;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             color: #1d4ed8;
             text-decoration: underline;
         }
 
         @media (max-width: 480px) {
-            .login-form-container {
+            .register-form-container {
                 padding: 1.5rem;
             }
             .logo-img {
-                width: 65px;
-                height: 65px;
+                width: 60px;
+                height: 60px;
             }
             h2 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-form-container">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-form-container">
                 <!-- Logo -->
                 <div class="logo-container">
                     <img src="{{ asset('assets/Apps/vendors/images/logo jawa barat.png') }}"
@@ -311,20 +287,23 @@
                          alt="Logo e-LKS Jawa Barat" class="logo-img">
                 </div>
 
-                <h2>Selamat Datang</h2>
-                <p class="subtitle">Silakan masuk ke akun Anda</p>
+                <h2>Registrasi LKS</h2>
+                <p class="subtitle">Daftarkan Lembaga Kesejahteraan Sosial Anda</p>
 
                 <!-- Alert placeholder -->
-                <div id="loginAlert" class="alert-custom d-none" role="alert"></div>
+                <div id="registerAlert" class="alert-custom d-none" role="alert"></div>
 
-                <form id="loginForm" action="{{ route('login') }}" method="POST">
+                <form id="registerForm" action="{{ route('register') }}" method="POST">
                     @csrf
+
+                    <!-- Data Pengguna -->
+
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control" id="email" name="email"
-                                   placeholder="nama@contoh.com" required autofocus>
+                                   placeholder="nama@contoh.com" required>
                         </div>
                     </div>
 
@@ -333,28 +312,38 @@
                         <div class="input-group password-input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
                             <input type="password" class="form-control" id="password" name="password"
-                                   placeholder="Masukkan kata sandi" required>
+                                   placeholder="Minimal 8 karakter" required>
                             <button type="button" class="password-toggle" id="togglePassword">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="rememberMe" name="remember">
-                        <label class="form-check-label" for="rememberMe">Ingat saya</label>
+                    <div class="mb-3">
+                        <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
+                        <div class="input-group password-input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
+                                   placeholder="Ulangi kata sandi" required>
+                            <button type="button" class="password-toggle" id="togglePasswordConfirm">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn-login" id="loginButton">
-                            <span id="loginText">Masuk</span>
-                            <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    <!-- Data LKS -->
+                    <hr class="my-4">
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn-register" id="registerButton">
+                            <span id="registerText">Daftar</span>
+                            <span id="registerSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                         </button>
                     </div>
                 </form>
 
-                <div class="register-link">
-                    Belum punya akun? <a href="{{ route('register.show') }}">Daftar sebagai LKS</a>
+                <div class="login-link">
+                    Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini</a>
                 </div>
             </div>
         </div>
@@ -364,15 +353,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            const loginAlert = document.getElementById('loginAlert');
-            const loginButton = document.getElementById('loginButton');
-            const loginText = document.getElementById('loginText');
-            const loginSpinner = document.getElementById('loginSpinner');
+            const registerForm = document.getElementById('registerForm');
+            const registerAlert = document.getElementById('registerAlert');
+            const registerButton = document.getElementById('registerButton');
+            const registerText = document.getElementById('registerText');
+            const registerSpinner = document.getElementById('registerSpinner');
 
             // ===== PASSWORD TOGGLE FUNCTIONALITY =====
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
+            const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
+            const passwordConfirmInput = document.getElementById('password_confirmation');
 
             if (togglePassword && passwordInput) {
                 togglePassword.addEventListener('click', function() {
@@ -390,24 +381,45 @@
                 });
             }
 
-            // ===== LOGIN FORM HANDLING =====
-            loginForm.addEventListener('submit', function(e) {
+            if (togglePasswordConfirm && passwordConfirmInput) {
+                togglePasswordConfirm.addEventListener('click', function() {
+                    const type = passwordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordConfirmInput.setAttribute('type', type);
+
+                    const icon = this.querySelector('i');
+                    if (type === 'password') {
+                        icon.classList.remove('bi-eye-slash');
+                        icon.classList.add('bi-eye');
+                    } else {
+                        icon.classList.remove('bi-eye');
+                        icon.classList.add('bi-eye-slash');
+                    }
+                });
+            }
+
+            // ===== REGISTER FORM HANDLING =====
+            registerForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
+                const passwordConfirm = document.getElementById('password_confirmation').value;
 
-                if (!email || !password) {
-                    showAlert('Email dan kata sandi harus diisi!', 'danger');
+                if (password !== passwordConfirm) {
+                    showAlert('Konfirmasi password tidak cocok!', 'danger');
+                    return;
+                }
+
+                if (password.length < 8) {
+                    showAlert('Password minimal 8 karakter!', 'danger');
                     return;
                 }
 
                 // Loading state
-                loginButton.disabled = true;
-                loginText.textContent = 'Memproses...';
-                loginSpinner.classList.remove('d-none');
+                registerButton.disabled = true;
+                registerText.textContent = 'Memproses...';
+                registerSpinner.classList.remove('d-none');
 
-                fetch(loginForm.action, {
+                fetch(registerForm.action, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -416,44 +428,53 @@
                         'Accept': 'application/json'
                     },
                     credentials: 'same-origin',
-                    body: new URLSearchParams(new FormData(loginForm))
+                    body: new URLSearchParams(new FormData(registerForm))
                 })
                 .then(async response => {
-                    if (response.status === 419) {
-                        showAlert('Sesi kedaluwarsa. Muat ulang halaman dan coba lagi.', 'danger');
-                        throw new Error('CSRF token mismatch');
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw data;
                     }
-                    return response.json();
+                    return data;
                 })
                 .then(data => {
                     if (data.success) {
-                        showAlert('Login berhasil! Mengalihkan...', 'success');
+                        showAlert('Registrasi berhasil! Mengalihkan...', 'success');
                         setTimeout(() => {
                             window.location.href = data.redirect || '/dashboard';
                         }, 1500);
                     } else {
-                        showAlert(data.message || 'Email atau kata sandi salah!', 'danger');
-                        loginButton.disabled = false;
-                        loginText.textContent = 'Masuk';
-                        loginSpinner.classList.add('d-none');
+                        showAlert(data.message || 'Registrasi gagal!', 'danger');
+                        registerButton.disabled = false;
+                        registerText.textContent = 'Daftar';
+                        registerSpinner.classList.add('d-none');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showAlert('Terjadi kesalahan. Silakan coba lagi.', 'danger');
-                    loginButton.disabled = false;
-                    loginText.textContent = 'Masuk';
-                    loginSpinner.classList.add('d-none');
+                    let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+
+                    if (error.errors) {
+                        const firstError = Object.values(error.errors)[0];
+                        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+
+                    showAlert(errorMessage, 'danger');
+                    registerButton.disabled = false;
+                    registerText.textContent = 'Daftar';
+                    registerSpinner.classList.add('d-none');
                 });
             });
 
             function showAlert(message, type) {
-                loginAlert.textContent = message;
-                loginAlert.className = `alert-custom alert-${type}`;
-                loginAlert.classList.remove('d-none');
+                registerAlert.textContent = message;
+                registerAlert.className = `alert-custom alert-${type}`;
+                registerAlert.classList.remove('d-none');
 
                 setTimeout(() => {
-                    loginAlert.classList.add('d-none');
+                    registerAlert.classList.add('d-none');
                 }, 5000);
             }
         });

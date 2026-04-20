@@ -1,15 +1,13 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Verifikasi Pendaftaran LKS'); ?>
 
-@section('title', 'Verifikasi Pendaftaran LKS')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
                 <i class="bi bi-person-check"></i> Upload Surat Rekomendasi LKS
             </h1>
-            <a href="{{ route('admin.lks.index') }}" class="btn btn-outline-secondary">
+            <a href="<?php echo e(route('admin.lks.index')); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali ke Admin Panel
             </a>
         </div>
@@ -31,55 +29,56 @@
                         <table class="table table-borderless">
                             <tr>
                                 <td width="40%"><strong>Nama LKS</strong></td>
-                                <td width="60%">{{ $lks->nama_lks }}</td>
+                                <td width="60%"><?php echo e($lks->nama_lks); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Alamat LKS</strong></td>
-                                <td>{{ $lks->alamat_lks }}</td>
+                                <td><?php echo e($lks->alamat_lks); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Nama Ketua LKS</strong></td>
-                                <td>{{ $lks->nama_ketua_lks ?? '-' }}</td>
+                                <td><?php echo e($lks->nama_ketua_lks ?? '-'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Jenis Pelayanan</strong></td>
-                                <td>{{ $lks->jenis_pelayanan ?? '-' }}</td>
+                                <td><?php echo e($lks->jenis_pelayanan ?? '-'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Jumlah Binaan Dalam Panti</strong></td>
-                                <td>{{ $lks->jumlah_binaan_dalam_panti ?? '0' }}</td>
+                                <td><?php echo e($lks->jumlah_binaan_dalam_panti ?? '0'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Jumlah Binaan Luar Panti</strong></td>
-                                <td>{{ $lks->jumlah_binaan_luar_panti ?? '0' }}</td>
+                                <td><?php echo e($lks->jumlah_binaan_luar_panti ?? '0'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Lokasi LKS</strong></td>
-                                <td>{{ $lks->lokasi_lks ?? '-' }}</td>
+                                <td><?php echo e($lks->lokasi_lks ?? '-'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Pusat LKS</strong></td>
-                                <td>{{ $lks->pusat_lks ?? '-' }}</td>
+                                <td><?php echo e($lks->pusat_lks ?? '-'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Cabang LKS</strong></td>
-                                <td>{{ $lks->cabang_lks ?? '-' }}</td>
+                                <td><?php echo e($lks->cabang_lks ?? '-'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Nomor Kontak</strong></td>
-                                <td>{{ $lks->nomor_kontak ?? '-' }}</td>
+                                <td><?php echo e($lks->nomor_kontak ?? '-'); ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Tanda Pendaftaran</strong></td>
                                 <td>
-                                    <span class="badge {{ $lks->tanda_pendaftaran == 'Baru' ? 'bg-success' : 'bg-info' }}">
-                                        {{ $lks->tanda_pendaftaran }}
+                                    <span class="badge <?php echo e($lks->tanda_pendaftaran == 'Baru' ? 'bg-success' : 'bg-info'); ?>">
+                                        <?php echo e($lks->tanda_pendaftaran); ?>
+
                                     </span>
                                 </td>
                             </tr>
                             <tr>
                                 <td><strong>Tanggal Masuk</strong></td>
-                                <td>{{ \Carbon\Carbon::parse($lks->tanggal_masuk_dokumen)->format('d/m/Y') }}</td>
+                                <td><?php echo e(\Carbon\Carbon::parse($lks->tanggal_masuk_dokumen)->format('d/m/Y')); ?></td>
                             </tr>
                         </table>
                     </div>
@@ -88,16 +87,18 @@
                             <tr>
                                 <td width="40%"><strong>Status Saat Ini</strong></td>
                                 <td width="60%">
-                                    <span class="badge {{ $lks->status_badge }}">
-                                        {{ $lks->status_permohonan }}
+                                    <span class="badge <?php echo e($lks->status_badge); ?>">
+                                        <?php echo e($lks->status_permohonan); ?>
+
                                     </span>
                                 </td>
                             </tr>
                             <tr>
                                 <td><strong>Kelengkapan</strong></td>
                                 <td>
-                                    <span class="badge {{ $lks->pendaftaran_lengkap ? 'bg-success' : 'bg-warning' }}">
-                                        {{ $lks->pendaftaran_lengkap ? 'Lengkap' : 'Tidak Lengkap' }}
+                                    <span class="badge <?php echo e($lks->pendaftaran_lengkap ? 'bg-success' : 'bg-warning'); ?>">
+                                        <?php echo e($lks->pendaftaran_lengkap ? 'Lengkap' : 'Tidak Lengkap'); ?>
+
                                     </span>
                                 </td>
                             </tr>
@@ -127,74 +128,76 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($lks->checklists as $index => $checklist)
+                            <?php $__currentLoopData = $lks->checklists; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $checklist): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td><?php echo e($index + 1); ?></td>
                                 <td>
-                                    <strong>{{ $checklist->document->nama_dokumen }}</strong>
-                                    @if($checklist->document->wajib)
+                                    <strong><?php echo e($checklist->document->nama_dokumen); ?></strong>
+                                    <?php if($checklist->document->wajib): ?>
                                         <span class="badge bg-danger ms-2">Wajib</span>
-                                    @endif
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    @if($checklist->kelengkapan == 'Ada')
+                                    <?php if($checklist->kelengkapan == 'Ada'): ?>
                                         <span class="badge bg-success">
                                             <i class="bi bi-check-circle"></i> Lengkap
-                                            @if($checklist->file_count > 1)
-                                                <br><small>({{ $checklist->file_count }} files)</small>
-                                            @endif
+                                            <?php if($checklist->file_count > 1): ?>
+                                                <br><small>(<?php echo e($checklist->file_count); ?> files)</small>
+                                            <?php endif; ?>
                                         </span>
-                                    @else
+                                    <?php else: ?>
                                         <span class="badge bg-danger">
                                             <i class="bi bi-x-circle"></i> Tidak Lengkap
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    @if($checklist->has_files)
+                                    <?php if($checklist->has_files): ?>
                                         <div class="admin-files-list">
-                                            @foreach($checklist->getFilesInfo() as $fileIndex => $file)
+                                            <?php $__currentLoopData = $checklist->getFilesInfo(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fileIndex => $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="admin-file-item d-flex justify-content-between align-items-center p-2 mb-2 border rounded">
                                                 <div class="file-info d-flex align-items-center">
                                                     <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
                                                     <div>
-                                                           @php $fileUrl = $file['url'] ?? null; @endphp
-                                                        @if($fileUrl)
-                                                            <a href="{{ $fileUrl }}" target="_blank" class="text-decoration-none fw-bold">
-                                                                {{ $file['name'] }}
+                                                           <?php $fileUrl = $file['url'] ?? null; ?>
+                                                        <?php if($fileUrl): ?>
+                                                            <a href="<?php echo e($fileUrl); ?>" target="_blank" class="text-decoration-none fw-bold">
+                                                                <?php echo e($file['name']); ?>
+
                                                             </a>
-                                                        @else
-                                                            <a href="{{ route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" target="_blank" class="text-decoration-none fw-bold">
-                                                                {{ $file['name'] }}
+                                                        <?php else: ?>
+                                                            <a href="<?php echo e(route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']])); ?>" target="_blank" class="text-decoration-none fw-bold">
+                                                                <?php echo e($file['name']); ?>
+
                                                             </a>
-                                                        @endif
+                                                        <?php endif; ?>
                                                         <br>
-                                                        <small class="text-muted">File {{ $fileIndex + 1 }} of {{ $checklist->file_count }}</small>
+                                                        <small class="text-muted">File <?php echo e($fileIndex + 1); ?> of <?php echo e($checklist->file_count); ?></small>
                                                     </div>
                                                 </div>
                                                 <div class="file-actions">
-                                                    <a href="{{ route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <a href="<?php echo e(route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']])); ?>" target="_blank" class="btn btn-sm btn-outline-primary">
                                                         <i class="bi bi-eye"></i> Lihat
                                                     </a>
                                                 </div>
                                             </div>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </div>
-                                    @else
+                                    <?php else: ?>
                                         <span class="text-danger">
                                             <i class="bi bi-exclamation-triangle"></i> Tidak ada file
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    @if(!empty($checklist->keterangan))
-                                        <span>{{ $checklist->keterangan }}</span>
-                                    @else
+                                    <?php if(!empty($checklist->keterangan)): ?>
+                                        <span><?php echo e($checklist->keterangan); ?></span>
+                                    <?php else: ?>
                                         <span class="text-muted">-</span>
-                                    @endif
+                                    <?php endif; ?>
                                 </td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
@@ -211,35 +214,63 @@
                 </h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.verification.store', $lks->id) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+                <form action="<?php echo e(route('admin.verification.store', $lks->id)); ?>" method="POST" enctype="multipart/form-data">
+                    <?php echo csrf_field(); ?>
                     
                     <div class="mb-3">
                         <label for="status_permohonan" class="form-label">Status Verifikasi <span class="text-danger">*</span></label>
-                        <select class="form-select @error('status_permohonan') is-invalid @enderror" id="status_permohonan" name="status_permohonan" required>
+                        <select class="form-select <?php $__errorArgs = ['status_permohonan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="status_permohonan" name="status_permohonan" required>
                             <option value="">Pilih Status</option>
-                            <option value="Diterima" {{ old('status_permohonan') == 'Diterima' ? 'selected' : '' }}>Diterima</option>
-                            <option value="Ditolak" {{ old('status_permohonan') == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
-                            <option value="Dikembalikan" {{ old('status_permohonan') == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
+                            <option value="Diterima" <?php echo e(old('status_permohonan') == 'Diterima' ? 'selected' : ''); ?>>Diterima</option>
+                            <option value="Ditolak" <?php echo e(old('status_permohonan') == 'Ditolak' ? 'selected' : ''); ?>>Ditolak</option>
+                            <option value="Dikembalikan" <?php echo e(old('status_permohonan') == 'Dikembalikan' ? 'selected' : ''); ?>>Dikembalikan</option>
                         </select>
-                        @error('status_permohonan')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <?php $__errorArgs = ['status_permohonan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <!-- Field Upload Surat Rekomendasi - Muncul hanya ketika status "Diterima" dipilih -->
                     <div class="mb-3" id="surat_rekomendasi_div" style="display: none;">
                         <label for="surat_rekomendasi" class="form-label">Upload Surat Rekomendasi (PDF/JPG/PNG)</label>
-                        <input type="file" class="form-control @error('surat_rekomendasi') is-invalid @enderror" id="surat_rekomendasi" name="surat_rekomendasi" accept=".pdf,.jpg,.jpeg,.png">
+                        <input type="file" class="form-control <?php $__errorArgs = ['surat_rekomendasi'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="surat_rekomendasi" name="surat_rekomendasi" accept=".pdf,.jpg,.jpeg,.png">
                         <div class="form-text">
                             <small>Format file yang diizinkan: PDF, JPG, PNG. Maksimal ukuran: 5MB</small>
                         </div>
-                        @error('surat_rekomendasi')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <?php $__errorArgs = ['surat_rekomendasi'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         
                         <!-- Tampilkan surat rekomendasi yang sudah ada jika ada -->
-                        @if($lks->surat_rekomendasi_path)
+                        <?php if($lks->surat_rekomendasi_path): ?>
                         <div class="mt-2">
                             <div class="alert alert-info p-2">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -248,48 +279,90 @@
                                         <span class="ms-2">Surat rekomendasi sudah diupload</span>
                                     </div>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.verification.download-sertifikat', $lks->id) }}" class="btn btn-outline-primary">
+                                        <a href="<?php echo e(route('admin.verification.download-sertifikat', $lks->id)); ?>" class="btn btn-outline-primary">
                                             <i class="bi bi-download"></i>
                                         </a>
-                                        <a href="{{ route('admin.verification.preview-sertifikat', $lks->id) }}" class="btn btn-outline-info" target="_blank">
+                                        <a href="<?php echo e(route('admin.verification.preview-sertifikat', $lks->id)); ?>" class="btn btn-outline-info" target="_blank">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <div class="mb-3" id="alasan_penolakan_div" style="display: none;">
                         <label for="alasan_penolakan" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('alasan_penolakan') is-invalid @enderror" id="alasan_penolakan" name="alasan_penolakan" rows="3" placeholder="Masukkan alasan penolakan...">{{ old('alasan_penolakan') }}</textarea>
-                        @error('alasan_penolakan')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <textarea class="form-control <?php $__errorArgs = ['alasan_penolakan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="alasan_penolakan" name="alasan_penolakan" rows="3" placeholder="Masukkan alasan penolakan..."><?php echo e(old('alasan_penolakan')); ?></textarea>
+                        <?php $__errorArgs = ['alasan_penolakan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <div class="mb-3" id="alasan_dikembalikan_div" style="display: none;">
                         <label for="alasan_dikembalikan" class="form-label">Alasan Dikembalikan <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('alasan_dikembalikan') is-invalid @enderror" id="alasan_dikembalikan" name="alasan_dikembalikan" rows="3" placeholder="Masukkan alasan dikembalikan...">{{ old('alasan_dikembalikan') }}</textarea>
-                        @error('alasan_dikembalikan')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <textarea class="form-control <?php $__errorArgs = ['alasan_dikembalikan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="alasan_dikembalikan" name="alasan_dikembalikan" rows="3" placeholder="Masukkan alasan dikembalikan..."><?php echo e(old('alasan_dikembalikan')); ?></textarea>
+                        <?php $__errorArgs = ['alasan_dikembalikan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <div class="mb-3">
                         <label for="nama_verifikator" class="form-label">Nama Verifikator <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('nama_verifikator') is-invalid @enderror" id="nama_verifikator" name="nama_verifikator" value="{{ old('nama_verifikator', auth()->user()->name) }}" placeholder="Masukkan nama verifikator" required>
-                        @error('nama_verifikator')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" class="form-control <?php $__errorArgs = ['nama_verifikator'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="nama_verifikator" name="nama_verifikator" value="<?php echo e(old('nama_verifikator', auth()->user()->name)); ?>" placeholder="Masukkan nama verifikator" required>
+                        <?php $__errorArgs = ['nama_verifikator'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-circle"></i> Simpan Verifikasi
                         </button>
-                        <a href="{{ route('admin.lks.index') }}" class="btn btn-outline-secondary">
+                        <a href="<?php echo e(route('admin.lks.index')); ?>" class="btn btn-outline-secondary">
                             <i class="bi bi-x-circle"></i> Batal
                         </a>
                     </div>
@@ -370,4 +443,5 @@ document.addEventListener('DOMContentLoaded', function() {
     background-color: #f8f9fa;
 }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\pendaftaranLKS\resources\views/admin/verification.blade.php ENDPATH**/ ?>

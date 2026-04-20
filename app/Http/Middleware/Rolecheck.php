@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,8 +23,8 @@ class Rolecheck
             return redirect('login');
         }
 
-        if (in_array(Auth::user()->role, $roles)) {
-           abort(403, 'akses ditolak, Pengguna tidak memiliki izin'); // Forbidden
+        if (!in_array(Auth::user()->role, $roles)) {
+            abort(403, 'akses ditolak, Pengguna tidak memiliki izin'); // Forbidden
         }
 
         return $next($request);

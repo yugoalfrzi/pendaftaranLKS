@@ -13,7 +13,7 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $documents = Document::ordered()->paginate(15);
+        $documents = Document::ordered()->paginate(10);
         return view('documents.index', compact('documents'));
     }
 

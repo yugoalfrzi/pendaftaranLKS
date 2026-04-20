@@ -144,7 +144,7 @@ class LKSController extends Controller
     {
         $lks = LKS::with('checklists')->findOrFail($id);
         $documents = Document::all();
-        
+
         return view('lks.show', compact('lks', 'documents'));
     }
 
@@ -155,7 +155,7 @@ class LKSController extends Controller
     {
         $lks = LKS::with('checklists.document')->findOrFail($id);
         $documents = Document::all();
-        
+
         return view('lks.edit', compact('lks', 'documents'));
     }
 
@@ -166,7 +166,7 @@ class LKSController extends Controller
     {
         return DB::transaction(function () use ($request, $id) {
             $lks = LKS::findOrFail($id);
-            
+
             // Validasi data utama LKS
             $validated = $request->validate([
                 'nama_lks' => 'required|string|max:255',
@@ -187,24 +187,24 @@ class LKSController extends Controller
                 'documents.*.keterangan' => 'nullable|string',
                 'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:2048',
             ]);
-        
+
             // Update data LKS termasuk kabupaten_kota
             $validated['kabupaten_kota'] = $request->lokasi_lks; // UPDATE KABUPATEN/KOTA
             $lks->update($validated);
-        
+
             // Proses checklist documents dengan multiple files
             if ($request->has('documents')) {
                 foreach ($request->documents as $index => $documentData) {
-                    
+
                     if (!isset($documentData['document_id'])) {
                         continue;
                     }
-                
+
                     // Cari checklist yang sudah ada
                     $checklist = Checklist::where('lks_id', $lks->id)
                                         ->where('document_id', $documentData['document_id'])
                                         ->first();
-                
+
                     // Jika tidak ada checklist, buat baru
                     if (!$checklist) {
                         $checklist = new Checklist();
@@ -217,9 +217,9 @@ class LKSController extends Controller
                         $filePaths = $checklist->file_paths ?? [];
                         $originalFilenames = $checklist->original_filenames ?? [];
                     }
-                
+
                     $kelengkapan = $documentData['kelengkapan'] ?? 'Tidak Ada';
-                
+
                     // Handle multiple file uploads
                     if (isset($documentData['files']) && is_array($documentData['files'])) {
                         foreach ($documentData['files'] as $fileIndex => $file) {
@@ -227,22 +227,22 @@ class LKSController extends Controller
                                 $originalFilename = $file->getClientOriginalName();
                                 $fileName = time() . '_' . $lks->id . '_' . $documentData['document_id'] . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                                 $filePath = 'documents/' . $fileName;
-                                
+
                                 // Store file
                                 Storage::disk('public')->put($filePath, file_get_contents($file));
-                                
+
                                 $filePaths[] = $filePath;
                                 $originalFilenames[] = $originalFilename;
-                                
+
                                 // Auto-set kelengkapan to 'Ada' if files are uploaded
                                 $kelengkapan = 'Ada';
                             }
                         }
                     }
-                
+
                     // Hitung jumlah file
                     $fileCount = count($filePaths);
-                
+
                     // Update atau buat checklist
                     $checklistData = [
                         'kelengkapan' => $kelengkapan,
@@ -251,7 +251,7 @@ class LKSController extends Controller
                         'original_filenames' => !empty($originalFilenames) ? $originalFilenames : null,
                         'file_count' => $fileCount,
                     ];
-                
+
                     if ($checklist->exists) {
                         $checklist->update($checklistData);
                     } else {
@@ -260,13 +260,13 @@ class LKSController extends Controller
                     }
                 }
             }
-        
+
             // Update status pendaftaran_lengkap
             $lks->update(['pendaftaran_lengkap' => $lks->isComplete()]);
-        
+
             return redirect()->route('lks.show', $lks->id)
                 ->with('success', 'Data LKS berhasil diperbarui!');
-        
+
         });
     }
 
@@ -289,7 +289,7 @@ class LKSController extends Controller
         $lks->delete();
         return redirect()->route('lks.index')->with('success', 'Data LKS berhasil dihapus!');
     }
-    
+
     /**
      * View document file
      */
@@ -303,7 +303,7 @@ class LKSController extends Controller
         if ($document->file_paths) {
             $filePaths = is_array($document->file_paths) ? $document->file_paths : json_decode($document->file_paths, true);
         }
-        
+
         $filePath = is_array($filePaths) ? ($filePaths[$file] ?? null) : $document->file_path;
 
         if (!$filePath) {

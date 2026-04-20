@@ -1,0 +1,279 @@
+
+
+<?php $__env->startSection('title', 'Super Admin Panel - Surat Rekomendasi'); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-shield-check"></i> Super Admin Panel - Upload Sertifikat
+            </h1>
+            <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="text-muted mb-1"><?php echo e($stats['total']); ?></h4>
+                        <p class="mb-0">Total LKS</p>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                        <i class="bi bi-building fs-3 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="text-muted mb-0"><?php echo e($stats['menunggu']); ?></h4>
+                        <p class="mb-0">Menunggu Upload Sertifikat</p>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                        <i class="bi bi-check-circle fs-3 text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="text-muted mb-0"><?php echo e($stats['with_sertifikat'] ?? 0); ?></h4>
+                        <p class="mb-0">Sudah Upload Sertifikat</p>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="bi bi-file-earmark-check fs-3 text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="text-muted mb-0"><?php echo e($stats['ditolak'] + $stats['dikembalikan']); ?></h4>
+                        <p class="mb-0">Ditolak/Dikembalikan</p>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-circle">
+                        <i class="bi bi-x-circle fs-3 text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Options -->
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-funnel"></i> Filter Data
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="<?php echo e(route('superadmin.index')); ?>">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="">Semua Status</option>
+                        <option value="Menunggu" <?php echo e(request('status') == 'Menunggu' ? 'selected' : ''); ?>>Menunggu</option>
+                        <option value="Diterima untuk proses" <?php echo e(request('status') == 'Diterima untuk proses' ? 'selected' : ''); ?>>Diterima untuk Proses</option>
+                        <option value="Diterima" <?php echo e(request('status') == 'Diterima' ? 'selected' : ''); ?>>Diterima</option>
+                        <option value="Ditolak" <?php echo e(request('status') == 'Ditolak' ? 'selected' : ''); ?>>Ditolak</option>
+                        <option value="Dikembalikan" <?php echo e(request('status') == 'Dikembalikan' ? 'selected' : ''); ?>>Dikembalikan</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Kabupaten/Kota</label>
+                    <input type="text" class="form-control" name="kabupaten" value="<?php echo e(request('kabupaten')); ?>" placeholder="Cari kabupaten/kota...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Pencarian</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari nama LKS...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Cari
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-table"></i> Daftar LKS - Upload Sertifikat
+        </h5>
+    </div>
+    <div class="card-body">
+        <?php if(session('success')): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i><?php echo e(session('success')); ?>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if($lks->count() > 0): ?>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama LKS</th>
+                            <th>Kabupaten/Kota</th>
+                            <th>Status</th>
+                            <th>Surat Rekomendasi</th>
+                            <th>Sertifikat</th>
+                            <th>Verifikator</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $__currentLoopData = $lks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $lksItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <tr>
+                                <td><?php echo e($lks->firstItem() + $index); ?></td>
+                                <td>
+                                    <strong><?php echo e($lksItem->nama_lks); ?></strong><br>
+                                    <small class="text-muted"><?php echo e($lksItem->alamat_lks); ?></small>
+                                </td>
+                                <td><?php echo e($lksItem->kabupaten_kota ?? '-'); ?></td>
+                                <td>
+                                    <span class="badge <?php echo e($lksItem->status_badge); ?>">
+                                        <?php echo e($lksItem->status_permohonan); ?>
+
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php if($lksItem->surat_rekomendasi_path): ?>
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Ada
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-x-circle"></i> Belum Ada
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if($lksItem->sertifikat_path): ?>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="<?php echo e(route('superadmin.download-surat', $lksItem->id)); ?>"
+                                               class="btn btn-outline-success"
+                                               title="Download"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                            <a href="<?php echo e(route('superadmin.preview-surat', $lksItem->id)); ?>"
+                                               class="btn btn-outline-info"
+                                               title="Preview"
+                                               target="_blank"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <form action="<?php echo e(route('superadmin.delete-surat', $lksItem->id)); ?>"
+                                                  method="POST"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Hapus sertifikat?')">
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('DELETE'); ?>
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-file-earmark"></i> Belum Ada
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo e($lksItem->nama_verifikator ?? '-'); ?></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="<?php echo e(route('superadmin.verification', $lksItem->id)); ?>" 
+                                           class="btn btn-primary" 
+                                           title="Upload Sertifikat">
+                                            <i class="bi bi-upload"></i> Upload
+                                        </a>
+                                        <a href="<?php echo e(route('superadmin.edit', $lksItem->id)); ?>" 
+                                           class="btn btn-warning" 
+                                           title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="<?php echo e(route('superadmin.destroy', $lksItem->id)); ?>"
+                                              method="POST"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Hapus data LKS ini?')">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <?php echo e($lks->links()); ?>
+
+            </div>
+        <?php else: ?>
+            <div class="text-center py-5">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <p class="text-muted mt-2">Belum ada data LKS</p>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<script>
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+});
+</script>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+.table td {
+    vertical-align: middle;
+}
+</style>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\pendaftaranLKS\resources\views/superadmin/index.blade.php ENDPATH**/ ?>

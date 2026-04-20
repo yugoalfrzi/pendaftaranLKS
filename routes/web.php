@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Documents\DocumentController;
@@ -24,6 +25,8 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.show');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
 });
 
 // Logout route
@@ -31,12 +34,31 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // Protected Routes (Require Authentication)
 Route::middleware('auth')->group(function () {
-    
+
     // Dashboard Route
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Documents Routes
-    Route::prefix('documents')->group(function () {
+    // ==================== SUPER ADMIN ROUTES ====================
+    Route::prefix('superadmin')->middleware('superadmin')->group(function () {
+        Route::get('/', [SuperAdminController::class, 'index'])->name('superadmin.index');
+        Route::get('/{id}/verification', [SuperAdminController::class, 'verification'])->name('superadmin.verification');
+        Route::post('/{id}/verification', [SuperAdminController::class, 'processVerification'])->name('superadmin.verification.process');
+        Route::get('/{id}/edit', [SuperAdminController::class, 'edit'])->name('superadmin.edit');
+        Route::put('/{id}', [SuperAdminController::class, 'update'])->name('superadmin.update');
+        Route::delete('/{id}', [SuperAdminController::class, 'destroy'])->name('superadmin.destroy');
+        
+        // Sertifikat routes (file dari super admin)
+        Route::get('/{id}/download-surat', [SuperAdminController::class, 'downloadSuratRekomendasi'])->name('superadmin.download-surat');
+        Route::get('/{id}/preview-surat', [SuperAdminController::class, 'previewSuratRekomendasi'])->name('superadmin.preview-surat');
+        Route::delete('/{id}/delete-surat', [SuperAdminController::class, 'deleteSuratRekomendasi'])->name('superadmin.delete-surat');
+        
+        // Surat rekomendasi routes (file dari admin - untuk dilihat super admin)
+        Route::get('/{id}/download-rekomendasi', [SuperAdminController::class, 'downloadSuratRekomendasiAdmin'])->name('superadmin.download-rekomendasi');
+        Route::get('/{id}/preview-rekomendasi', [SuperAdminController::class, 'previewSuratRekomendasiAdmin'])->name('superadmin.preview-rekomendasi');
+    });
+
+    // Documents Routes - Super Admin & Admin only
+    Route::prefix('documents')->middleware('rolecheck:super_admin,admin')->group(function () {
         Route::get('/', [DocumentController::class, 'index'])->name('documents.index');
         Route::get('/create', [DocumentController::class, 'create'])->name('documents.create');
         Route::post('/', [DocumentController::class, 'store'])->name('documents.store');
@@ -49,38 +71,53 @@ Route::middleware('auth')->group(function () {
     // Kewenangan Routes
     // Kabkota Routes
     Route::prefix('kewenangan-kabkota')->group(function () {
+        // View routes - accessible by all authenticated users
         Route::get('/', [KewenanganKabkotaController::class, 'index'])->name('kewenangan-kabkota.index');
-        Route::get('/create', [KewenanganKabkotaController::class, 'create'])->name('kewenangan-kabkota.create');
-        Route::post('/', [KewenanganKabkotaController::class, 'store'])->name('kewenangan-kabkota.store');
         Route::get('/{kewenangan}', [KewenanganKabkotaController::class, 'show'])->name('kewenangan-kabkota.show');
-        Route::get('/{kewenangan}/edit', [KewenanganKabkotaController::class, 'edit'])->name('kewenangan-kabkota.edit');
-        Route::put('/{kewenangan}', [KewenanganKabkotaController::class, 'update'])->name('kewenangan-kabkota.update');
-        Route::delete('/{kewenangan}', [KewenanganKabkotaController::class, 'destroy'])->name('kewenangan-kabkota.destroy');
-        Route::get('/kewenangan-kabkota/export-excel', [KewenanganKabkotaController::class, 'exportExcel'])->name('kewenangan-kabkota.export-excel');    
+        
+        // Admin & Super Admin only routes
+        Route::middleware('rolecheck:super_admin,admin')->group(function () {
+            Route::get('/create', [KewenanganKabkotaController::class, 'create'])->name('kewenangan-kabkota.create');
+            Route::post('/', [KewenanganKabkotaController::class, 'store'])->name('kewenangan-kabkota.store');
+            Route::get('/{kewenangan}/edit', [KewenanganKabkotaController::class, 'edit'])->name('kewenangan-kabkota.edit');
+            Route::put('/{kewenangan}', [KewenanganKabkotaController::class, 'update'])->name('kewenangan-kabkota.update');
+            Route::delete('/{kewenangan}', [KewenanganKabkotaController::class, 'destroy'])->name('kewenangan-kabkota.destroy');
+            Route::get('/kewenangan-kabkota/export-excel', [KewenanganKabkotaController::class, 'exportExcel'])->name('kewenangan-kabkota.export-excel');
+        });
     });
 
     // Provinsi Routes
     Route::prefix('kewenangan-provinsi')->group(function () {
+        // View routes - accessible by all authenticated users
         Route::get('/', [KewenanganProvinsiController::class, 'index'])->name('kewenangan-provinsi.index');
-        Route::get('/create', [KewenanganProvinsiController::class, 'create'])->name('kewenangan-provinsi.create');
-        Route::post('/', [KewenanganProvinsiController::class, 'store'])->name('kewenangan-provinsi.store');
         Route::get('/{kewenangan}', [KewenanganProvinsiController::class, 'show'])->name('kewenangan-provinsi.show');
-        Route::get('/{kewenangan}/edit', [KewenanganProvinsiController::class, 'edit'])->name('kewenangan-provinsi.edit');
-        Route::put('/{kewenangan}', [KewenanganProvinsiController::class, 'update'])->name('kewenangan-provinsi.update');
-        Route::delete('/{kewenangan}', [KewenanganProvinsiController::class, 'destroy'])->name('kewenangan-provinsi.destroy');
-        Route::get('/kewenangan-provinsi/export-excel', [KewenanganProvinsiController::class, 'exportExcel'])->name('kewenangan-provinsi.export-excel');
+        
+        // Admin & Super Admin only routes
+        Route::middleware('rolecheck:super_admin,admin')->group(function () {
+            Route::get('/create', [KewenanganProvinsiController::class, 'create'])->name('kewenangan-provinsi.create');
+            Route::post('/', [KewenanganProvinsiController::class, 'store'])->name('kewenangan-provinsi.store');
+            Route::get('/{kewenangan}/edit', [KewenanganProvinsiController::class, 'edit'])->name('kewenangan-provinsi.edit');
+            Route::put('/{kewenangan}', [KewenanganProvinsiController::class, 'update'])->name('kewenangan-provinsi.update');
+            Route::delete('/{kewenangan}', [KewenanganProvinsiController::class, 'destroy'])->name('kewenangan-provinsi.destroy');
+            Route::get('/kewenangan-provinsi/export-excel', [KewenanganProvinsiController::class, 'exportExcel'])->name('kewenangan-provinsi.export-excel');
+        });
     });
 
     // Kemensos Routes
     Route::prefix('kewenangan-kemensos')->group(function () {
+        // View routes - accessible by all authenticated users
         Route::get('/', [KewenanganKemensosController::class, 'index'])->name('kewenangan-kemensos.index');
-        Route::get('/create', [KewenanganKemensosController::class, 'create'])->name('kewenangan-kemensos.create');
-        Route::post('/', [KewenanganKemensosController::class, 'store'])->name('kewenangan-kemensos.store');
         Route::get('/{kewenangan}', [KewenanganKemensosController::class, 'show'])->name('kewenangan-kemensos.show');
-        Route::get('/{kewenangan}/edit', [KewenanganKemensosController::class, 'edit'])->name('kewenangan-kemensos.edit');
-        Route::put('/{kewenangan}', [KewenanganKemensosController::class, 'update'])->name('kewenangan-kemensos.update');
-        Route::delete('/{kewenangan}', [KewenanganKemensosController::class, 'destroy'])->name('kewenangan-kemensos.destroy');
-        Route::get('/kewenangan-kemensos/export-excel', [KewenanganKemensosController::class, 'exportExcel'])->name('kewenangan-kemensos.export-excel');
+        
+        // Admin & Super Admin only routes
+        Route::middleware('rolecheck:super_admin,admin')->group(function () {
+            Route::get('/create', [KewenanganKemensosController::class, 'create'])->name('kewenangan-kemensos.create');
+            Route::post('/', [KewenanganKemensosController::class, 'store'])->name('kewenangan-kemensos.store');
+            Route::get('/{kewenangan}/edit', [KewenanganKemensosController::class, 'edit'])->name('kewenangan-kemensos.edit');
+            Route::put('/{kewenangan}', [KewenanganKemensosController::class, 'update'])->name('kewenangan-kemensos.update');
+            Route::delete('/{kewenangan}', [KewenanganKemensosController::class, 'destroy'])->name('kewenangan-kemensos.destroy');
+            Route::get('/kewenangan-kemensos/export-excel', [KewenanganKemensosController::class, 'exportExcel'])->name('kewenangan-kemensos.export-excel');
+        });
     });
 
     // Announcements Routes
@@ -99,21 +136,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/regulasi', [AnnouncementController::class, 'regulasi'])->name('regulasi');
     Route::get('/panduan', [AnnouncementController::class, 'panduan'])->name('panduan');
     Route::get('/surat', [AnnouncementController::class, 'surat'])->name('surat');
-    
+
 
     // LKS Resource Routes
     Route::prefix('lks')->group(function () {
+        // View routes - accessible by all authenticated users
         Route::get('/', [LKSController::class, 'index'])->name('lks.index');
-        Route::get('/create', [LKSController::class, 'create'])->name('lks.create');
-        Route::post('/', [LKSController::class, 'store'])->name('lks.store');
         Route::get('/{lks}', [LKSController::class, 'show'])->name('lks.show');
-        Route::get('/{lks}/edit', [LKSController::class, 'edit'])->name('lks.edit');
-        Route::put('/{lks}', [LKSController::class, 'update'])->name('lks.update');
-        Route::delete('/{lks}', [LKSController::class, 'destroy'])->name('lks.destroy');
+        
+        // Create/Edit/Delete - Admin & Super Admin only
+        Route::middleware('rolecheck:super_admin,admin')->group(function () {
+            Route::get('/create', [LKSController::class, 'create'])->name('lks.create');
+            Route::post('/', [LKSController::class, 'store'])->name('lks.store');
+            Route::get('/{lks}/edit', [LKSController::class, 'edit'])->name('lks.edit');
+            Route::put('/{lks}', [LKSController::class, 'update'])->name('lks.update');
+            Route::delete('/{lks}', [LKSController::class, 'destroy'])->name('lks.destroy');
 
-        // View and Delete individual checklist files (simple routes)
-        Route::get('/{lks}/documents/{document}/files/{file}', [LKSController::class, 'viewDocument'])->name('lks.files.show');
-        Route::delete('/{lks}/documents/{document}/files/{file}', [LKSController::class, 'deleteDocumentFile'])->name('lks.files.destroy');
+            // View and Delete individual checklist files
+            Route::get('/{lks}/documents/{document}/files/{file}', [LKSController::class, 'viewDocument'])->name('lks.files.show');
+            Route::delete('/{lks}/documents/{document}/files/{file}', [LKSController::class, 'deleteDocumentFile'])->name('lks.files.destroy');
+        });
     });
 
     // ==================== HIBAH LKS ROUTES LENGKAP ====================
@@ -126,7 +168,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/edit', [HibahLksController::class, 'edit'])->name('hibah.edit');
         Route::put('/{id}', [HibahLksController::class, 'update'])->name('hibah.update');
         Route::delete('/{id}', [HibahLksController::class, 'destroy'])->name('hibah.destroy');
-        
+
 
         // Menu links in sidebar
         Route::get('/data/{tahun}', [HibahLksController::class, 'data'])->name('hibah.data');
@@ -136,11 +178,11 @@ Route::middleware('auth')->group(function () {
         // Upload dokumen verifikasi tahunan
         Route::post('/{id}/upload-dokumen-verifikasi', [HibahLksController::class, 'uploadDokumenVerifikasi'])
         ->name('hibah.upload-dokumen-verifikasi');
-        
+
         // Hapus dokumen verifikasi
         Route::delete('/{id}/delete-dokumen-verifikasi', [HibahLksController::class, 'deleteDokumenVerifikasi'])
         ->name('hibah.delete-dokumen-verifikasi');
-        
+
         // Update status verifikasi (admin only)
         Route::post('/{id}/update-status-verifikasi', [HibahLksController::class, 'updateStatusVerifikasi'])
         ->name('hibah.update-status-verifikasi');
@@ -154,28 +196,28 @@ Route::middleware('auth')->group(function () {
         // ===== DOKUMEN PENDUKUNG ROUTES =====
         // Halaman kelola dokumen pendukung - SIMPLIFIED ROUTE
         Route::get('/{id}/documents', [HibahLksController::class, 'documents'])->name('hibah.documents');
-        
+
         // Upload dokumen pendukung
         Route::post('/{id}/documents/upload', [HibahLksController::class, 'uploadDocument'])->name('hibah.documents.upload');
 
         // Bulk upload supporting documents (admin only)
         Route::post('/{id}/bulk-upload-supporting', [HibahLksController::class, 'bulkUploadSupportingDocuments'])->name('hibah.bulk-upload-supporting');
-        
-        // Hapus dokumen pendukung  
+
+        // Hapus dokumen pendukung
         Route::delete('/{id}/documents/delete', [HibahLksController::class, 'deleteDocument'])->name('hibah.documents.delete');
-        
+
         // Preview dokumen - Lihat di browser
         Route::get('/{id}/documents/preview/{document_type}', [HibahLksController::class, 'previewDocument'])->name('hibah.documents.preview');
-        
+
         // Download dokumen - Unduh file
         Route::get('/{id}/documents/download/{document_type}', [HibahLksController::class, 'downloadDocument'])->name('hibah.documents.download');
-        
+
         // View dokumen - Alternatif view
         Route::get('/{id}/documents/view/{document_type}', [HibahLksController::class, 'viewDocument'])->name('hibah.documents.view');
     });
 
-    // ==================== ADMIN ROUTES LENGKAP ====================
-    Route::prefix('admin')->group(function () {
+    // ==================== ADMIN PANEL ROUTES (Super Admin Only) ====================
+    Route::prefix('admin')->middleware('superadmin')->group(function () {
         // ===== LKS MANAGEMENT ROUTES =====
         Route::prefix('lks')->group(function () {
             Route::get('/', [AdminController::class, 'adminIndex'])->name('admin.lks.index');
@@ -186,13 +228,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/verification', [AdminController::class, 'showVerification'])->name('admin.verification');
             Route::post('/{id}/verification', [AdminController::class, 'verification'])->name('admin.verification.store');
             Route::post('/{id}/verify-documents', [AdminController::class, 'verifyDocuments'])->name('admin.verify-documents');
-            
+
             Route::prefix('{id}')->group(function () {
                 Route::get('/download-sertifikat', [AdminController::class, 'downloadSertifikat'])->name('admin.verification.download-sertifikat');
                 Route::get('/preview-sertifikat', [AdminController::class, 'previewSertifikat'])->name('admin.verification.preview-sertifikat');
                 Route::delete('/delete-sertifikat', [AdminController::class, 'deleteSertifikat'])->name('admin.verification.delete-sertifikat');
             });
-            
+
             Route::post('/bulk-action', [AdminController::class, 'bulkAction'])->name('admin.lks.bulk-action');
             Route::get('/export', [AdminController::class, 'export'])->name('admin.lks.export');
         });
@@ -204,15 +246,15 @@ Route::middleware('auth')->group(function () {
             // Route untuk verifikasi dokumen (admin only)
             Route::post('/{id}/update-status-verifikasi', [HibahLksController::class, 'updateStatusVerifikasi'])
             ->name('admin.hibah.update-status-verifikasi');
-            
+
             // Route dengan parameter untuk operasi spesifik
             Route::prefix('{id}')->group(function () {
                 Route::post('/admin-documents', [HibahLksController::class, 'adminDocumentsStore'])->name('admin.hibah.documents.store');
                 Route::post('/bulk-upload', [HibahLksController::class, 'adminBulkUpload'])->name('admin.hibah.bulk-upload');
                 Route::post('/bulk-delete', [HibahLksController::class, 'adminBulkDelete'])->name('admin.hibah.bulk-delete');
-                
+
             });
-            
+
             // Admin export dan statistics
             Route::get('/export/{tahun}', [HibahLksController::class, 'adminExport'])->name('admin.hibah.export');
             Route::get('/statistics/{tahun}', [HibahLksController::class, 'admintatistics'])->name('admin.hibah.statistics');
@@ -222,7 +264,7 @@ Route::middleware('auth')->group(function () {
     // ==================== FILE STORAGE ROUTES ====================
     Route::get('storage/{path}', function ($path) {
         $path = storage_path('app/public/' . $path);
-        
+
         if (!File::exists($path)) {
             abort(404);
         }
@@ -265,7 +307,7 @@ Route::middleware('auth')->group(function () {
 // ==================== PUBLIC ROUTES ====================
 Route::get('up', function () {
     return response()->json([
-        'status' => 'OK', 
+        'status' => 'OK',
         'timestamp' => now(),
         'app' => config('app.name'),
         'env' => config('app.env')
@@ -274,7 +316,7 @@ Route::get('up', function () {
 
 Route::get('certificates/{filename}', function ($filename) {
     $path = storage_path('app/public/sertifikat/' . $filename);
-    
+
     if (!File::exists($path)) {
         abort(404);
     }

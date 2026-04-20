@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sistem Pendaftaran LKS') - Provinsi Jawa Barat</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title><?php echo $__env->yieldContent('title', 'Sistem Pendaftaran LKS'); ?> - Provinsi Jawa Barat</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- ICON PAGE -->
-    <link rel="icon" href="{{ asset('assets/Apps/vendors/images/favicon.ico') }}" type="image/png">
+    <link rel="icon" href="<?php echo e(asset('assets/Apps/vendors/images/favicon.ico')); ?>" type="image/png">
 
     <style>
         * {
@@ -290,14 +290,14 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="{{ route('dashboard') }}" class="logo">
-                <img src="{{ asset('assets/Apps/vendors/images/lks-removebg-preview.png') }}" alt="e-LKS Jawa Barat">
+            <a href="<?php echo e(route('dashboard')); ?>" class="logo">
+                <img src="<?php echo e(asset('assets/Apps/vendors/images/lks-removebg-preview.png')); ?>" alt="e-LKS Jawa Barat">
                 <span>E-LKS JABAR</span>
             </a>
         </div>
 
         <nav class="nav flex-column">
-            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>" href="<?php echo e(route('dashboard')); ?>">
                 <i class="bi bi-house-door"></i>
                 <span>Dashboard</span>
             </a>
@@ -309,72 +309,72 @@
                 <i class="bi bi-chevron-down dropdown-arrow"></i>
             </div>
             <div class="submenu" id="pengumumanSubmenu">
-                <a class="nav-link {{ request()->routeIs('announcements.regulasi') ? 'active' : '' }}" href="{{ route('announcements.regulasi') }}">
+                <a class="nav-link <?php echo e(request()->routeIs('announcements.regulasi') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.regulasi')); ?>">
                     <i class="bi bi-file-earmark-text"></i> <span>Regulasi</span>
                 </a>
-                <a class="nav-link {{ request()->routeIs('announcements.panduan') ? 'active' : '' }}" href="{{ route('announcements.panduan') }}">
+                <a class="nav-link <?php echo e(request()->routeIs('announcements.panduan') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.panduan')); ?>">
                     <i class="bi bi-journal-text"></i> <span>Panduan</span>
                 </a>
-                <a class="nav-link {{ request()->routeIs('announcements.surat') ? 'active' : '' }}" href="{{ route('announcements.surat') }}">
+                <a class="nav-link <?php echo e(request()->routeIs('announcements.surat') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.surat')); ?>">
                     <i class="bi bi-envelope"></i> <span>Surat</span>
                 </a>
             </div>
 
-            <a class="nav-link {{ request()->routeIs('lks.create') ? 'active' : '' }}" href="{{ route('lks.create') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('lks.create') ? 'active' : ''); ?>" href="<?php echo e(route('lks.create')); ?>">
                 <i class="bi bi-plus-circle"></i> <span>Pendaftaran LKS</span>
             </a>
 
             <!-- Data LKS JABAR -->
-            @auth
+            <?php if(auth()->guard()->check()): ?>
                 <div class="nav-link dropdown-toggle" data-target="dataLksSubmenu">
                     <i class="bi bi-database"></i>
                     <span>Data LKS JABAR</span>
                     <i class="bi bi-chevron-down dropdown-arrow"></i>
                 </div>
                 <div class="submenu" id="dataLksSubmenu">
-                    <a class="nav-link {{ request()->routeIs('kewenangan-kabkota.*') ? 'active' : '' }}" href="{{ route('kewenangan-kabkota.index') }}">
+                    <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kabkota.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kabkota.index')); ?>">
                         <i class="bi bi-geo-alt"></i> <span>Kewenangan Kab/Kota</span>
                     </a>
-                    @if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin'))
-                        <a class="nav-link {{ request()->routeIs('kewenangan-provinsi.*') ? 'active' : '' }}" href="{{ route('kewenangan-provinsi.index') }}">
+                    <?php if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin')): ?>
+                        <a class="nav-link <?php echo e(request()->routeIs('kewenangan-provinsi.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-provinsi.index')); ?>">
                             <i class="bi bi-building"></i> <span>Kewenangan Provinsi</span>
                         </a>
-                        <a class="nav-link {{ request()->routeIs('kewenangan-kemensos.*') ? 'active' : '' }}" href="{{ route('kewenangan-kemensos.index') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kemensos.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kemensos.index')); ?>">
                             <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
                         </a>
-                    @endif
+                    <?php endif; ?>
                 </div>
-            @endauth
+            <?php endif; ?>
 
             <!-- Hibah LKS (Admin only) -->
-            @auth
-                @if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin'))
+            <?php if(auth()->guard()->check()): ?>
+                <?php if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin')): ?>
                     <div class="nav-link dropdown-toggle" data-target="kewirausahaanSubmenu">
                         <i class="bi bi-cash-stack"></i>
                         <span>Hibah LKS</span>
                         <i class="bi bi-chevron-down dropdown-arrow"></i>
                     </div>
                     <div class="submenu" id="kewirausahaanSubmenu">
-                        <a class="nav-link" href="{{ route('hibah.keuangan', ['tahun' => now()->year]) }}">
+                        <a class="nav-link" href="<?php echo e(route('hibah.keuangan', ['tahun' => now()->year])); ?>">
                             <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
                         </a>
                     </div>
-                @endif
-            @endauth
+                <?php endif; ?>
+            <?php endif; ?>
 
             <!-- Admin Panel (Super Admin only) -->
-            @auth
-                @if(Auth::user()->role === 'super_admin')
-                    <a class="nav-link {{ request()->routeIs('admin.index') ? 'active' : '' }}" href="{{ route('admin.lks.index') }}">
+            <?php if(auth()->guard()->check()): ?>
+                <?php if(Auth::user()->role === 'super_admin'): ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('admin.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.lks.index')); ?>">
                         <i class="bi bi-gear-wide-connected"></i>
                         <span>Admin Panel</span>
                     </a>
-                    <a class="nav-link {{ request()->routeIs('superadmin.index') ? 'active' : '' }}" href="{{ route('superadmin.index') }}">
+                    <a class="nav-link <?php echo e(request()->routeIs('superadmin.index') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.index')); ?>">
                         <i class="bi bi-shield-check"></i>
                         <span>Super Admin Panel</span>
                     </a>
-                @endif
-            @endauth
+                <?php endif; ?>
+            <?php endif; ?>
         </nav>
     </div>
 
@@ -385,26 +385,28 @@
                 <button class="sidebar-toggle me-3" id="sidebarToggle">
                     <i class="bi bi-list"></i>
                 </button>
-                <h4 class="mb-0 fw-semibold">@yield('page-title', 'E-LKS')</h4>
+                <h4 class="mb-0 fw-semibold"><?php echo $__env->yieldContent('page-title', 'E-LKS'); ?></h4>
             </div>
 
             <div class="user-info">
                 <div class="user-avatar">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    <?php echo e(strtoupper(substr(Auth::user()->name ?? 'U', 0, 1))); ?>
+
                 </div>
                 <div class="d-none d-md-block">
-                    <div class="fw-semibold small">{{ Auth::user()->name ?? 'User' }}</div>
+                    <div class="fw-semibold small"><?php echo e(Auth::user()->name ?? 'User'); ?></div>
                     <div class="role-badge
-                        @if(Auth::user()->hasRole('admin')) role-admin
-                        @elseif(Auth::user()->hasRole('kabkota')) role-kabkota
-                        @elseif(Auth::user()->hasRole('provinsi')) role-provinsi
-                        @elseif(Auth::user()->hasRole('kemensos')) role-kemensos
-                        @else role-admin @endif">
-                        {{ ucfirst(Auth::user()->role ?? 'admin') }}
+                        <?php if(Auth::user()->hasRole('admin')): ?> role-admin
+                        <?php elseif(Auth::user()->hasRole('kabkota')): ?> role-kabkota
+                        <?php elseif(Auth::user()->hasRole('provinsi')): ?> role-provinsi
+                        <?php elseif(Auth::user()->hasRole('kemensos')): ?> role-kemensos
+                        <?php else: ?> role-admin <?php endif; ?>">
+                        <?php echo e(ucfirst(Auth::user()->role ?? 'admin')); ?>
+
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('logout')); ?>" class="d-inline">
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                         <i class="bi bi-box-arrow-right"></i>
                         <span class="d-none d-md-inline ms-1">Logout</span>
@@ -414,21 +416,23 @@
         </div>
 
         <div class="content-area">
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                    <i class="bi bi-check-circle-fill me-2"></i> <?php echo e(session('success')); ?>
+
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @if(session('error'))
+            <?php if(session('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> <?php echo e(session('error')); ?>
+
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
     </div>
 
@@ -510,6 +514,7 @@
             });
         });
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+<?php /**PATH C:\xampp\htdocs\pendaftaranLKS\resources\views/layouts/app.blade.php ENDPATH**/ ?>

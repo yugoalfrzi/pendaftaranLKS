@@ -36,7 +36,6 @@ return [
     ],
 
     'google' => [
-        'credentials' => storage_path('app/data-pendaftaran-lks-ba3d6100274d.json'),
     ],
 
 

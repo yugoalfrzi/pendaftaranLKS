@@ -34,6 +34,7 @@ class LKS extends Model
         'alasan_dikembalikan',
         'kabupaten_kota',
         'sertifikat_path',
+        'surat_rekomendasi_path',
         'user_id'
     ];
 

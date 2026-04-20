@@ -13,9 +13,11 @@
                 <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-house-door"></i> Dashboard
                 </a>
-                <a href="{{ route('lks.create') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-plus-circle"></i> Pendaftaran Baru
-                </a>
+                @if(auth()->user()->hasRole(['super_admin', 'admin']))
+                    <a href="{{ route('lks.create') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Pendaftaran Baru
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -100,21 +102,23 @@
                                         <a href="{{ route('lks.show', $lksItem->id) }}" class="btn btn-sm btn-info" title="Lihat Detail">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('lks.edit', $lksItem->id) }}" class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        @if(auth()->user()->role === 'admin')
-                                            <a href="{{ route('admin.verification', $lksItem->id) }}" class="btn btn-sm btn-primary" title="Verifikasi">
-                                                <i class="bi bi-clipboard-check"></i>
+                                        @if(auth()->user()->hasRole(['super_admin', 'admin']))
+                                            <a href="{{ route('lks.edit', $lksItem->id) }}" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
                                             </a>
+                                            @if(auth()->user()->role === 'admin')
+                                                <a href="{{ route('admin.verification', $lksItem->id) }}" class="btn btn-sm btn-primary" title="Verifikasi">
+                                                    <i class="bi bi-clipboard-check"></i>
+                                                </a>
+                                            @endif
+                                            <form action="{{ route('lks.destroy', $lksItem->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         @endif
-                                        <form action="{{ route('lks.destroy', $lksItem->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>
