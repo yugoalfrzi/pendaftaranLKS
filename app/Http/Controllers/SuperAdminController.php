@@ -189,26 +189,13 @@ class SuperAdminController extends Controller
     {
         $lks = lks::findOrFail($id);
 
-        // Cek apakah request untuk surat rekomendasi atau sertifikat
-        if ($lks->surat_rekomendasi_path && !$lks->sertifikat_path) {
-            // Download surat rekomendasi
-            if (!Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
-                abort(404, 'Surat rekomendasi tidak ditemukan');
-            }
-            /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
-            $disk = Storage::disk('public');
-            return $disk->download($lks->surat_rekomendasi_path);
-        } elseif ($lks->sertifikat_path) {
-            // Download sertifikat
-            if (!Storage::disk('public')->exists($lks->sertifikat_path)) {
-                abort(404, 'Sertifikat tidak ditemukan');
-            }
-            /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
-            $disk = Storage::disk('public');
-            return $disk->download($lks->sertifikat_path);
+        if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
+            abort(404, 'Sertifikat tidak ditemukan');
         }
 
-        abort(404, 'File tidak ditemukan');
+        /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
+        $disk = Storage::disk('public');
+        return $disk->download($lks->sertifikat_path);
     }
 
     /**
@@ -218,30 +205,16 @@ class SuperAdminController extends Controller
     {
         $lks = lks::findOrFail($id);
 
-        // Cek apakah request untuk surat rekomendasi atau sertifikat
-        if ($lks->surat_rekomendasi_path && !$lks->sertifikat_path) {
-            // Preview surat rekomendasi
-            if (!Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
-                abort(404, 'Surat rekomendasi tidak ditemukan');
-            }
-            /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
-            $disk = Storage::disk('public');
-            $file = $disk->get($lks->surat_rekomendasi_path);
-            $mimeType = $disk->mimeType($lks->surat_rekomendasi_path);
-            return response($file, 200)->header('Content-Type', $mimeType);
-        } elseif ($lks->sertifikat_path) {
-            // Preview sertifikat
-            if (!Storage::disk('public')->exists($lks->sertifikat_path)) {
-                abort(404, 'Sertifikat tidak ditemukan');
-            }
-            /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
-            $disk = Storage::disk('public');
-            $file = $disk->get($lks->sertifikat_path);
-            $mimeType = $disk->mimeType($lks->sertifikat_path);
-            return response($file, 200)->header('Content-Type', $mimeType);
+        if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
+            abort(404, 'Sertifikat tidak ditemukan');
         }
 
-        abort(404, 'File tidak ditemukan');
+        /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
+        $disk = Storage::disk('public');
+        $file = $disk->get($lks->sertifikat_path);
+        $mimeType = $disk->mimeType($lks->sertifikat_path);
+
+        return response($file, 200)->header('Content-Type', $mimeType);
     }
 
     /**

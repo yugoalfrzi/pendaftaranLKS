@@ -7,14 +7,9 @@
             <h1 class="h3 mb-0">
                 <i class="bi bi-gear-wide-connected"></i> Admin Panel - Upload Surat Rekomendasi
             </h1>
-            <div class="justify-content-end btn-group">
-                <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-                </a>
-                <a href="<?php echo e(route('documents.index')); ?>" class="btn btn-outline-primary">
-                    <i class="bi bi-file-text"></i> Dokumen Tanda Pendaftaran
-                </a>
-            </div>
+            <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+            </a>
         </div>
     </div>
 </div>
@@ -185,7 +180,6 @@
                             <th>Kelengkapan</th>
                             <th>Surat Rekomendasi</th>
                             <th>Nama Verifikator</th>
-                            <th>ID Verifikator</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -249,7 +243,6 @@
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo e($lksItem->nama_verifikator ?? '-'); ?></td>
-                                <td><?php echo e($lksItem->verifikator_id ?? '-'); ?></td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a href="<?php echo e(route('admin.verification', $lksItem->id)); ?>" class="btn btn-primary" title="Upload Surat Rekomendasi">

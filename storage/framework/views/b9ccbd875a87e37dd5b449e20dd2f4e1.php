@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Super Admin Panel - Surat Rekomendasi'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -9,9 +7,14 @@
             <h1 class="h3 mb-0">
                 <i class="bi bi-shield-check"></i> Super Admin Panel - Upload Sertifikat
             </h1>
-            <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-outline-primary">
-                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-            </a>
+            <div class="justify-content-end btn-group">
+                <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                </a>
+                <a href="<?php echo e(route('documents.index')); ?>" class="btn btn-outline-primary">
+                    <i class="bi bi-file-text"></i> Dokumen Tanda Pendaftaran
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -212,13 +215,13 @@
                                 <td><?php echo e($lksItem->nama_verifikator ?? '-'); ?></td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="<?php echo e(route('superadmin.verification', $lksItem->id)); ?>" 
-                                           class="btn btn-primary" 
+                                        <a href="<?php echo e(route('superadmin.verification', $lksItem->id)); ?>"
+                                           class="btn btn-primary"
                                            title="Upload Sertifikat">
                                             <i class="bi bi-upload"></i> Upload
                                         </a>
-                                        <a href="<?php echo e(route('superadmin.edit', $lksItem->id)); ?>" 
-                                           class="btn btn-warning" 
+                                        <a href="<?php echo e(route('superadmin.edit', $lksItem->id)); ?>"
+                                           class="btn btn-warning"
                                            title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>

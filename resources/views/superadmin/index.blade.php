@@ -9,9 +9,14 @@
             <h1 class="h3 mb-0">
                 <i class="bi bi-shield-check"></i> Super Admin Panel - Upload Sertifikat
             </h1>
-            <a href="{{ route('dashboard') }}" class="btn btn-outline-primary">
-                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-            </a>
+            <div class="justify-content-end btn-group">
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                </a>
+                <a href="{{ route('documents.index') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-file-text"></i> Dokumen Tanda Pendaftaran
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -210,13 +215,13 @@
                                 <td>{{ $lksItem->nama_verifikator ?? '-' }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('superadmin.verification', $lksItem->id) }}" 
-                                           class="btn btn-primary" 
+                                        <a href="{{ route('superadmin.verification', $lksItem->id) }}"
+                                           class="btn btn-primary"
                                            title="Upload Sertifikat">
                                             <i class="bi bi-upload"></i> Upload
                                         </a>
-                                        <a href="{{ route('superadmin.edit', $lksItem->id) }}" 
-                                           class="btn btn-warning" 
+                                        <a href="{{ route('superadmin.edit', $lksItem->id) }}"
+                                           class="btn btn-warning"
                                            title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>

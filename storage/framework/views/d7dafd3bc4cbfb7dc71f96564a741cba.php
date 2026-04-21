@@ -319,10 +319,17 @@
                     <i class="bi bi-envelope"></i> <span>Surat</span>
                 </a>
             </div>
+            <?php if(auth()->guard()->check()): ?>
+                <?php if(Auth::user()->hasRole('user')): ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('lks.create') ? 'active' : ''); ?>" href="<?php echo e(route('lks.create')); ?>">
+                        <i class="bi bi-plus-circle"></i> <span>Pendaftaran LKS</span>
+                    </a>
+                    <a class="nav-link <?php echo e(request()->routeIs('rptka.*') && !request()->routeIs('admin.rptka.*') && !request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('rptka.index')); ?>">
+                        <i class="bi bi-file-earmark-person"></i> <span>Permohonan RPTKA</span>
+                    </a>
+                <?php endif; ?>
+            <?php endif; ?>
 
-            <a class="nav-link <?php echo e(request()->routeIs('lks.create') ? 'active' : ''); ?>" href="<?php echo e(route('lks.create')); ?>">
-                <i class="bi bi-plus-circle"></i> <span>Pendaftaran LKS</span>
-            </a>
 
             <!-- Data LKS JABAR -->
             <?php if(auth()->guard()->check()): ?>
@@ -335,20 +342,19 @@
                     <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kabkota.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kabkota.index')); ?>">
                         <i class="bi bi-geo-alt"></i> <span>Kewenangan Kab/Kota</span>
                     </a>
-                    <?php if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin')): ?>
-                        <a class="nav-link <?php echo e(request()->routeIs('kewenangan-provinsi.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-provinsi.index')); ?>">
-                            <i class="bi bi-building"></i> <span>Kewenangan Provinsi</span>
-                        </a>
-                        <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kemensos.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kemensos.index')); ?>">
-                            <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
-                        </a>
-                    <?php endif; ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('kewenangan-provinsi.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-provinsi.index')); ?>">
+                        <i class="bi bi-building"></i> <span>Kewenangan Provinsi</span>
+                    </a>
+                    <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kemensos.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kemensos.index')); ?>">
+                        <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
+                    </a>
                 </div>
             <?php endif; ?>
 
-            <!-- Hibah LKS (Admin only) -->
+            <!-- Hibah LKS & RPTKA (Admin & Super Admin) -->
             <?php if(auth()->guard()->check()): ?>
                 <?php if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin')): ?>
+                    <!-- Hibah LKS -->
                     <div class="nav-link dropdown-toggle" data-target="kewirausahaanSubmenu">
                         <i class="bi bi-cash-stack"></i>
                         <span>Hibah LKS</span>
@@ -359,19 +365,45 @@
                             <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
                         </a>
                     </div>
+
+                    <!-- RPTKA -->
+                    <div class="nav-link dropdown-toggle <?php echo e(request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" data-target="rptkaSubmenu">
+                        <i class="bi bi-file-earmark-person"></i>
+                        <span>RPTKA</span>
+                        <i class="bi bi-chevron-down dropdown-arrow"></i>
+                    </div>
+                    <div class="submenu <?php echo e(request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'show' : ''); ?>" id="rptkaSubmenu">
+                        <?php if(Auth::user()->hasRole('user')): ?>
+                            <a class="nav-link <?php echo e(request()->routeIs('rptka.index') || request()->routeIs('rptka.show') ? 'active' : ''); ?>" href="<?php echo e(route('rptka.index')); ?>">
+                                <i class="bi bi-list-ul"></i> <span>Daftar Permohonan</span>
+                            </a>
+                        <?php endif; ?>
+                        <?php if(Auth::user()->hasRole('admin')): ?>
+                            <a class="nav-link <?php echo e(request()->routeIs('admin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.rptka.index')); ?>">
+                                <i class="bi bi-shield-check"></i> <span>Verifikasi RPTKA</span>
+                            </a>
+                        <?php endif; ?>
+                        <?php if(Auth::user()->hasRole('super_admin')): ?>
+                        <a class="nav-link <?php echo e(request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.rptka.index')); ?>">
+                            <i class="bi bi-patch-check"></i> <span>Verval RPTKA</span>
+                        </a>
+                        <?php endif; ?>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
 
-            <!-- Admin Panel (Super Admin only) -->
+            <!-- Admin Panel -->
             <?php if(auth()->guard()->check()): ?>
                 <?php if(Auth::user()->role === 'super_admin'): ?>
-                    <a class="nav-link <?php echo e(request()->routeIs('admin.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.lks.index')); ?>">
-                        <i class="bi bi-gear-wide-connected"></i>
-                        <span>Admin Panel</span>
-                    </a>
                     <a class="nav-link <?php echo e(request()->routeIs('superadmin.index') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.index')); ?>">
                         <i class="bi bi-shield-check"></i>
                         <span>Super Admin Panel</span>
+                    </a>
+                <?php endif; ?>
+                <?php if(Auth::user()->role === 'admin'): ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('admin.lks.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.lks.index')); ?>">
+                        <i class="bi bi-gear-wide-connected"></i>
+                        <span>Admin Panel</span>
                     </a>
                 <?php endif; ?>
             <?php endif; ?>

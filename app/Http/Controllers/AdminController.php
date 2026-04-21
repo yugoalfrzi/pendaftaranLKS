@@ -41,7 +41,7 @@ class AdminController extends Controller
             'terverifikasi' => lks::where('status_permohonan', 'Terverifikasi')->count(),
             'ditolak' => lks::where('status_permohonan', 'Ditolak')->count(),
             'dikembalikan' => lks::where('status_permohonan', 'Dikembalikan')->count(),
-            'with_sertifikat' => lks::whereNotNull('surat_rekomendasi_path')->count(),
+            'with_sertifikat' => lks::whereNotNull('surat_rekomendasi_path')->count(), // surat rekomendasi yang sudah diupload admin
         ];
         
         return view('admin.index', compact('lks', 'stats'));
