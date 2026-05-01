@@ -17,6 +17,7 @@ class rptka extends Model
         'nama_lks',
         'nama_tka_pemohon',
         'alamat_lks',
+        'kabupaten_kota',
         'permohonan_rptka',
         'tanggal_masuk_dokumen',
         'tanggal_persyaratan_lengkap',

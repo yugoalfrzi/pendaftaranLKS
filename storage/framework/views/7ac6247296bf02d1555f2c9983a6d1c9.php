@@ -56,39 +56,39 @@
         .login-card {
             background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(12px);
-            border-radius: 2rem;
+            border-radius: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            max-width: 460px;
+            max-width: 380px;
             width: 100%;
         }
 
         .login-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 24px 44px -12px rgba(0, 0, 0, 0.16);
         }
 
         .login-form-container {
-            padding: 2.2rem 2rem 2.5rem 2rem;
+            padding: 1.8rem 1.75rem 2rem;
         }
 
         /* Logo container */
         .logo-container {
             display: flex;
             justify-content: center;
-            gap: 1.2rem;
-            margin-bottom: 1.8rem;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
         }
 
         .logo-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 1.5rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 1rem;
             object-fit: cover;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
             background: #ffffff;
-            padding: 6px;
+            padding: 4px;
             transition: transform 0.2s;
         }
 
@@ -97,10 +97,10 @@
         }
 
         h2 {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             background: linear-gradient(135deg, #1e40af, #3b82f6);
             background-clip: text;
             -webkit-background-clip: text;
@@ -111,21 +111,21 @@
         .subtitle {
             text-align: center;
             color: #5b6e8c;
-            font-size: 0.85rem;
-            margin-bottom: 1.8rem;
+            font-size: 0.8rem;
+            margin-bottom: 1.4rem;
         }
 
         .form-label {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #1e293b;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.3rem;
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }
 
         .input-group {
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             overflow: hidden;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
@@ -135,15 +135,15 @@
             border: 1px solid #e2e8f0;
             border-right: none;
             color: #2563eb;
-            font-size: 1rem;
-            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+            padding: 0.55rem 0.85rem;
         }
 
         .form-control {
             border: 1px solid #e2e8f0;
             border-left: none;
-            padding: 0.7rem 1rem;
-            font-size: 0.9rem;
+            padding: 0.55rem 0.85rem;
+            font-size: 0.85rem;
             background: #ffffff;
             transition: all 0.2s;
         }
@@ -217,9 +217,9 @@
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border: none;
             border-radius: 2rem;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.5rem;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             color: white;
             transition: all 0.2s;
             width: 100%;
@@ -268,8 +268,8 @@
         /* Link register */
         .register-link {
             text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.85rem;
+            margin-top: 1rem;
+            font-size: 0.82rem;
             color: #5b6e8c;
         }
 
@@ -287,14 +287,14 @@
 
         @media (max-width: 480px) {
             .login-form-container {
-                padding: 1.5rem;
+                padding: 1.25rem;
             }
             .logo-img {
-                width: 65px;
-                height: 65px;
+                width: 46px;
+                height: 46px;
             }
             h2 {
-                font-size: 1.5rem;
+                font-size: 1.2rem;
             }
         }
     </style>

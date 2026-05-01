@@ -16,19 +16,6 @@
     </div>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-
 <!-- Statistics Cards -->
 <div class="row g-3 mb-4">
     <div class="col-xl-2 col-md-4 col-6">
@@ -186,7 +173,6 @@
                         <th>Nama LKS</th>
                         <th>Tgl Masuk</th>
                         <th>Status</th>
-                        <th>Kelengkapan</th>
                         <th>Tanda Pendaftaran Kab/kota</th>
                         <th>Verifikator</th>
                         <th>Aksi</th>
@@ -203,11 +189,6 @@
                         <td>{{ \Carbon\Carbon::parse($item->tanggal_masuk_dokumen)->format('d/m/Y') }}</td>
                         <td>
                             <span class="badge {{ $item->status_badge }}">{{ $item->status_permohonan }}</span>
-                        </td>
-                        <td>
-                            <span class="badge {{ $item->pendaftaran_lengkap ? 'bg-success' : 'bg-warning' }}">
-                                {{ $item->pendaftaran_lengkap ? 'Lengkap' : 'Belum' }}
-                            </span>
                         </td>
                         {{-- Sertifikat Kab/Kota --}}
                         <td>
@@ -265,7 +246,6 @@
                         <th>Nama LKS</th>
                         <th>Tgl Masuk</th>
                         <th>Status</th>
-                        <th>Kelengkapan</th>
                         <th>Surat Rekomendasi</th>
                         <th>Sertifikat (Super Admin)</th>
                         <th>Verifikator</th>
@@ -283,11 +263,6 @@
                         <td>{{ \Carbon\Carbon::parse($item->tanggal_masuk_dokumen)->format('d/m/Y') }}</td>
                         <td>
                             <span class="badge {{ $item->status_badge }}">{{ $item->status_permohonan }}</span>
-                        </td>
-                        <td>
-                            <span class="badge {{ $item->pendaftaran_lengkap ? 'bg-success' : 'bg-warning' }}">
-                                {{ $item->pendaftaran_lengkap ? 'Lengkap' : 'Belum' }}
-                            </span>
                         </td>
                         {{-- Surat Rekomendasi --}}
                         <td>

@@ -151,6 +151,14 @@ Route::middleware('auth')->group(function () {
     // LKS Terdaftar (sudah bersertifikat)
     Route::get('/lks-terdaftar', [LKSController::class, 'terdaftar'])->name('lks.terdaftar');
 
+    // Sertifikat & dokumen LKS — dapat diakses semua role terautentikasi
+    Route::get('/lks/{id}/preview-sertifikat-kabkota', [AdminController::class, 'previewSertifikatKabkotaPublic'])->name('lks.preview-sertifikat-kabkota');
+    Route::get('/lks/{id}/download-sertifikat-kabkota', [AdminController::class, 'downloadSertifikatKabkotaPublic'])->name('lks.download-sertifikat-kabkota');
+    Route::get('/lks/{id}/preview-surat-rekomendasi', [AdminController::class, 'previewSuratRekomendasiPublic'])->name('lks.preview-surat-rekomendasi');
+    Route::get('/lks/{id}/download-surat-rekomendasi', [AdminController::class, 'downloadSuratRekomendasiPublic'])->name('lks.download-surat-rekomendasi');
+    Route::get('/lks/{id}/preview-sertifikat-provinsi', [AdminController::class, 'previewSertifikatProvinsiPublic'])->name('lks.preview-sertifikat-provinsi');
+    Route::get('/lks/{id}/download-sertifikat-provinsi', [AdminController::class, 'downloadSertifikatProvinsiPublic'])->name('lks.download-sertifikat-provinsi');
+
     // LKS Resource Routes
     Route::prefix('lks')->group(function () {
         // View routes - accessible by all authenticated users

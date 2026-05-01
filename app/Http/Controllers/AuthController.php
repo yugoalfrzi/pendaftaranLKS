@@ -87,17 +87,19 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+            'name'            => 'required|string|max:255',
+            'email'           => 'required|email|unique:users,email',
+            'password'        => 'required|min:8|confirmed',
+            'kabupaten_kota'  => 'required|string|max:100',
         ], [
-            'name.required'      => 'Nama lengkap wajib diisi',
-            'email.required'     => 'Email wajib diisi',
-            'email.email'        => 'Format email tidak valid',
-            'email.unique'       => 'Email sudah terdaftar',
-            'password.required'  => 'Password wajib diisi',
-            'password.min'       => 'Password minimal 8 karakter',
-            'password.confirmed' => 'Konfirmasi password tidak cocok',
+            'name.required'           => 'Nama lengkap wajib diisi',
+            'email.required'          => 'Email wajib diisi',
+            'email.email'             => 'Format email tidak valid',
+            'email.unique'            => 'Email sudah terdaftar',
+            'password.required'       => 'Password wajib diisi',
+            'password.min'            => 'Password minimal 8 karakter',
+            'password.confirmed'      => 'Konfirmasi password tidak cocok',
+            'kabupaten_kota.required' => 'Kabupaten/Kota wajib dipilih',
         ]);
 
         try {
@@ -106,6 +108,7 @@ class AuthController extends Controller
                 'email'           => $request->email,
                 'password'        => bcrypt($request->password),
                 'role'            => 'user',
+                'kabupaten_kota'  => $request->kabupaten_kota,
                 'approval_status' => 'pending',
             ]);
 

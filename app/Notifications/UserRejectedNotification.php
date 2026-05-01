@@ -30,7 +30,7 @@ class UserRejectedNotification extends Notification
 
         return $mail
             ->line('Jika Anda merasa ini adalah kesalahan, silakan hubungi admin untuk informasi lebih lanjut.')
-            ->action('Hubungi Admin', url('/login'))
+            //->action('Hubungi Admin', url('/login'))
             ->salutation('Salam, Tim e-LKS Jawa Barat');
     }
 }

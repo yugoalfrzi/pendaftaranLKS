@@ -5,7 +5,7 @@
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
-                <i class="bi bi-shield-check"></i> Super Admin Panel - Upload Sertifikat
+                <i class="bi bi-shield-check"></i> Super Admin Panel - Upload Tanda pendaftaran
             </h1>
             <div class="justify-content-end btn-group">
                 <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-outline-primary">
@@ -24,7 +24,7 @@
     <i class="bi bi-info-circle-fill fs-4 flex-0"></i>
     <div>
         <strong>Alur Kewenangan Provinsi:</strong>
-        User mendaftar LKS (Provinsi) → <span class="badge bg-warning text-dark">Admin</span> upload Surat Rekomendasi → <span class="badge bg-primary">Super Admin</span> upload Sertifikat
+        User mendaftar LKS (Provinsi) → <span class="badge bg-warning text-dark">Admin</span> upload Surat Rekomendasi → <span class="badge bg-primary">Super Admin</span> upload Tanda pendaftaran
         <br><small class="text-muted">Halaman ini hanya menampilkan LKS kewenangan <strong>Provinsi</strong> yang sudah diverifikasi Admin.</small>
     </div>
 </div>
@@ -52,7 +52,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h4 class="text-muted mb-0"><?php echo e($stats['menunggu']); ?></h4>
-                        <p class="mb-0">Menunggu Upload Sertifikat</p>
+                        <p class="mb-0">Menunggu Upload tanda pendaftaran</p>
                     </div>
                     <div class="bg-success bg-opacity-10 p-3 rounded-circle">
                         <i class="bi bi-check-circle fs-3 text-success"></i>
@@ -140,22 +140,6 @@
         </h5>
     </div>
     <div class="card-body">
-        <?php if(session('success')): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle me-2"></i><?php echo e(session('success')); ?>
-
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if(session('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-circle me-2"></i><?php echo e(session('error')); ?>
-
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
         <?php if($lks->count() > 0): ?>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

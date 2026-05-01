@@ -88,6 +88,7 @@ class RptkaController extends Controller
                 'nama_lks'              => $request->nama_lks,
                 'nama_tka_pemohon'      => $request->nama_tka_pemohon,
                 'alamat_lks'            => $request->alamat_lks,
+                'kabupaten_kota'        => auth()->user()->kabupaten_kota,
                 'permohonan_rptka'      => $request->permohonan_rptka,
                 'tanggal_masuk_dokumen' => $request->tanggal_masuk_dokumen,
                 'status_permohonan'     => 'Menunggu',
@@ -240,7 +241,13 @@ class RptkaController extends Controller
 
     public function adminIndex(Request $request)
     {
+        $adminKabkota = auth()->user()->kabupaten_kota;
         $query = rptka::with('user');
+
+        // Filter berdasarkan kabupaten/kota admin yang login
+        if ($adminKabkota) {
+            $query->where('kabupaten_kota', $adminKabkota);
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -256,13 +263,18 @@ class RptkaController extends Controller
 
         $rptkas = $query->latest()->paginate(15);
 
+        $baseStats = rptka::query();
+        if ($adminKabkota) {
+            $baseStats->where('kabupaten_kota', $adminKabkota);
+        }
+
         $stats = [
-            'total'        => rptka::count(),
-            'menunggu'     => rptka::where('status_permohonan', 'Menunggu')->count(),
-            'diterima'     => rptka::where('status_permohonan', 'Diterima')->count(),
-            'ditolak'      => rptka::where('status_permohonan', 'Ditolak')->count(),
-            'dikembalikan' => rptka::where('status_permohonan', 'Dikembalikan')->count(),
-            'terverifikasi'=> rptka::where('status_permohonan', 'Terverifikasi')->count(),
+            'total'        => (clone $baseStats)->count(),
+            'menunggu'     => (clone $baseStats)->where('status_permohonan', 'Menunggu')->count(),
+            'diterima'     => (clone $baseStats)->where('status_permohonan', 'Diterima')->count(),
+            'ditolak'      => (clone $baseStats)->where('status_permohonan', 'Ditolak')->count(),
+            'dikembalikan' => (clone $baseStats)->where('status_permohonan', 'Dikembalikan')->count(),
+            'terverifikasi'=> (clone $baseStats)->where('status_permohonan', 'Terverifikasi')->count(),
         ];
 
         return view('admin.rptka.index', compact('rptkas', 'stats'));

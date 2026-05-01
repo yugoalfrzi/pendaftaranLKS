@@ -333,10 +333,12 @@
                             @enderror
                         </div>
 
+                        {{-- Pusat & Cabang LKS: hanya tampil untuk kewenangan Provinsi --}}
+                        <div id="pusat_cabang_section" style="{{ old('kewenangan_type', $lks->kewenangan_type) === 'kabkota' ? 'display:none;' : '' }}">
                         <div class="col-md-6 mb-3">
                             <label for="pusat_lks" class="form-label required-label">Pusat LKS</label>
                             <select class="form-select @error('pusat_lks') is-invalid @enderror" 
-                                    id="pusat_lks" name="pusat_lks" required>
+                                    id="pusat_lks" name="pusat_lks">
                                 <option value="">Pilih Kabupaten/Kota</option>
                                 <option value="Kabupaten Bogor" {{ old('pusat_lks', $lks->pusat_lks) == 'Kabupaten Bogor' ? 'selected' : ''}}>Kabupaten Bogor</option>
                                 <option value="Kabupaten Sukabumi" {{ old('pusat_lks', $lks->pusat_lks) == 'Kabupaten Sukabumi' ? 'selected' : '' }}>Kabupaten Sukabumi</option>
@@ -558,6 +560,7 @@
                                 <!-- Selected items will be displayed here -->
                             </div>
                         </div>
+                        </div>{{-- end pusat_cabang_section --}}
 
                         <div class="col-md-6 mb-3">
                             <label for="tanda_pendaftaran" class="form-label required-label">Tanda Pendaftaran</label>

@@ -41,7 +41,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Bogor',
                 'password' => Hash::make('@dinsoskabBogor01'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Bogor',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -50,7 +52,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Sukabumi',
                 'password' => Hash::make('@dinsoskabSukabumi02'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Sukabumi',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -59,7 +63,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Cianjur',
                 'password' => Hash::make('@dinsoskabCianjur03'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Cianjur',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -68,7 +74,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Bandung',
                 'password' => Hash::make('@dinsoskabBandung04'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Bandung',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -77,7 +85,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Garut',
                 'password' => Hash::make('@dinsoskabGarut05'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Garut',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -86,7 +96,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Tasikmalaya',
                 'password' => Hash::make('@dinsoskabTasikmalaya06'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Tasikmalaya',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -95,7 +107,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Ciamis',
                 'password' => Hash::make('@dinsoskabCiamis07'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Ciamis',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -104,7 +118,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Kuningan',
                 'password' => Hash::make('@dinsoskabKuningan08'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Kuningan',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -113,7 +129,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Cirebon',
                 'password' => Hash::make('@dinsoskabCirebon09'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Cirebon',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -122,7 +140,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Majalengka',
                 'password' => Hash::make('@dinsoskabMajalengka10'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Majalengka',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -131,7 +151,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Sumedang',
                 'password' => Hash::make('@dinsoskabSumedang11'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Sumedang',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -140,7 +162,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Indramayu',
                 'password' => Hash::make('@dinsoskabIndramayu12'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Indramayu',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -149,7 +173,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Subang',
                 'password' => Hash::make('@dinsoskabSubang13'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Subang',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -158,7 +184,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Purwakarta',
                 'password' => Hash::make('@dinsoskabPurwakarta14'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Purwakarta',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -167,7 +195,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Karawang',
                 'password' => Hash::make('@dinsoskabKarawang15'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Karawang',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -176,7 +206,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Bekasi',
                 'password' => Hash::make('@dinsoskabBekasi16'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Bekasi',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -185,7 +217,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Bandung Barat',
                 'password' => Hash::make('@dinsoskabBandungBarat17'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Bandung Barat',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -194,7 +228,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kabupaten Pangandaran',
                 'password' => Hash::make('@dinsoskabPangandaran18'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kabupaten Pangandaran',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -204,7 +240,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Bogor',
                 'password' => Hash::make('@dinsoskotaBogor19'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Bogor',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -213,7 +251,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Sukabumi',
                 'password' => Hash::make('@dinsoskotaSukabumi20'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Sukabumi',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -222,7 +262,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Bandung',
                 'password' => Hash::make('@dinsoskotaBandung21'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Bandung',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -231,7 +273,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Cirebon',
                 'password' => Hash::make('@dinsoskotaCirebon22'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Cirebon',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -240,7 +284,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Bekasi',
                 'password' => Hash::make('@dinsoskotaBekasi23'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Bekasi',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -249,7 +295,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Depok',
                 'password' => Hash::make('@dinsoskotaDepok24'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Depok',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -258,7 +306,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Cimahi',
                 'password' => Hash::make('@dinsoskotaCimahi25'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Cimahi',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -267,7 +317,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Tasikmalaya',
                 'password' => Hash::make('@dinsoskotaTasikmalaya26'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Tasikmalaya',
+                'approval_status' => 'approved',
             ]
         );
 
@@ -276,7 +328,9 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dinsos Kota Banjar',
                 'password' => Hash::make('@dinsoskotaBanjar27'),
-                'role' => 'admin'
+                'role' => 'admin',
+                'kabupaten_kota' => 'Kota Banjar',
+                'approval_status' => 'approved',
             ]
         );
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pendaftaran LKS Baru')
+@section('title', 'Pendaftaran LKS')
 @section('page-title', 'Pendaftaran LKS')
 
 @section('content')
@@ -185,7 +185,7 @@
                                 <div class="col-md-6">
                                     <input type="radio" class="btn-check" name="kewenangan_type" id="kew_kabkota" value="kabkota" {{ old('kewenangan_type', 'kabkota') == 'kabkota' ? 'checked' : '' }} required>
                                     <label class="btn btn-outline-primary w-100 d-flex align-items-center gap-3 p-3 text-start" for="kew_kabkota" style="border-radius:0.75rem;">
-                                        <i class="bi bi-building fs-3 flex-shrink-0"></i>
+                                        <i class="bi bi-building fs-3 flex-0"></i>
                                         <div>
                                             <div class="fw-bold">Kewenangan Kab/Kota</div>
                                             <small class="text-muted">Proses verifikasi selesai di Admin Kab/Kota</small>
@@ -195,7 +195,7 @@
                                 <div class="col-md-6">
                                     <input type="radio" class="btn-check" name="kewenangan_type" id="kew_provinsi" value="provinsi" {{ old('kewenangan_type') == 'provinsi' ? 'checked' : '' }}>
                                     <label class="btn btn-outline-success w-100 d-flex align-items-center gap-3 p-3 text-start" for="kew_provinsi" style="border-radius:0.75rem;">
-                                        <i class="bi bi-map fs-3 flex-shrink-0"></i>
+                                        <i class="bi bi-map fs-3 flex-0"></i>
                                         <div>
                                             <div class="fw-bold">Kewenangan Provinsi</div>
                                             <small class="text-muted">Proses verifikasi diteruskan ke Super Admin</small>
@@ -221,6 +221,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="nama_ketua_lks" class="form-label">Nama Ketua LKS <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('nama_ketua_lks') is-invalid @enderror"
+                                    placeholder="Nama ketua lks"
                                    id="nama_ketua_lks" name="nama_ketua_lks" value="{{ old('nama_ketua_lks') }}" required>
                             @error('nama_ketua_lks')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -356,10 +357,12 @@
                             @enderror
                         </div>
 
+                        {{-- Pusat & Cabang LKS: hanya tampil untuk kewenangan Provinsi --}}
+                        <div id="pusat_cabang_section" style="{{ old('kewenangan_type', 'kabkota') === 'kabkota' ? 'display:none;' : '' }}">
                         <div class="col-md-6 mb-3">
                             <label for="pusat_lks" class="form-label">Pusat LKS <span class="text-danger">*</span></label>
                             <select class="form-select @error('pusat_lks') is-invalid @enderror" 
-                                    id="pusat_lks" name="pusat_lks" required>
+                                    id="pusat_lks" name="pusat_lks">
                                 <option value="">Pilih Kabupaten/Kota</option>
                                 <option value="Kabupaten Bogor" {{ old('pusat_lks') == 'Kabupaten Bogor' ? 'selected' : ''}}>Kabupaten Bogor</option>
                                 <option value="Kabupaten Sukabumi" {{ old('pusat_lks') == 'Kabupaten Sukabumi' ? 'selected' : '' }}>Kabupaten Sukabumi</option>
@@ -581,6 +584,7 @@
                                 <!-- Selected items will be displayed here -->
                             </div>
                         </div>
+                        </div>{{-- end pusat_cabang_section --}}
 
                         <div class="col-md-6 mb-3">
                             <label for="tanda_pendaftaran" class="form-label">Tanda Pendaftaran <span class="text-danger">*</span></label>
@@ -735,6 +739,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 el.disabled = !isProvinsi;
             });
         });
+
+        // Toggle pusat & cabang LKS
+        const pusatCabangSection = document.getElementById('pusat_cabang_section');
+        if (pusatCabangSection) {
+            pusatCabangSection.style.display = isProvinsi ? '' : 'none';
+            const pusatSelect = document.getElementById('pusat_lks');
+            if (pusatSelect) pusatSelect.required = isProvinsi;
+            // Disable semua input di dalam section saat kabkota
+            pusatCabangSection.querySelectorAll('input, select').forEach(el => {
+                el.disabled = !isProvinsi;
+            });
+        }
     }
 
     // Jalankan saat load

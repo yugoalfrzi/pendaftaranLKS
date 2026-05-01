@@ -37,7 +37,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 340px;
+            width: 240px;
             z-index: 1000;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 20px rgba(0,0,0,0.03);
@@ -91,20 +91,26 @@
 
         .sidebar .nav-link {
             color: #334155;
-            padding: 0.7rem 1rem;
-            border-radius: 1rem;
-            margin: 0.2rem 0;
+            padding: 0.6rem 0.85rem;
+            border-radius: 0.75rem;
+            margin: 0.15rem 0;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none;
             cursor: pointer;
             border: none;
             background: transparent;
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
+        }
+
+        .sidebar .nav-link span {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.3;
         }
 
         .sidebar .nav-link:hover {
@@ -120,15 +126,17 @@
         }
 
         .sidebar .nav-link i {
-            font-size: 1.2rem;
-            width: 24px;
+            font-size: 1.1rem;
+            width: 20px;
+            min-width: 20px;
             text-align: center;
         }
 
         .sidebar .nav-link .dropdown-arrow {
             margin-left: auto;
+            min-width: 14px;
             transition: transform 0.3s;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .sidebar .nav-link.active .dropdown-arrow {
@@ -142,8 +150,9 @@
             overflow: hidden;
             transition: max-height 0.3s ease;
             padding-left: 0;
-            border-radius: 1rem;
-            margin-left: 0.5rem;
+            border-radius: 0.75rem;
+            margin-left: 0.4rem;
+            border-left: 2px solid rgba(99, 102, 241, 0.15);
         }
 
         .submenu.active {
@@ -151,14 +160,22 @@
         }
 
         .submenu .nav-link {
-            padding-left: 2.8rem;
-            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem 0.5rem 1rem;
+            font-size: 0.82rem;
             margin: 0.1rem 0;
+            border-radius: 0.6rem;
+            gap: 8px;
+        }
+
+        .submenu .nav-link i {
+            font-size: 0.95rem;
+            width: 18px;
+            min-width: 18px;
         }
 
         /* Main Content */
         .main-content {
-            margin-left: 335px;
+            margin-left: 240px;
             min-height: 100vh;
             background: #f8fafc;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -273,16 +290,57 @@
             display: none;
         }
         .sidebar.collapsed .submenu .nav-link {
-            padding-left: 1rem;
+            padding: 0.5rem;
+            justify-content: center;
         }
         .sidebar.collapsed .nav-link {
             justify-content: center;
+            padding: 0.6rem;
+            white-space: nowrap;
+            overflow: hidden;
         }
         .sidebar.collapsed .nav-link i {
             margin-right: 0;
         }
         .sidebar.collapsed .submenu {
             margin-left: 0;
+            border-left: none;
+        }
+
+        /* Flyout submenu saat collapsed */
+        .sidebar.collapsed .nav-item-wrapper {
+            position: relative;
+        }
+
+        .sidebar.collapsed .submenu {
+            position: absolute;
+            left: 80px;
+            top: 0;
+            width: 200px;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 1px solid rgba(203, 213, 225, 0.5);
+            z-index: 1100;
+            padding: 0.4rem;
+            margin-left: 0;
+            border-left: none;
+            overflow: visible;
+        }
+
+        .sidebar.collapsed .submenu.active {
+            max-height: none;
+        }
+
+        .sidebar.collapsed .submenu .nav-link {
+            padding: 0.5rem 0.75rem;
+            justify-content: flex-start;
+            white-space: normal;
+            overflow: visible;
+        }
+
+        .sidebar.collapsed .submenu .nav-link span {
+            display: inline !important;
         }
     </style>
 </head>
@@ -305,6 +363,7 @@
             </a>
 
             {{-- ===== PENGUMUMAN (semua role) ===== --}}
+            <div class="nav-item-wrapper">
             <div class="nav-link dropdown-toggle {{ request()->routeIs('announcements.*') || request()->routeIs('regulasi') || request()->routeIs('panduan') || request()->routeIs('surat') ? 'active' : '' }}" data-target="pengumumanSubmenu">
                 <i class="bi bi-megaphone"></i>
                 <span>Pengumuman LKS</span>
@@ -320,6 +379,7 @@
                 <a class="nav-link {{ request()->routeIs('announcements.surat') || request()->routeIs('surat') ? 'active' : '' }}" href="{{ route('announcements.surat') }}">
                     <i class="bi bi-envelope"></i> <span>Surat</span>
                 </a>
+            </div>
             </div>
 
             @auth
@@ -339,6 +399,7 @@
             </a>
 
             {{-- ===== DATA LKS JABAR (semua role) ===== --}}
+            <div class="nav-item-wrapper">
             <div class="nav-link dropdown-toggle {{ request()->routeIs('kewenangan-*') ? 'active' : '' }}" data-target="dataLksSubmenu">
                 <i class="bi bi-database"></i>
                 <span>Data LKS JABAR</span>
@@ -355,8 +416,10 @@
                     <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
                 </a>
             </div>
+            </div>
 
             {{-- ===== RPTKA ===== --}}
+            <div class="nav-item-wrapper">
             <div class="nav-link dropdown-toggle {{ request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" data-target="rptkaSubmenu">
                 <i class="bi bi-file-earmark-person"></i>
                 <span>Permohonan RPTKA</span>
@@ -379,9 +442,11 @@
                     </a>
                 @endif
             </div>
+            </div>
 
             {{-- ===== HIBAH LKS (super admin) ===== --}}
             @if(Auth::user()->hasRole('super_admin'))
+                <div class="nav-item-wrapper">
                 <div class="nav-link dropdown-toggle {{ request()->routeIs('hibah.*') ? 'active' : '' }}" data-target="hibahSubmenu">
                     <i class="bi bi-cash-stack"></i>
                     <span>Hibah LKS</span>
@@ -391,6 +456,7 @@
                     <a class="nav-link {{ request()->routeIs('hibah.keuangan') ? 'active' : '' }}" href="{{ route('hibah.keuangan', ['tahun' => now()->year]) }}">
                         <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
                     </a>
+                </div>
                 </div>
             @endif
 
@@ -490,6 +556,17 @@
                 if (window.innerWidth > 768) {
                     sidebar.classList.toggle('collapsed');
                     mainContent.classList.toggle('expanded');
+
+                    // Reset semua flyout saat expand kembali
+                    if (!sidebar.classList.contains('collapsed')) {
+                        document.querySelectorAll('.submenu.active').forEach(sub => {
+                            sub.style.top = '';
+                            sub.style.maxHeight = sub.scrollHeight + 'px';
+                        });
+                    } else {
+                        // Tutup semua submenu saat collapse
+                        closeAllSubmenus();
+                    }
                 } else {
                     sidebar.classList.toggle('show');
                 }
@@ -535,11 +612,22 @@
                     if (!isActive) {
                         closeAllSubmenus(targetSubmenu);
                         targetSubmenu.classList.add('active');
-                        targetSubmenu.style.maxHeight = targetSubmenu.scrollHeight + 'px';
+
+                        // Flyout positioning saat collapsed
+                        if (sidebar.classList.contains('collapsed')) {
+                            const toggleRect = this.getBoundingClientRect();
+                            targetSubmenu.style.top = (toggleRect.top - sidebar.getBoundingClientRect().top) + 'px';
+                            targetSubmenu.style.maxHeight = 'none';
+                        } else {
+                            targetSubmenu.style.top = '';
+                            targetSubmenu.style.maxHeight = targetSubmenu.scrollHeight + 'px';
+                        }
+
                         this.classList.add('active');
                     } else {
                         targetSubmenu.classList.remove('active');
                         targetSubmenu.style.maxHeight = null;
+                        targetSubmenu.style.top = '';
                         this.classList.remove('active');
                     }
                 });

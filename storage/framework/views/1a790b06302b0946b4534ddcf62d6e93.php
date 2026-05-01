@@ -27,6 +27,7 @@
                         <th class="ps-3">No</th>
                         <th>Nama</th>
                         <th>Email</th>
+                        <th>Kabupaten/Kota</th>
                         <th>Metode Daftar</th>
                         <th>Tanggal Daftar</th>
                         <th>Aksi</th>
@@ -51,6 +52,16 @@
                             </div>
                         </td>
                         <td><?php echo e($user->email); ?></td>
+                        <td>
+                            <?php if($user->kabupaten_kota): ?>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1"></i><?php echo e($user->kabupaten_kota); ?>
+
+                                </span>
+                            <?php else: ?>
+                                <span class="text-muted small">—</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <?php if($user->google_id): ?>
                                 <span class="badge bg-light text-dark border">

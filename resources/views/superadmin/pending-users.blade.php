@@ -27,6 +27,7 @@
                         <th class="ps-3">No</th>
                         <th>Nama</th>
                         <th>Email</th>
+                        <th>Kabupaten/Kota</th>
                         <th>Metode Daftar</th>
                         <th>Tanggal Daftar</th>
                         <th>Aksi</th>
@@ -50,6 +51,15 @@
                             </div>
                         </td>
                         <td>{{ $user->email }}</td>
+                        <td>
+                            @if($user->kabupaten_kota)
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ $user->kabupaten_kota }}
+                                </span>
+                            @else
+                                <span class="text-muted small">—</span>
+                            @endif
+                        </td>
                         <td>
                             @if($user->google_id)
                                 <span class="badge bg-light text-dark border">
