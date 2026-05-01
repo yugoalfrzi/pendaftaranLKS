@@ -38,6 +38,22 @@
                                 <td>{{ $lks->alamat_lks }}</td>
                             </tr>
                             <tr>
+                                <td><strong>Nama Ketua LKS</strong></td>
+                                <td>{{ $lks->nama_ketua_lks ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jenis Pelayanan</strong></td>
+                                <td>{{ $lks->jenis_pelayanan ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jumlah Binaan Dalam Panti</strong></td>
+                                <td>{{ $lks->jumlah_binaan_dalam_panti ?? '0' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jumlah Binaan Luar Panti</strong></td>
+                                <td>{{ $lks->jumlah_binaan_luar_panti ?? '0' }}</td>
+                            </tr>
+                            <tr>
                                 <td><strong>Nomor Kontak</strong></td>
                                 <td>{{ $lks->nomor_kontak ?? '-' }}</td>
                             </tr>
@@ -50,11 +66,31 @@
                                 <td>{{ $lks->lokasi_lks ?? '-' }}</td>
                             </tr>
                             <tr>
+                                <td><strong>Pusat LKS</strong></td>
+                                <td>{{ $lks->pusat_lks ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cabang LKS</strong></td>
+                                <td>{{ $lks->cabang_lks ?? '-' }}</td>
+                            </tr>
+                            <tr>
                                 <td><strong>Tanda Pendaftaran</strong></td>
                                 <td>
                                     <span class="badge {{ $lks->tanda_pendaftaran == 'Baru' ? 'bg-success' : 'bg-info' }}">
                                         {{ $lks->tanda_pendaftaran }}
                                     </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kewenangan</strong></td>
+                                <td>
+                                    @if($lks->kewenangan_type == 'kabkota')
+                                        <span class="badge bg-primary"><i class="bi bi-building"></i> Kab/Kota</span>
+                                    @elseif($lks->kewenangan_type == 'provinsi')
+                                        <span class="badge bg-success"><i class="bi bi-map"></i> Provinsi</span>
+                                    @else
+                                        <span class="badge bg-secondary">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         </table>
@@ -82,7 +118,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><strong>Verifikator</strong></td>
+                                <td><strong>Verifikator Admin</strong></td>
                                 <td>{{ $lks->nama_verifikator ?? '-' }}</td>
                             </tr>
                             @if($lks->user)
@@ -145,6 +181,9 @@
                                     @if($checklist->kelengkapan == 'Ada')
                                         <span class="badge bg-success">
                                             <i class="bi bi-check-circle"></i> Lengkap
+                                            @if($checklist->file_count > 1)
+                                                <br><small>({{ $checklist->file_count }} files)</small>
+                                            @endif
                                         </span>
                                     @else
                                         <span class="badge bg-danger">
@@ -154,13 +193,30 @@
                                 </td>
                                 <td>
                                     @if($checklist->has_files)
-                                        <div class="d-flex flex-wrap gap-2">
+                                        <div class="admin-files-list">
                                             @foreach($checklist->getFilesInfo() as $fileIndex => $file)
-                                            <a href="{{ route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" 
-                                               target="_blank" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-file-earmark-pdf"></i> File {{ $fileIndex + 1 }}
-                                            </a>
+                                            <div class="d-flex justify-content-between align-items-center p-2 mb-2 border rounded">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                                    <div>
+                                                        @php $fileUrl = $file['url'] ?? null; @endphp
+                                                        @if($fileUrl)
+                                                            <a href="{{ $fileUrl }}" target="_blank" class="text-decoration-none fw-bold">
+                                                                {{ $file['name'] }}
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" target="_blank" class="text-decoration-none fw-bold">
+                                                                {{ $file['name'] }}
+                                                            </a>
+                                                        @endif
+                                                        <br>
+                                                        <small class="text-muted">File {{ $fileIndex + 1 }} of {{ $checklist->file_count }}</small>
+                                                    </div>
+                                                </div>
+                                                <a href="{{ route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i> Lihat
+                                                </a>
+                                            </div>
                                             @endforeach
                                         </div>
                                     @else
@@ -191,12 +247,12 @@
             <div class="card-body">
                 <form action="{{ route('superadmin.verification.process', $lks->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    
+
                     <div class="mb-3">
                         <label for="status_permohonan" class="form-label">Status Verifikasi <span class="text-danger">*</span></label>
-                        <select class="form-select @error('status_permohonan') is-invalid @enderror" 
-                                id="status_permohonan" 
-                                name="status_permohonan" 
+                        <select class="form-select @error('status_permohonan') is-invalid @enderror"
+                                id="status_permohonan"
+                                name="status_permohonan"
                                 required>
                             <option value="">Pilih Status</option>
                             <option value="Diterima untuk proses" {{ old('status_permohonan', $lks->status_permohonan) == 'Diterima untuk proses' ? 'selected' : '' }}>Diterima untuk proses</option>
@@ -213,10 +269,10 @@
                         <label for="sertifikat" class="form-label">
                             Upload Sertifikat (PDF) <span class="text-danger">*</span>
                         </label>
-                        <input type="file" 
-                               class="form-control @error('sertifikat') is-invalid @enderror" 
-                               id="sertifikat" 
-                               name="sertifikat" 
+                        <input type="file"
+                               class="form-control @error('sertifikat') is-invalid @enderror"
+                               id="sertifikat"
+                               name="sertifikat"
                                accept=".pdf">
                         <div class="form-text">
                             <small>Format: PDF. Maksimal: 5MB</small>
@@ -224,7 +280,7 @@
                         @error('sertifikat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        
+
                         <!-- Tampilkan surat rekomendasi dari admin -->
                         @if($lks->surat_rekomendasi_path)
                         <div class="mt-2 mb-3">
@@ -235,12 +291,12 @@
                                         <span class="ms-2"><strong>Surat Rekomendasi (dari Admin)</strong></span>
                                     </div>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('superadmin.download-rekomendasi', $lks->id) }}" 
+                                        <a href="{{ route('superadmin.download-rekomendasi', $lks->id) }}"
                                            class="btn btn-outline-success">
                                             <i class="bi bi-download"></i> Download
                                         </a>
-                                        <a href="{{ route('superadmin.preview-rekomendasi', $lks->id) }}" 
-                                           class="btn btn-outline-info" 
+                                        <a href="{{ route('superadmin.preview-rekomendasi', $lks->id) }}"
+                                           class="btn btn-outline-info"
                                            target="_blank">
                                             <i class="bi bi-eye"></i> Preview
                                         </a>
@@ -249,7 +305,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         <!-- Tampilkan sertifikat yang sudah ada -->
                         @if($lks->sertifikat_path)
                         <div class="mt-2">
@@ -260,12 +316,12 @@
                                         <span class="ms-2"><strong>Sertifikat sudah diupload</strong></span>
                                     </div>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('superadmin.download-surat', $lks->id) }}" 
+                                        <a href="{{ route('superadmin.download-surat', $lks->id) }}"
                                            class="btn btn-outline-primary">
                                             <i class="bi bi-download"></i>
                                         </a>
-                                        <a href="{{ route('superadmin.preview-surat', $lks->id) }}" 
-                                           class="btn btn-outline-info" 
+                                        <a href="{{ route('superadmin.preview-surat', $lks->id) }}"
+                                           class="btn btn-outline-info"
                                            target="_blank">
                                             <i class="bi bi-eye"></i>
                                         </a>
@@ -277,19 +333,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="verifikator" class="form-label">ID Verifikator <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('verifikator') is-invalid @enderror" id="verifikator" name="verifikator" value="{{ old('verifikator', $lks->verifikator_id) }}" placeholder="Masukkan ID verifikator" required>
-                        @error('verifikator')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <label for="verifikator" class="form-label">ID Verifikator</label>
+                        <input type="text" class="form-control bg-light" id="verifikator" name="verifikator" value="{{ auth()->user()->id }}" readonly>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="nama_verifikator" class="form-label">Nama Verifikator <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('nama_verifikator') is-invalid @enderror" id="nama_verifikator" name="nama_verifikator" value="{{ old('nama_verifikator', $lks->nama_verifikator) }}" placeholder="Masukkan nama verifikator" required>
-                        @error('nama_verifikator')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <di class="mb-3">
+                        <label for="nama_verifikator" class="form-label">Nama Verifikator</label>
+                        <input type="text" class="form-control bg-light" id="nama_verifikator" name="nama_verifikator" value="{{ auth()->user()->name }}" readonly>
+                        <div class="form-text"><small>Otomatis diisi sesuai akun yang login</small></div>
                     </div>
 
                     <!-- Alasan Penolakan -->
@@ -297,10 +348,10 @@
                         <label for="alasan_penolakan" class="form-label">
                             Alasan Penolakan <span class="text-danger">*</span>
                         </label>
-                        <textarea class="form-control @error('alasan_penolakan') is-invalid @enderror" 
-                                  id="alasan_penolakan" 
-                                  name="alasan_penolakan" 
-                                  rows="3" 
+                        <textarea class="form-control @error('alasan_penolakan') is-invalid @enderror"
+                                  id="alasan_penolakan"
+                                  name="alasan_penolakan"
+                                  rows="3"
                                   placeholder="Masukkan alasan penolakan...">{{ old('alasan_penolakan', $lks->alasan_penolakan) }}</textarea>
                         @error('alasan_penolakan')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -312,10 +363,10 @@
                         <label for="alasan_dikembalikan" class="form-label">
                             Alasan Dikembalikan <span class="text-danger">*</span>
                         </label>
-                        <textarea class="form-control @error('alasan_dikembalikan') is-invalid @enderror" 
-                                  id="alasan_dikembalikan" 
-                                  name="alasan_dikembalikan" 
-                                  rows="3" 
+                        <textarea class="form-control @error('alasan_dikembalikan') is-invalid @enderror"
+                                  id="alasan_dikembalikan"
+                                  name="alasan_dikembalikan"
+                                  rows="3"
                                   placeholder="Masukkan alasan dikembalikan...">{{ old('alasan_dikembalikan', $lks->alasan_dikembalikan) }}</textarea>
                         @error('alasan_dikembalikan')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -345,20 +396,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const alasanPenolakan = document.getElementById('alasan_penolakan');
     const alasanDikembalikan = document.getElementById('alasan_dikembalikan');
     const sertifikatInput = document.getElementById('sertifikat');
-    
+
     function toggleFields() {
         const status = statusSelect.value;
-        
+
         // Hide all fields first
         sertifikatDiv.style.display = 'none';
         alasanPenolakanDiv.style.display = 'none';
         alasanDikembalikanDiv.style.display = 'none';
-        
+
         // Reset required attributes
         alasanPenolakan.required = false;
         alasanDikembalikan.required = false;
         sertifikatInput.required = false;
-        
+
         // Show relevant fields based on status
         if (status === 'Diterima untuk proses') {
             sertifikatDiv.style.display = 'block';
@@ -374,13 +425,13 @@ document.addEventListener('DOMContentLoaded', function() {
             alasanDikembalikan.required = true;
         }
     }
-    
+
     // Initial toggle
     toggleFields();
-    
+
     // Add event listener for status change
     statusSelect.addEventListener('change', toggleFields);
-    
+
     // Validasi file PDF
     sertifikatInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -388,13 +439,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileType = file.type;
             const fileSize = file.size;
             const maxSize = 5 * 1024 * 1024; // 5MB
-            
+
             if (fileType !== 'application/pdf') {
                 alert('Hanya file PDF yang diizinkan!');
                 e.target.value = '';
                 return;
             }
-            
+
             if (fileSize > maxSize) {
                 alert('Ukuran file maksimal 5MB!');
                 e.target.value = '';

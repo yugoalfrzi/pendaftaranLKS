@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0"><i class="bi bi-plus-circle"></i> Pendaftaran RPTKA</h1>
+            <h1 class="h3 mb-0"><i class="bi bi-plus-circle"></i> Permohonan Rekomendasi RPTKA</h1>
             <a href="{{ route('rptka.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>

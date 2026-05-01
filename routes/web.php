@@ -15,6 +15,7 @@ use App\Http\Controllers\KewenanganProvinsiController;
 use App\Http\Controllers\KewenanganKemensosController;
 use App\Http\Controllers\HibahLksController;
 use App\Http\Controllers\RPTKA\RptkaController;
+use App\Http\Controllers\GoogleAuthController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 
@@ -28,10 +29,20 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.show');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+    // Google OAuth
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 });
 
 // Logout route
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// User Approval (super_admin only)
+Route::middleware(['auth', 'superadmin'])->group(function () {
+    Route::post('/users/{id}/approve', [AuthController::class, 'approveUser'])->name('users.approve');
+    Route::post('/users/{id}/reject', [AuthController::class, 'rejectUser'])->name('users.reject');
+});
 
 // Protected Routes (Require Authentication)
 Route::middleware('auth')->group(function () {
@@ -42,6 +53,7 @@ Route::middleware('auth')->group(function () {
     // ==================== SUPER ADMIN ROUTES ====================
     Route::prefix('superadmin')->middleware('superadmin')->group(function () {
         Route::get('/', [SuperAdminController::class, 'index'])->name('superadmin.index');
+        Route::get('/pending-users', [SuperAdminController::class, 'pendingUsers'])->name('superadmin.pending-users');
         Route::get('/{id}/verification', [SuperAdminController::class, 'verification'])->name('superadmin.verification');
         Route::post('/{id}/verification', [SuperAdminController::class, 'processVerification'])->name('superadmin.verification.process');
         Route::get('/{id}/edit', [SuperAdminController::class, 'edit'])->name('superadmin.edit');
@@ -136,14 +148,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat', [AnnouncementController::class, 'surat'])->name('surat');
 
 
+    // LKS Terdaftar (sudah bersertifikat)
+    Route::get('/lks-terdaftar', [LKSController::class, 'terdaftar'])->name('lks.terdaftar');
+
     // LKS Resource Routes
     Route::prefix('lks')->group(function () {
         // View routes - accessible by all authenticated users
         Route::get('/', [LKSController::class, 'index'])->name('lks.index');
         
-        // Pendaftaran LKS - accessible by all authenticated users (user, admin, super_admin)
-        Route::get('/create', [LKSController::class, 'create'])->name('lks.create');
-        Route::post('/', [LKSController::class, 'store'])->name('lks.store');
+        // Pendaftaran LKS - hanya untuk user biasa (bukan admin/super_admin)
+        Route::middleware('rolecheck:user')->group(function () {
+            Route::get('/create', [LKSController::class, 'create'])->name('lks.create');
+            Route::post('/', [LKSController::class, 'store'])->name('lks.store');
+        });
 
         // Edit/Update/Delete - accessible by all authenticated users
         Route::get('/{lks}/edit', [LKSController::class, 'edit'])->name('lks.edit');
@@ -265,6 +282,9 @@ Route::middleware('auth')->group(function () {
                 Route::get('/download-sertifikat', [AdminController::class, 'downloadSertifikat'])->name('admin.verification.download-sertifikat');
                 Route::get('/preview-sertifikat', [AdminController::class, 'previewSertifikat'])->name('admin.verification.preview-sertifikat');
                 Route::delete('/delete-sertifikat', [AdminController::class, 'deleteSertifikat'])->name('admin.verification.delete-sertifikat');
+                Route::get('/download-sertifikat-kabkota', [AdminController::class, 'downloadSertifikatKabkota'])->name('admin.verification.download-sertifikat-kabkota');
+                Route::get('/preview-sertifikat-kabkota', [AdminController::class, 'previewSertifikatKabkota'])->name('admin.verification.preview-sertifikat-kabkota');
+                Route::delete('/delete-sertifikat-kabkota', [AdminController::class, 'deleteSertifikatKabkota'])->name('admin.verification.delete-sertifikat-kabkota');
             });
 
             Route::post('/bulk-action', [AdminController::class, 'bulkAction'])->name('admin.lks.bulk-action');

@@ -6,16 +6,16 @@
         font-size: 0.7rem;
         font-weight: 600;
     }
-    
+
     .document-card {
         border-left: 4px solid #007bff;
     }
-    
+
     .shared-document {
         border-left-color: #28a745;
         background-color: #f8fff9;
     }
-    
+
     .upload-area {
         border: 2px dashed #dee2e6;
         border-radius: 0.5rem;
@@ -24,12 +24,12 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .upload-area:hover {
         border-color: #007bff;
         background-color: #f8f9fa;
     }
-    
+
     .bulk-upload-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 0.5rem;
@@ -48,7 +48,7 @@
             </nav>
             <h4 class="mb-1">Kelola Dokumen Pendukung</h4>
             <p class="text-muted mb-0">
-                <i class="bi bi-building me-1"></i>{{ $hibah->nama_lks }} 
+                <i class="bi bi-building me-1"></i>{{ $hibah->nama_lks }}
                 <span class="badge bg-primary year-badge ms-2">
                     <i class="bi bi-calendar me-1"></i>Tahun {{ $hibah->tahun }}
                 </span>
@@ -69,8 +69,8 @@
         <div class="d-flex align-items-center">
             <i class="bi bi-info-circle me-2 fs-5"></i>
             <div>
-                <strong>Sistem Dokumen Pendukung Terpusat per Tahun</strong> - 
-                Dokumen pendukung diupload sekali dan berlaku untuk <strong>semua LKS tahun {{ $hibah->tahun }}</strong>. 
+                <strong>Sistem Dokumen Pendukung Terpusat per Tahun</strong> -
+                Dokumen pendukung diupload sekali dan berlaku untuk <strong>semua LKS tahun {{ $hibah->tahun }}</strong>.
                 @php
                     $totalLksTahunIni = $allYearsData->where('tahun', $hibah->tahun)->count();
                 @endphp
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Bulk Upload Section untuk Admin -->
-    @if(Auth::user() && Auth::user()->role === 'admin')
+    @if(Auth::user()->role === 'super_admin'))
     <div class="card bulk-upload-section text-white mb-4">
         <div class="card-body">
             <div class="row align-items-center">
@@ -165,7 +165,7 @@
                 <i class="bi bi-calendar-event me-2"></i>Dokumen Spesifik Tahun {{ $hibah->tahun }}
             </h5>
         </div>
-        
+
         <!-- Proposal -->
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card document-card h-100">
@@ -199,17 +199,17 @@
                     <div class="quick-actions">
                         @if($hibah->proposal_path)
                             <div class="btn-group w-100 mb-2">
-                                <a href="{{ route('hibah.documents.preview', [$hibah->id, 'proposal']) }}" 
+                                <a href="{{ route('hibah.documents.preview', [$hibah->id, 'proposal']) }}"
                                    class="btn btn-outline-primary btn-sm" target="_blank">
                                     <i class="bi bi-eye"></i> Lihat
                                 </a>
-                                <a href="{{ route('hibah.documents.download', [$hibah->id, 'proposal']) }}" 
+                                <a href="{{ route('hibah.documents.download', [$hibah->id, 'proposal']) }}"
                                    class="btn btn-outline-success btn-sm">
                                     <i class="bi bi-download"></i> Unduh
                                 </a>
                             </div>
                         @endif
-                        
+
                         <a href="{{ route('hibah.edit', $hibah->id) }}" class="btn btn-outline-secondary btn-sm w-100">
                             <i class="bi bi-pencil me-1"></i>Edit Proposal
                         </a>
@@ -251,19 +251,19 @@
                     <div class="quick-actions">
                         @if($hibah->lpj_path)
                             <div class="btn-group w-100 mb-2">
-                                <a href="{{ route('hibah.documents.preview', [$hibah->id, 'lpj']) }}" 
+                                <a href="{{ route('hibah.documents.preview', [$hibah->id, 'lpj']) }}"
                                    class="btn btn-outline-primary btn-sm" target="_blank">
                                     <i class="bi bi-eye"></i> Lihat
                                 </a>
-                                <a href="{{ route('hibah.documents.download', [$hibah->id, 'lpj']) }}" 
+                                <a href="{{ route('hibah.documents.download', [$hibah->id, 'lpj']) }}"
                                    class="btn btn-outline-success btn-sm">
                                     <i class="bi bi-download"></i> Unduh
                                 </a>
                             </div>
                         @endif
-                        
-                        @if(Auth::user() && Auth::user()->role === 'admin')
-                        <form action="{{ route('hibah.documents.upload', $hibah->id) }}" method="POST" 
+
+                        @if(Auth::user() && Auth::user()->role === 'super_admin')
+                        <form action="{{ route('hibah.documents.upload', $hibah->id) }}" method="POST"
                               enctype="multipart/form-data" class="mb-0">
                             @csrf
                             <input type="hidden" name="document_type" value="lpj">
@@ -271,9 +271,9 @@
                                 <i class="bi bi-cloud-arrow-up fs-4 text-muted mb-2"></i>
                                 <p class="small mb-1">Upload LPJ untuk <strong>Tahun {{ $hibah->tahun }}</strong></p>
                                 <p class="small text-muted mb-0">Format: PDF (Maks. 10MB)</p>
-                                <input type="file" name="document_file" 
-                                       id="file-lpj" 
-                                       class="d-none" 
+                                <input type="file" name="document_file"
+                                       id="file-lpj"
+                                       class="d-none"
                                        accept=".pdf"
                                        onchange="this.form.submit()">
                             </div>
@@ -348,11 +348,11 @@
                         <div class="quick-actions">
                             @if($hasFile)
                                 <div class="btn-group w-100 mb-2">
-                                    <a href="{{ route('hibah.documents.preview', [$hibah->id, $docType]) }}" 
+                                    <a href="{{ route('hibah.documents.preview', [$hibah->id, $docType]) }}"
                                        class="btn btn-outline-primary btn-sm" target="_blank">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
-                                    <a href="{{ route('hibah.documents.download', [$hibah->id, $docType]) }}" 
+                                    <a href="{{ route('hibah.documents.download', [$hibah->id, $docType]) }}"
                                        class="btn btn-outline-success btn-sm">
                                         <i class="bi bi-download"></i> Unduh
                                     </a>
@@ -361,7 +361,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <input type="hidden" name="document_type" value="{{ $docType }}">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"
                                                 onclick="return confirm('Hapus {{ $docInfo['title'] }} untuk semua LKS tahun {{ $hibah->tahun }}?')">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -369,9 +369,9 @@
                                     @endif
                                 </div>
                             @endif
-                            
-                            @if(Auth::user() && Auth::user()->role === 'admin')
-                            <form action="{{ route('hibah.documents.upload', $hibah->id) }}" method="POST" 
+
+                            @if(Auth::user() && (Auth::user()->role === 'admin' || Auth::user()->role === 'super_admin'))
+                            <form action="{{ route('hibah.documents.upload', $hibah->id) }}" method="POST"
                                   enctype="multipart/form-data" class="mb-0">
                                 @csrf
                                 <input type="hidden" name="document_type" value="{{ $docType }}">
@@ -379,9 +379,9 @@
                                     <i class="bi bi-cloud-arrow-up fs-4 text-muted mb-2"></i>
                                     <p class="small mb-1">Upload untuk <strong>Semua LKS Tahun {{ $hibah->tahun }}</strong></p>
                                     <p class="small text-muted mb-0">Format: PDF (Maks. 10MB)</p>
-                                    <input type="file" name="document_file" 
-                                           id="file-{{ $docType }}" 
-                                           class="d-none" 
+                                    <input type="file" name="document_file"
+                                           id="file-{{ $docType }}"
+                                           class="d-none"
                                            accept=".pdf"
                                            onchange="this.form.submit()">
                                 </div>
@@ -440,12 +440,12 @@
                         Dokumen yang diupload akan berlaku untuk <strong>semua LKS tahun {{ $hibah->tahun }}</strong>.
                         Total: <strong>{{ $totalLksTahunIni }} LKS</strong>.
                     </div>
-                    
+
                     <div class="row">
                         @foreach($supportingDocuments as $docType => $docInfo)
                         <div class="col-md-6 mb-3">
                             <label class="form-label small">{{ $docInfo['title'] }}</label>
-                            <input type="file" name="supporting_documents[{{ $docType }}]" 
+                            <input type="file" name="supporting_documents[{{ $docType }}]"
                                    class="form-control form-control-sm" accept=".pdf">
                             <small class="text-muted">Aplikasikan ke semua LKS tahun {{ $hibah->tahun }}</small>
                         </div>

@@ -179,6 +179,35 @@
                             </h6>
                         </div>
                         
+                        <div class="col-12 mb-4">
+                            <label class="form-label fw-bold">Kewenangan Pendaftaran <span class="text-danger">*</span></label>
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="kewenangan_type" id="kew_kabkota" value="kabkota" {{ old('kewenangan_type', 'kabkota') == 'kabkota' ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-primary w-100 d-flex align-items-center gap-3 p-3 text-start" for="kew_kabkota" style="border-radius:0.75rem;">
+                                        <i class="bi bi-building fs-3 flex-shrink-0"></i>
+                                        <div>
+                                            <div class="fw-bold">Kewenangan Kab/Kota</div>
+                                            <small class="text-muted">Proses verifikasi selesai di Admin Kab/Kota</small>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="kewenangan_type" id="kew_provinsi" value="provinsi" {{ old('kewenangan_type') == 'provinsi' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-success w-100 d-flex align-items-center gap-3 p-3 text-start" for="kew_provinsi" style="border-radius:0.75rem;">
+                                        <i class="bi bi-map fs-3 flex-shrink-0"></i>
+                                        <div>
+                                            <div class="fw-bold">Kewenangan Provinsi</div>
+                                            <small class="text-muted">Proses verifikasi diteruskan ke Super Admin</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            @error('kewenangan_type')
+                                <div class="text-danger small mt-2"><i class="bi bi-exclamation-circle"></i> {{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="nama_lks" class="form-label">Nama LKS <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('nama_lks') is-invalid @enderror" 
@@ -613,7 +642,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach($documents as $index => $document)
-                                        <tr>
+                                        <tr class="{{ $document->urutan >= 17 ? 'doc-provinsi-only' : '' }}">
                                             <td>{{ $index + 1 }}</td>
                                             <td>
                                                 <strong>{{ $document->nama_dokumen }}</strong>
@@ -693,6 +722,27 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // ========== KEWENANGAN TOGGLE DOKUMEN 17 & 18 ==========
+    const kewRadios = document.querySelectorAll('input[name="kewenangan_type"]');
+    const provinsiOnlyRows = document.querySelectorAll('tr.doc-provinsi-only');
+
+    function toggleProvinsiDocs() {
+        const isProvinsi = document.querySelector('input[name="kewenangan_type"]:checked')?.value === 'provinsi';
+        provinsiOnlyRows.forEach(row => {
+            row.style.display = isProvinsi ? '' : 'none';
+            // disable/enable semua input agar tidak ikut submit saat kabkota
+            row.querySelectorAll('input, textarea, select').forEach(el => {
+                el.disabled = !isProvinsi;
+            });
+        });
+    }
+
+    // Jalankan saat load
+    toggleProvinsiDocs();
+
+    // Jalankan saat pilihan berubah
+    kewRadios.forEach(radio => radio.addEventListener('change', toggleProvinsiDocs));
+
     // Auto-fill today's date for tanggal_masuk_dokumen if empty
     const tanggalMasukInput = document.getElementById('tanggal_masuk_dokumen');
     if (tanggalMasukInput && !tanggalMasukInput.value) {

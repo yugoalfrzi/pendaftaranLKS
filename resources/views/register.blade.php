@@ -293,17 +293,41 @@
                 <!-- Alert placeholder -->
                 <div id="registerAlert" class="alert-custom d-none" role="alert"></div>
 
+                @if(session('pending'))
+                <div class="alert-custom mb-3" style="background:#fff8e1;color:#856404;border-left:4px solid #ffc107;border-radius:1rem;padding:0.75rem 1rem;font-size:0.85rem;">
+                    <i class="bi bi-clock-history me-2"></i>{{ session('pending') }}
+                </div>
+                @endif
+
                 <form id="registerForm" action="{{ route('register') }}" method="POST">
                     @csrf
 
+                    @if($errors->any())
+                    <div class="alert-custom alert-danger mb-3">
+                        <ul class="mb-0 ps-3">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
                     <!-- Data Pengguna -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama LKS</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   value="{{ old('name') }}" placeholder="Nama LKS Anda" required>
+                        </div>
+                    </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control" id="email" name="email"
-                                   placeholder="nama@contoh.com" required>
+                                   value="{{ old('email') }}" placeholder="nama@contoh.com" required>
                         </div>
                     </div>
 
@@ -331,9 +355,6 @@
                         </div>
                     </div>
 
-                    <!-- Data LKS -->
-                    <hr class="my-4">
-
                     <div class="d-grid mt-4">
                         <button type="submit" class="btn-register" id="registerButton">
                             <span id="registerText">Daftar</span>
@@ -345,6 +366,25 @@
                 <div class="login-link">
                     Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini</a>
                 </div>
+
+                <!-- Divider -->
+                <div class="d-flex align-items-center my-3">
+                    <hr class="flex-grow-1"><span class="px-2 text-muted small">atau</span><hr class="flex-grow-1">
+                </div>
+
+                <!-- Google Register -->
+                <a href="{{ route('auth.google') }}" class="btn w-100 d-flex align-items-center justify-content-center gap-2"
+                   style="border:1.5px solid #e2e8f0;border-radius:2rem;padding:0.65rem 1rem;font-size:0.9rem;font-weight:600;color:#1e293b;background:#fff;transition:all 0.2s;"
+                   onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+                    <svg width="20" height="20" viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        <path fill="none" d="M0 0h48v48H0z"/>
+                    </svg>
+                    Daftar dengan Google
+                </a>
             </div>
         </div>
     </div>
@@ -353,70 +393,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const registerForm = document.getElementById('registerForm');
+            const registerForm  = document.getElementById('registerForm');
             const registerAlert = document.getElementById('registerAlert');
-            const registerButton = document.getElementById('registerButton');
-            const registerText = document.getElementById('registerText');
+            const registerBtn   = document.getElementById('registerButton');
+            const registerText  = document.getElementById('registerText');
             const registerSpinner = document.getElementById('registerSpinner');
 
-            // ===== PASSWORD TOGGLE FUNCTIONALITY =====
-            const togglePassword = document.getElementById('togglePassword');
-            const passwordInput = document.getElementById('password');
-            const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
-            const passwordConfirmInput = document.getElementById('password_confirmation');
-
-            if (togglePassword && passwordInput) {
-                togglePassword.addEventListener('click', function() {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-
+            // Password toggle
+            function setupToggle(toggleId, inputId) {
+                const toggle = document.getElementById(toggleId);
+                const input  = document.getElementById(inputId);
+                if (!toggle || !input) return;
+                toggle.addEventListener('click', function() {
+                    const isPassword = input.type === 'password';
+                    input.type = isPassword ? 'text' : 'password';
                     const icon = this.querySelector('i');
-                    if (type === 'password') {
-                        icon.classList.remove('bi-eye-slash');
-                        icon.classList.add('bi-eye');
-                    } else {
-                        icon.classList.remove('bi-eye');
-                        icon.classList.add('bi-eye-slash');
-                    }
+                    icon.classList.toggle('bi-eye', !isPassword);
+                    icon.classList.toggle('bi-eye-slash', isPassword);
                 });
             }
+            setupToggle('togglePassword', 'password');
+            setupToggle('togglePasswordConfirm', 'password_confirmation');
 
-            if (togglePasswordConfirm && passwordConfirmInput) {
-                togglePasswordConfirm.addEventListener('click', function() {
-                    const type = passwordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordConfirmInput.setAttribute('type', type);
-
-                    const icon = this.querySelector('i');
-                    if (type === 'password') {
-                        icon.classList.remove('bi-eye-slash');
-                        icon.classList.add('bi-eye');
-                    } else {
-                        icon.classList.remove('bi-eye');
-                        icon.classList.add('bi-eye-slash');
-                    }
-                });
-            }
-
-            // ===== REGISTER FORM HANDLING =====
+            // Form submit via AJAX
             registerForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                const password = document.getElementById('password').value;
-                const passwordConfirm = document.getElementById('password_confirmation').value;
-
-                if (password !== passwordConfirm) {
-                    showAlert('Konfirmasi password tidak cocok!', 'danger');
-                    return;
-                }
-
-                if (password.length < 8) {
-                    showAlert('Password minimal 8 karakter!', 'danger');
-                    return;
-                }
-
-                // Loading state
-                registerButton.disabled = true;
-                registerText.textContent = 'Memproses...';
+                registerBtn.disabled = true;
+                registerText.textContent = 'Mendaftar...';
                 registerSpinner.classList.remove('d-none');
 
                 fetch(registerForm.action, {
@@ -425,58 +429,38 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
                     },
                     credentials: 'same-origin',
-                    body: new URLSearchParams(new FormData(registerForm))
+                    body: new URLSearchParams(new FormData(registerForm)),
                 })
-                .then(async response => {
-                    const data = await response.json();
-                    if (!response.ok) {
-                        throw data;
-                    }
-                    return data;
-                })
+                .then(r => r.json())
                 .then(data => {
-                    if (data.success) {
-                        showAlert('Registrasi berhasil! Mengalihkan...', 'success');
-                        setTimeout(() => {
-                            window.location.href = data.redirect || '/dashboard';
-                        }, 1500);
-                    } else {
-                        showAlert(data.message || 'Registrasi gagal!', 'danger');
-                        registerButton.disabled = false;
+                    if (data.success && data.status === 'pending') {
+                        // Tampilkan pesan pending — jangan redirect
+                        registerForm.style.display = 'none';
+                        registerAlert.innerHTML = `<i class="bi bi-clock-history me-2"></i>${data.message}`;
+                        registerAlert.className = 'alert-custom mb-3';
+                        registerAlert.style.cssText = 'background:#fff8e1;color:#856404;border-left:4px solid #ffc107;border-radius:1rem;padding:1rem;font-size:0.9rem;';
+                        registerAlert.classList.remove('d-none');
+                    } else if (!data.success) {
+                        registerAlert.innerHTML = `<i class="bi bi-exclamation-circle me-2"></i>${data.message || 'Terjadi kesalahan.'}`;
+                        registerAlert.className = 'alert-custom alert-danger';
+                        registerAlert.classList.remove('d-none');
+                        registerBtn.disabled = false;
                         registerText.textContent = 'Daftar';
                         registerSpinner.classList.add('d-none');
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
-
-                    if (error.errors) {
-                        const firstError = Object.values(error.errors)[0];
-                        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
-                    } else if (error.message) {
-                        errorMessage = error.message;
-                    }
-
-                    showAlert(errorMessage, 'danger');
-                    registerButton.disabled = false;
+                .catch(() => {
+                    registerAlert.innerHTML = '<i class="bi bi-exclamation-circle me-2"></i>Terjadi kesalahan. Silakan coba lagi.';
+                    registerAlert.className = 'alert-custom alert-danger';
+                    registerAlert.classList.remove('d-none');
+                    registerBtn.disabled = false;
                     registerText.textContent = 'Daftar';
                     registerSpinner.classList.add('d-none');
                 });
             });
-
-            function showAlert(message, type) {
-                registerAlert.textContent = message;
-                registerAlert.className = `alert-custom alert-${type}`;
-                registerAlert.classList.remove('d-none');
-
-                setTimeout(() => {
-                    registerAlert.classList.add('d-none');
-                }, 5000);
-            }
         });
     </script>
 </body>

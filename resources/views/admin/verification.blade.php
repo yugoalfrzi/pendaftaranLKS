@@ -7,7 +7,12 @@
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
-                <i class="bi bi-person-check"></i> Upload Surat Rekomendasi LKS
+                <i class="bi bi-person-check"></i> 
+                @if($lks->kewenangan_type == 'kabkota')
+                    Upload Sertifikat Kab/Kota LKS
+                @else
+                    Upload Surat Rekomendasi LKS
+                @endif
             </h1>
             <a href="{{ route('admin.lks.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali ke Admin Panel
@@ -75,6 +80,20 @@
                                     <span class="badge {{ $lks->tanda_pendaftaran == 'Baru' ? 'bg-success' : 'bg-info' }}">
                                         {{ $lks->tanda_pendaftaran }}
                                     </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kewenangan</strong></td>
+                                <td>
+                                    @if($lks->kewenangan_type == 'kabkota')
+                                        <span class="badge bg-primary"><i class="bi bi-building"></i> Kab/Kota</span>
+                                        <small class="d-block text-muted mt-1">Proses berhenti di Admin</small>
+                                    @elseif($lks->kewenangan_type == 'provinsi')
+                                        <span class="badge bg-success"><i class="bi bi-map"></i> Provinsi</span>
+                                        <small class="d-block text-muted mt-1">Diteruskan ke Super Admin</small>
+                                    @else
+                                        <span class="badge bg-secondary">-</span>
+                                    @endif
                                 </td>
                             </tr>
                             <tr>
@@ -207,7 +226,12 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="bi bi-clipboard-check"></i> Form Upload Surat Rekomendasi
+                    <i class="bi bi-clipboard-check"></i> 
+                    @if($lks->kewenangan_type == 'kabkota')
+                        Form Upload Sertifikat Kab/Kota
+                    @else
+                        Form Upload Surat Rekomendasi
+                    @endif
                 </h5>
             </div>
             <div class="card-body">
@@ -227,7 +251,40 @@
                         @enderror
                     </div>
 
-                    <!-- Field Upload Surat Rekomendasi - Muncul hanya ketika status "Diterima" dipilih -->
+                    @if($lks->kewenangan_type == 'kabkota')
+                    {{-- Kab/Kota: Upload Sertifikat Kab/Kota --}}
+                    <div class="mb-3" id="sertifikat_kabkota_div" style="display: none;">
+                        <label for="sertifikat_kabkota" class="form-label">Upload Sertifikat Kab/Kota (PDF/JPG/PNG)</label>
+                        <input type="file" class="form-control @error('sertifikat_kabkota') is-invalid @enderror" id="sertifikat_kabkota" name="sertifikat_kabkota" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="form-text">
+                            <small>Format file yang diizinkan: PDF, JPG, PNG. Maksimal ukuran: 5MB</small>
+                        </div>
+                        @error('sertifikat_kabkota')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        @if($lks->sertifikat_kabkota_path)
+                        <div class="mt-2">
+                            <div class="alert alert-info p-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-file-earmark-check text-success"></i>
+                                        <span class="ms-2">Sertifikat kab/kota sudah diupload</span>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ route('admin.verification.download-sertifikat-kabkota', $lks->id) }}" class="btn btn-outline-primary">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <a href="{{ route('admin.verification.preview-sertifikat-kabkota', $lks->id) }}" class="btn btn-outline-info" target="_blank">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    @else
+                    {{-- Provinsi: Upload Surat Rekomendasi --}}
                     <div class="mb-3" id="surat_rekomendasi_div" style="display: none;">
                         <label for="surat_rekomendasi" class="form-label">Upload Surat Rekomendasi (PDF/JPG/PNG)</label>
                         <input type="file" class="form-control @error('surat_rekomendasi') is-invalid @enderror" id="surat_rekomendasi" name="surat_rekomendasi" accept=".pdf,.jpg,.jpeg,.png">
@@ -237,8 +294,6 @@
                         @error('surat_rekomendasi')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        
-                        <!-- Tampilkan surat rekomendasi yang sudah ada jika ada -->
                         @if($lks->surat_rekomendasi_path)
                         <div class="mt-2">
                             <div class="alert alert-info p-2">
@@ -260,6 +315,7 @@
                         </div>
                         @endif
                     </div>
+                    @endif
 
                     <div class="mb-3" id="alasan_penolakan_div" style="display: none;">
                         <label for="alasan_penolakan" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
@@ -278,11 +334,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="nama_verifikator" class="form-label">Nama Verifikator <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('nama_verifikator') is-invalid @enderror" id="nama_verifikator" name="nama_verifikator" value="{{ old('nama_verifikator', auth()->user()->name) }}" placeholder="Masukkan nama verifikator" required>
-                        @error('nama_verifikator')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <label for="nama_verifikator" class="form-label">Nama Verifikator</label>
+                        <input type="text" class="form-control bg-light" id="nama_verifikator" name="nama_verifikator" value="{{ auth()->user()->name }}" readonly>
+                        <div class="form-text"><small>Otomatis diisi sesuai akun yang login</small></div>
                     </div>
 
                     <div class="d-grid gap-2">
@@ -302,29 +356,32 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const statusSelect = document.getElementById('status_permohonan');
-    const suratRekomendasiDiv = document.getElementById('surat_rekomendasi_div');
     const alasanPenolakanDiv = document.getElementById('alasan_penolakan_div');
     const alasanDikembalikanDiv = document.getElementById('alasan_dikembalikan_div');
     const alasanPenolakan = document.getElementById('alasan_penolakan');
     const alasanDikembalikan = document.getElementById('alasan_dikembalikan');
-    const suratRekomendasiInput = document.getElementById('surat_rekomendasi');
-    
+
+    // Deteksi jenis kewenangan dari blade
+    const isKabkota = {{ $lks->kewenangan_type == 'kabkota' ? 'true' : 'false' }};
+    const uploadDiv = isKabkota
+        ? document.getElementById('sertifikat_kabkota_div')
+        : document.getElementById('surat_rekomendasi_div');
+    const uploadInput = isKabkota
+        ? document.getElementById('sertifikat_kabkota')
+        : document.getElementById('surat_rekomendasi');
+
     function toggleFields() {
         const status = statusSelect.value;
-        
-        // Hide all fields first
-        suratRekomendasiDiv.style.display = 'none';
+
+        uploadDiv.style.display = 'none';
         alasanPenolakanDiv.style.display = 'none';
         alasanDikembalikanDiv.style.display = 'none';
-        
-        // Reset required attributes
+
         alasanPenolakan.required = false;
         alasanDikembalikan.required = false;
-        suratRekomendasiInput.required = false;
-        
-        // Show relevant fields based on status
+
         if (status === 'Diterima') {
-            suratRekomendasiDiv.style.display = 'block';
+            uploadDiv.style.display = 'block';
         } else if (status === 'Ditolak') {
             alasanPenolakanDiv.style.display = 'block';
             alasanPenolakan.required = true;
@@ -333,35 +390,28 @@ document.addEventListener('DOMContentLoaded', function() {
             alasanDikembalikan.required = true;
         }
     }
-    
-    // Initial toggle
+
     toggleFields();
-    
-    // Add event listener for status change
     statusSelect.addEventListener('change', toggleFields);
-    
+
     // Validasi file
-    suratRekomendasiInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const fileType = file.type;
-            const fileSize = file.size;
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-            
-            if (!allowedTypes.includes(fileType)) {
-                alert('Hanya file PDF, JPG, atau PNG yang diizinkan!');
-                e.target.value = '';
-                return;
+    if (uploadInput) {
+        uploadInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Hanya file PDF, JPG, atau PNG yang diizinkan!');
+                    e.target.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file maksimal 5MB!');
+                    e.target.value = '';
+                }
             }
-            
-            if (fileSize > maxSize) {
-                alert('Ukuran file maksimal 5MB!');
-                e.target.value = '';
-                return;
-            }
-        }
-    });
+        });
+    }
 });
 </script>
 

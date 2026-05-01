@@ -105,7 +105,7 @@
             .table-modern th, .table-modern td { padding: 0.5rem; }
         }
     </style>
-    
+
     <!-- Header Dashboard -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <div>
@@ -114,11 +114,16 @@
             </h1>
             <p class="text-muted small mb-0">Selamat datang, <?php echo e(auth()->user()->name); ?> | Sistem Pendaftaran LKS Jawa Barat</p>
         </div>
-        <a href="<?php echo e(route('lks.create')); ?>" class="btn btn-primary rounded-pill px-4">
-            <i class="bi bi-plus-circle me-1"></i> Pendaftaran Baru
-        </a>
+        <?php if(auth()->guard()->check()): ?>
+            <?php if(auth()->user()->hasRole('user')): ?>
+                <a href="<?php echo e(route('lks.create')); ?>" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-plus-circle me-1"></i> Pendaftaran Baru
+                </a>
+            <?php endif; ?>
+        <?php endif; ?>
+
     </div>
-    
+
     <!-- Statistik Utama (Kewenangan) -->
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-xl-3">
@@ -166,7 +171,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Statistik Pendaftaran Baru -->
     <div class="row g-4 mb-5">
         <div class="col-md-3 col-sm-6">
@@ -214,7 +219,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Charts Row -->
     <?php if($totalLKSJabar > 0 || $totalLKS > 0): ?>
     <div class="row g-4 mb-5">
@@ -255,7 +260,7 @@
                 </div>
             </div>
         </div>
-    
+
         <!-- Distribusi Kabupaten/Kota (Bar Chart) -->
         <div class="col-md-7">
             <div class="card-modern">
@@ -281,7 +286,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Status Permohonan & Trend -->
     <div class="row g-4 mb-5">
         <div class="col-md-4">
@@ -320,7 +325,7 @@
         </a>
     </div>
     <?php endif; ?>
-    
+
     <!-- Akses Cepat ke Kewenangan -->
     <div class="row g-4 mb-5">
         <div class="col-12">
@@ -353,7 +358,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Pendaftaran Terbaru -->
     <?php if($totalLKS > 0): ?>
     <div class="row g-4">
@@ -405,7 +410,7 @@
         </div>
     </div>
     <?php endif; ?>
-    
+
     <!-- Modal Status Permohonan (otomatis muncul) -->
     <?php if(isset($latestLks) && auth()->check() && $latestLks->user_id === auth()->id() && in_array($latestLks->status_permohonan, ['Proses Verifikasi', 'Diterima untuk proses', 'Diterima', 'Ditolak', 'Dikembalikan'])): ?>
     <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true">
@@ -443,7 +448,7 @@
         </div>
     </div>
     <?php endif; ?>
-    
+
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
@@ -545,4 +550,5 @@
 </script>
 <?php endif; ?>
 <?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\pendaftaranLKS\resources\views/dashboard/dashboard.blade.php ENDPATH**/ ?>

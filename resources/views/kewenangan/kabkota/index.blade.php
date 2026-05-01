@@ -148,20 +148,16 @@
                 <i class="bi bi-geo-alt-fill"></i> Kab/Kota
             </a>
         </li>
-        @auth
-            @if(Auth::user()->hasRole('admin'))
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('kewenangan-provinsi.index') }}">
-                        <i class="bi bi-building-fill"></i> Provinsi
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('kewenangan-kemensos.index') }}">
-                        <i class="bi bi-house-gear"></i> Kemensos
-                    </a>
-                </li>
-            @endif
-        @endauth
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('kewenangan-provinsi.index') }}">
+                <i class="bi bi-building-fill"></i> Provinsi
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('kewenangan-kemensos.index') }}">
+                <i class="bi bi-house-gear"></i> Kemensos
+            </a>
+        </li>
     </ul>
 </div>
 
@@ -296,7 +292,7 @@
                 <div class="col-md-7">
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0 ps-0" 
+                        <input type="text" name="search" class="form-control border-start-0 ps-0"
                                placeholder="Cari nama yayasan, LKS, atau kabupaten/kota..." value="{{ request('search') }}">
                     </div>
                 </div>
@@ -374,7 +370,7 @@
                                         <a href="{{ route('kewenangan-kabkota.edit', $item->id) }}" class="btn btn-sm btn-outline-warning rounded-pill me-1" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill"
                                                 title="Hapus" onclick="confirmDelete({{ $item->id }}, '{{ $item->Nama_Lembaga_Yayasan }}')">
                                             <i class="bi bi-trash3"></i>
                                         </button>

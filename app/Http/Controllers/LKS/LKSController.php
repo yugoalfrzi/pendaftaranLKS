@@ -21,6 +21,42 @@ class LKSController extends Controller
         return view('lks.index', compact('lks'));
     }
 
+    public function terdaftar(Request $request)
+    {
+        $search = $request->search;
+
+        $baseKabkota = LKS::where('kewenangan_type', 'kabkota')
+            ->whereNotNull('sertifikat_kabkota_path')
+            ->where('sertifikat_kabkota_path', '!=', '');
+
+        $baseProvinsi = LKS::where('kewenangan_type', 'provinsi')
+            ->whereNotNull('sertifikat_path')
+            ->where('sertifikat_path', '!=', '');
+
+        if ($search) {
+            $baseKabkota->where(function ($q) use ($search) {
+                $q->where('nama_lks', 'like', "%$search%")
+                  ->orWhere('kabupaten_kota', 'like', "%$search%")
+                  ->orWhere('lokasi_lks', 'like', "%$search%");
+            });
+            $baseProvinsi->where(function ($q) use ($search) {
+                $q->where('nama_lks', 'like', "%$search%")
+                  ->orWhere('kabupaten_kota', 'like', "%$search%")
+                  ->orWhere('lokasi_lks', 'like', "%$search%");
+            });
+        }
+
+        $lksKabkota  = (clone $baseKabkota)->latest()->paginate(15, ['*'], 'kabkota_page');
+        $lksProvinsi = (clone $baseProvinsi)->latest()->paginate(15, ['*'], 'provinsi_page');
+
+        $stats = [
+            'kabkota'  => LKS::where('kewenangan_type', 'kabkota')->whereNotNull('sertifikat_kabkota_path')->where('sertifikat_kabkota_path', '!=', '')->count(),
+            'provinsi' => LKS::where('kewenangan_type', 'provinsi')->whereNotNull('sertifikat_path')->where('sertifikat_path', '!=', '')->count(),
+        ];
+
+        return view('lks.terdaftar', compact('lksKabkota', 'lksProvinsi', 'stats'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -49,6 +85,7 @@ class LKSController extends Controller
             'tanda_pendaftaran' => 'required|in:Baru,Ulang',
             'tanggal_masuk_dokumen' => 'required|date',
             'tanggal_persyaratan' => 'required|date',
+            'kewenangan_type' => 'required|in:kabkota,provinsi',
             'documents' => 'required|array',
             'documents.*.document_id' => 'required|exists:documents,id',
             'documents.*.keterangan' => 'nullable|string',
@@ -73,7 +110,8 @@ class LKSController extends Controller
                 'tanda_pendaftaran' => $request->tanda_pendaftaran,
                 'tanggal_masuk_dokumen' => $request->tanggal_masuk_dokumen,
                 'tanggal_persyaratan' => $request->tanggal_persyaratan,
-                'kabupaten_kota' => $request->lokasi_lks, // SIMPAN KABUPATEN/KOTA DARI LOKASI_LKS
+                'kabupaten_kota' => $request->lokasi_lks,
+                'kewenangan_type' => $request->input('kewenangan_type', 'kabkota'),
                 'pendaftaran_lengkap' => false,
                 'status_permohonan' => 'Menunggu',
             ]);

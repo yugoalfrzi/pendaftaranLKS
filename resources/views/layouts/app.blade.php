@@ -37,7 +37,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 280px;
+            width: 340px;
             z-index: 1000;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 20px rgba(0,0,0,0.03);
@@ -158,7 +158,7 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 280px;
+            margin-left: 335px;
             min-height: 100vh;
             background: #f8fafc;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -297,116 +297,129 @@
         </div>
 
         <nav class="nav flex-column">
+
+            {{-- ===== DASHBOARD ===== --}}
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="bi bi-house-door"></i>
                 <span>Dashboard</span>
             </a>
 
-            <!-- Pengumuman LKS -->
-            <div class="nav-link dropdown-toggle" data-target="pengumumanSubmenu">
+            {{-- ===== PENGUMUMAN (semua role) ===== --}}
+            <div class="nav-link dropdown-toggle {{ request()->routeIs('announcements.*') || request()->routeIs('regulasi') || request()->routeIs('panduan') || request()->routeIs('surat') ? 'active' : '' }}" data-target="pengumumanSubmenu">
                 <i class="bi bi-megaphone"></i>
                 <span>Pengumuman LKS</span>
                 <i class="bi bi-chevron-down dropdown-arrow"></i>
             </div>
-            <div class="submenu" id="pengumumanSubmenu">
-                <a class="nav-link {{ request()->routeIs('announcements.regulasi') ? 'active' : '' }}" href="{{ route('announcements.regulasi') }}">
+            <div class="submenu {{ request()->routeIs('announcements.*') || request()->routeIs('regulasi') || request()->routeIs('panduan') || request()->routeIs('surat') ? 'show' : '' }}" id="pengumumanSubmenu">
+                <a class="nav-link {{ request()->routeIs('announcements.regulasi') || request()->routeIs('regulasi') ? 'active' : '' }}" href="{{ route('announcements.regulasi') }}">
                     <i class="bi bi-file-earmark-text"></i> <span>Regulasi</span>
                 </a>
-                <a class="nav-link {{ request()->routeIs('announcements.panduan') ? 'active' : '' }}" href="{{ route('announcements.panduan') }}">
+                <a class="nav-link {{ request()->routeIs('announcements.panduan') || request()->routeIs('panduan') ? 'active' : '' }}" href="{{ route('announcements.panduan') }}">
                     <i class="bi bi-journal-text"></i> <span>Panduan</span>
                 </a>
-                <a class="nav-link {{ request()->routeIs('announcements.surat') ? 'active' : '' }}" href="{{ route('announcements.surat') }}">
+                <a class="nav-link {{ request()->routeIs('announcements.surat') || request()->routeIs('surat') ? 'active' : '' }}" href="{{ route('announcements.surat') }}">
                     <i class="bi bi-envelope"></i> <span>Surat</span>
                 </a>
             </div>
+
             @auth
-                @if (Auth::user()->hasRole('user'))
-                    <a class="nav-link {{ request()->routeIs('lks.create') ? 'active' : '' }}" href="{{ route('lks.create') }}">
-                        <i class="bi bi-plus-circle"></i> <span>Pendaftaran LKS</span>
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('rptka.*') && !request()->routeIs('admin.rptka.*') && !request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" href="{{ route('rptka.index') }}">
-                        <i class="bi bi-file-earmark-person"></i> <span>Permohonan RPTKA</span>
+
+            {{-- ===== MENU KHUSUS USER ===== --}}
+            @if(Auth::user()->hasRole('user'))
+                <a class="nav-link {{ request()->routeIs('lks.create') ? 'active' : '' }}" href="{{ route('lks.create') }}">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Pendaftaran LKS</span>
+                </a>
+            @endif
+
+            {{-- ===== LKS TERDAFTAR (semua role) ===== --}}
+            <a class="nav-link {{ request()->routeIs('lks.terdaftar') ? 'active' : '' }}" href="{{ route('lks.terdaftar') }}">
+                <i class="bi bi-patch-check"></i>
+                <span>Download Tanda Pendaftaran</span>
+            </a>
+
+            {{-- ===== DATA LKS JABAR (semua role) ===== --}}
+            <div class="nav-link dropdown-toggle {{ request()->routeIs('kewenangan-*') ? 'active' : '' }}" data-target="dataLksSubmenu">
+                <i class="bi bi-database"></i>
+                <span>Data LKS JABAR</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
+            </div>
+            <div class="submenu {{ request()->routeIs('kewenangan-*') ? 'show' : '' }}" id="dataLksSubmenu">
+                <a class="nav-link {{ request()->routeIs('kewenangan-kabkota.*') ? 'active' : '' }}" href="{{ route('kewenangan-kabkota.index') }}">
+                    <i class="bi bi-geo-alt"></i> <span>Kewenangan Kab/Kota</span>
+                </a>
+                <a class="nav-link {{ request()->routeIs('kewenangan-provinsi.*') ? 'active' : '' }}" href="{{ route('kewenangan-provinsi.index') }}">
+                    <i class="bi bi-map"></i> <span>Kewenangan Provinsi</span>
+                </a>
+                <a class="nav-link {{ request()->routeIs('kewenangan-kemensos.*') ? 'active' : '' }}" href="{{ route('kewenangan-kemensos.index') }}">
+                    <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
+                </a>
+            </div>
+
+            {{-- ===== RPTKA ===== --}}
+            <div class="nav-link dropdown-toggle {{ request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" data-target="rptkaSubmenu">
+                <i class="bi bi-file-earmark-person"></i>
+                <span>Permohonan RPTKA</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
+            </div>
+            <div class="submenu {{ request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'show' : '' }}" id="rptkaSubmenu">
+                @if(Auth::user()->hasRole('user'))
+                    <a class="nav-link {{ request()->routeIs('rptka.index') || request()->routeIs('rptka.show') ? 'active' : '' }}" href="{{ route('rptka.index') }}">
+                        <i class="bi bi-list-ul"></i> <span>Daftar Permohonan</span>
                     </a>
                 @endif
-            @endauth
+                @if(Auth::user()->hasRole('admin'))
+                    <a class="nav-link {{ request()->routeIs('admin.rptka.*') ? 'active' : '' }}" href="{{ route('admin.rptka.index') }}">
+                        <i class="bi bi-shield-check"></i> <span>Verifikasi RPTKA</span>
+                    </a>
+                @endif
+                @if(Auth::user()->hasRole('super_admin'))
+                    <a class="nav-link {{ request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" href="{{ route('superadmin.rptka.index') }}">
+                        <i class="bi bi-patch-check"></i> <span>Verval RPTKA</span>
+                    </a>
+                @endif
+            </div>
 
-
-            <!-- Data LKS JABAR -->
-            @auth
-                <div class="nav-link dropdown-toggle" data-target="dataLksSubmenu">
-                    <i class="bi bi-database"></i>
-                    <span>Data LKS JABAR</span>
+            {{-- ===== HIBAH LKS (super admin) ===== --}}
+            @if(Auth::user()->hasRole('super_admin'))
+                <div class="nav-link dropdown-toggle {{ request()->routeIs('hibah.*') ? 'active' : '' }}" data-target="hibahSubmenu">
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Hibah LKS</span>
                     <i class="bi bi-chevron-down dropdown-arrow"></i>
                 </div>
-                <div class="submenu" id="dataLksSubmenu">
-                    <a class="nav-link {{ request()->routeIs('kewenangan-kabkota.*') ? 'active' : '' }}" href="{{ route('kewenangan-kabkota.index') }}">
-                        <i class="bi bi-geo-alt"></i> <span>Kewenangan Kab/Kota</span>
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('kewenangan-provinsi.*') ? 'active' : '' }}" href="{{ route('kewenangan-provinsi.index') }}">
-                        <i class="bi bi-building"></i> <span>Kewenangan Provinsi</span>
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('kewenangan-kemensos.*') ? 'active' : '' }}" href="{{ route('kewenangan-kemensos.index') }}">
-                        <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
+                <div class="submenu {{ request()->routeIs('hibah.*') ? 'show' : '' }}" id="hibahSubmenu">
+                    <a class="nav-link {{ request()->routeIs('hibah.keuangan') ? 'active' : '' }}" href="{{ route('hibah.keuangan', ['tahun' => now()->year]) }}">
+                        <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
                     </a>
                 </div>
+            @endif
+
+            {{-- ===== PANEL ADMIN ===== --}}
+            @if(Auth::user()->role === 'admin')
+                <a class="nav-link {{ request()->routeIs('admin.lks.*') ? 'active' : '' }}" href="{{ route('admin.lks.index') }}">
+                    <i class="bi bi-gear-wide-connected"></i>
+                    <span>Admin Panel</span>
+                </a>
+            @endif
+
+            {{-- ===== PANEL SUPER ADMIN ===== --}}
+            @if(Auth::user()->role === 'super_admin')
+                <a class="nav-link {{ request()->routeIs('superadmin.index') ? 'active' : '' }}" href="{{ route('superadmin.index') }}">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Super Admin Panel</span>
+                </a>
+                @php $pendingCount = \App\Models\User::where('approval_status','pending')->where('role','user')->count(); @endphp
+                <a class="nav-link {{ request()->routeIs('superadmin.pending-users') ? 'active' : '' }}" href="{{ route('superadmin.pending-users') }}">
+                    <i class="bi bi-person-check"></i>
+                    <span>Persetujuan Akun</span>
+                    @if($pendingCount > 0)
+                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingCount }}</span>
+                    @endif
+                </a>
+            @endif
+
             @endauth
 
-            <!-- Hibah LKS & RPTKA (Admin & Super Admin) -->
-            @auth
-                @if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin'))
-                    <!-- Hibah LKS -->
-                    <div class="nav-link dropdown-toggle" data-target="kewirausahaanSubmenu">
-                        <i class="bi bi-cash-stack"></i>
-                        <span>Hibah LKS</span>
-                        <i class="bi bi-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <div class="submenu" id="kewirausahaanSubmenu">
-                        <a class="nav-link" href="{{ route('hibah.keuangan', ['tahun' => now()->year]) }}">
-                            <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
-                        </a>
-                    </div>
-
-                    <!-- RPTKA -->
-                    <div class="nav-link dropdown-toggle {{ request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" data-target="rptkaSubmenu">
-                        <i class="bi bi-file-earmark-person"></i>
-                        <span>RPTKA</span>
-                        <i class="bi bi-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <div class="submenu {{ request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'show' : '' }}" id="rptkaSubmenu">
-                        @if (Auth::user()->hasRole('user'))
-                            <a class="nav-link {{ request()->routeIs('rptka.index') || request()->routeIs('rptka.show') ? 'active' : '' }}" href="{{ route('rptka.index') }}">
-                                <i class="bi bi-list-ul"></i> <span>Daftar Permohonan</span>
-                            </a>
-                        @endif
-                        @if (Auth::user()->hasRole('admin'))
-                            <a class="nav-link {{ request()->routeIs('admin.rptka.*') ? 'active' : '' }}" href="{{ route('admin.rptka.index') }}">
-                                <i class="bi bi-shield-check"></i> <span>Verifikasi RPTKA</span>
-                            </a>
-                        @endif
-                        @if(Auth::user()->hasRole('super_admin'))
-                        <a class="nav-link {{ request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" href="{{ route('superadmin.rptka.index') }}">
-                            <i class="bi bi-patch-check"></i> <span>Verval RPTKA</span>
-                        </a>
-                        @endif
-                    </div>
-                @endif
-            @endauth
-
-            <!-- Admin Panel -->
-            @auth
-                @if(Auth::user()->role === 'super_admin')
-                    <a class="nav-link {{ request()->routeIs('superadmin.index') ? 'active' : '' }}" href="{{ route('superadmin.index') }}">
-                        <i class="bi bi-shield-check"></i>
-                        <span>Super Admin Panel</span>
-                    </a>
-                @endif
-                @if(Auth::user()->role === 'admin')
-                    <a class="nav-link {{ request()->routeIs('admin.lks.*') ? 'active' : '' }}" href="{{ route('admin.lks.index') }}">
-                        <i class="bi bi-gear-wide-connected"></i>
-                        <span>Admin Panel</span>
-                    </a>
-                @endif
-            @endauth
         </nav>
     </div>
 

@@ -37,7 +37,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 280px;
+            width: 340px;
             z-index: 1000;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 20px rgba(0,0,0,0.03);
@@ -158,7 +158,7 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 280px;
+            margin-left: 335px;
             min-height: 100vh;
             background: #f8fafc;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -297,116 +297,129 @@
         </div>
 
         <nav class="nav flex-column">
+
+            
             <a class="nav-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>" href="<?php echo e(route('dashboard')); ?>">
                 <i class="bi bi-house-door"></i>
                 <span>Dashboard</span>
             </a>
 
-            <!-- Pengumuman LKS -->
-            <div class="nav-link dropdown-toggle" data-target="pengumumanSubmenu">
+            
+            <div class="nav-link dropdown-toggle <?php echo e(request()->routeIs('announcements.*') || request()->routeIs('regulasi') || request()->routeIs('panduan') || request()->routeIs('surat') ? 'active' : ''); ?>" data-target="pengumumanSubmenu">
                 <i class="bi bi-megaphone"></i>
                 <span>Pengumuman LKS</span>
                 <i class="bi bi-chevron-down dropdown-arrow"></i>
             </div>
-            <div class="submenu" id="pengumumanSubmenu">
-                <a class="nav-link <?php echo e(request()->routeIs('announcements.regulasi') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.regulasi')); ?>">
+            <div class="submenu <?php echo e(request()->routeIs('announcements.*') || request()->routeIs('regulasi') || request()->routeIs('panduan') || request()->routeIs('surat') ? 'show' : ''); ?>" id="pengumumanSubmenu">
+                <a class="nav-link <?php echo e(request()->routeIs('announcements.regulasi') || request()->routeIs('regulasi') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.regulasi')); ?>">
                     <i class="bi bi-file-earmark-text"></i> <span>Regulasi</span>
                 </a>
-                <a class="nav-link <?php echo e(request()->routeIs('announcements.panduan') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.panduan')); ?>">
+                <a class="nav-link <?php echo e(request()->routeIs('announcements.panduan') || request()->routeIs('panduan') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.panduan')); ?>">
                     <i class="bi bi-journal-text"></i> <span>Panduan</span>
                 </a>
-                <a class="nav-link <?php echo e(request()->routeIs('announcements.surat') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.surat')); ?>">
+                <a class="nav-link <?php echo e(request()->routeIs('announcements.surat') || request()->routeIs('surat') ? 'active' : ''); ?>" href="<?php echo e(route('announcements.surat')); ?>">
                     <i class="bi bi-envelope"></i> <span>Surat</span>
                 </a>
             </div>
+
             <?php if(auth()->guard()->check()): ?>
-                <?php if(Auth::user()->hasRole('user')): ?>
-                    <a class="nav-link <?php echo e(request()->routeIs('lks.create') ? 'active' : ''); ?>" href="<?php echo e(route('lks.create')); ?>">
-                        <i class="bi bi-plus-circle"></i> <span>Pendaftaran LKS</span>
-                    </a>
-                    <a class="nav-link <?php echo e(request()->routeIs('rptka.*') && !request()->routeIs('admin.rptka.*') && !request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('rptka.index')); ?>">
-                        <i class="bi bi-file-earmark-person"></i> <span>Permohonan RPTKA</span>
-                    </a>
-                <?php endif; ?>
+
+            
+            <?php if(Auth::user()->hasRole('user')): ?>
+                <a class="nav-link <?php echo e(request()->routeIs('lks.create') ? 'active' : ''); ?>" href="<?php echo e(route('lks.create')); ?>">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Pendaftaran LKS</span>
+                </a>
             <?php endif; ?>
 
+            
+            <a class="nav-link <?php echo e(request()->routeIs('lks.terdaftar') ? 'active' : ''); ?>" href="<?php echo e(route('lks.terdaftar')); ?>">
+                <i class="bi bi-patch-check"></i>
+                <span>Download Tanda Pendaftaran</span>
+            </a>
 
-            <!-- Data LKS JABAR -->
-            <?php if(auth()->guard()->check()): ?>
-                <div class="nav-link dropdown-toggle" data-target="dataLksSubmenu">
-                    <i class="bi bi-database"></i>
-                    <span>Data LKS JABAR</span>
+            
+            <div class="nav-link dropdown-toggle <?php echo e(request()->routeIs('kewenangan-*') ? 'active' : ''); ?>" data-target="dataLksSubmenu">
+                <i class="bi bi-database"></i>
+                <span>Data LKS JABAR</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
+            </div>
+            <div class="submenu <?php echo e(request()->routeIs('kewenangan-*') ? 'show' : ''); ?>" id="dataLksSubmenu">
+                <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kabkota.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kabkota.index')); ?>">
+                    <i class="bi bi-geo-alt"></i> <span>Kewenangan Kab/Kota</span>
+                </a>
+                <a class="nav-link <?php echo e(request()->routeIs('kewenangan-provinsi.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-provinsi.index')); ?>">
+                    <i class="bi bi-map"></i> <span>Kewenangan Provinsi</span>
+                </a>
+                <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kemensos.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kemensos.index')); ?>">
+                    <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
+                </a>
+            </div>
+
+            
+            <div class="nav-link dropdown-toggle <?php echo e(request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" data-target="rptkaSubmenu">
+                <i class="bi bi-file-earmark-person"></i>
+                <span>Permohonan RPTKA</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
+            </div>
+            <div class="submenu <?php echo e(request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'show' : ''); ?>" id="rptkaSubmenu">
+                <?php if(Auth::user()->hasRole('user')): ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('rptka.index') || request()->routeIs('rptka.show') ? 'active' : ''); ?>" href="<?php echo e(route('rptka.index')); ?>">
+                        <i class="bi bi-list-ul"></i> <span>Daftar Permohonan</span>
+                    </a>
+                <?php endif; ?>
+                <?php if(Auth::user()->hasRole('admin')): ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('admin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.rptka.index')); ?>">
+                        <i class="bi bi-shield-check"></i> <span>Verifikasi RPTKA</span>
+                    </a>
+                <?php endif; ?>
+                <?php if(Auth::user()->hasRole('super_admin')): ?>
+                    <a class="nav-link <?php echo e(request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.rptka.index')); ?>">
+                        <i class="bi bi-patch-check"></i> <span>Verval RPTKA</span>
+                    </a>
+                <?php endif; ?>
+            </div>
+
+            
+            <?php if(Auth::user()->hasRole('super_admin')): ?>
+                <div class="nav-link dropdown-toggle <?php echo e(request()->routeIs('hibah.*') ? 'active' : ''); ?>" data-target="hibahSubmenu">
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Hibah LKS</span>
                     <i class="bi bi-chevron-down dropdown-arrow"></i>
                 </div>
-                <div class="submenu" id="dataLksSubmenu">
-                    <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kabkota.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kabkota.index')); ?>">
-                        <i class="bi bi-geo-alt"></i> <span>Kewenangan Kab/Kota</span>
-                    </a>
-                    <a class="nav-link <?php echo e(request()->routeIs('kewenangan-provinsi.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-provinsi.index')); ?>">
-                        <i class="bi bi-building"></i> <span>Kewenangan Provinsi</span>
-                    </a>
-                    <a class="nav-link <?php echo e(request()->routeIs('kewenangan-kemensos.*') ? 'active' : ''); ?>" href="<?php echo e(route('kewenangan-kemensos.index')); ?>">
-                        <i class="bi bi-house-heart"></i> <span>Kewenangan Kemensos</span>
+                <div class="submenu <?php echo e(request()->routeIs('hibah.*') ? 'show' : ''); ?>" id="hibahSubmenu">
+                    <a class="nav-link <?php echo e(request()->routeIs('hibah.keuangan') ? 'active' : ''); ?>" href="<?php echo e(route('hibah.keuangan', ['tahun' => now()->year])); ?>">
+                        <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
                     </a>
                 </div>
             <?php endif; ?>
 
-            <!-- Hibah LKS & RPTKA (Admin & Super Admin) -->
-            <?php if(auth()->guard()->check()): ?>
-                <?php if(Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin')): ?>
-                    <!-- Hibah LKS -->
-                    <div class="nav-link dropdown-toggle" data-target="kewirausahaanSubmenu">
-                        <i class="bi bi-cash-stack"></i>
-                        <span>Hibah LKS</span>
-                        <i class="bi bi-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <div class="submenu" id="kewirausahaanSubmenu">
-                        <a class="nav-link" href="<?php echo e(route('hibah.keuangan', ['tahun' => now()->year])); ?>">
-                            <i class="bi bi-pie-chart"></i> <span>Data Keuangan Hibah</span>
-                        </a>
-                    </div>
-
-                    <!-- RPTKA -->
-                    <div class="nav-link dropdown-toggle <?php echo e(request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" data-target="rptkaSubmenu">
-                        <i class="bi bi-file-earmark-person"></i>
-                        <span>RPTKA</span>
-                        <i class="bi bi-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <div class="submenu <?php echo e(request()->routeIs('rptka.*') || request()->routeIs('admin.rptka.*') || request()->routeIs('superadmin.rptka.*') ? 'show' : ''); ?>" id="rptkaSubmenu">
-                        <?php if(Auth::user()->hasRole('user')): ?>
-                            <a class="nav-link <?php echo e(request()->routeIs('rptka.index') || request()->routeIs('rptka.show') ? 'active' : ''); ?>" href="<?php echo e(route('rptka.index')); ?>">
-                                <i class="bi bi-list-ul"></i> <span>Daftar Permohonan</span>
-                            </a>
-                        <?php endif; ?>
-                        <?php if(Auth::user()->hasRole('admin')): ?>
-                            <a class="nav-link <?php echo e(request()->routeIs('admin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.rptka.index')); ?>">
-                                <i class="bi bi-shield-check"></i> <span>Verifikasi RPTKA</span>
-                            </a>
-                        <?php endif; ?>
-                        <?php if(Auth::user()->hasRole('super_admin')): ?>
-                        <a class="nav-link <?php echo e(request()->routeIs('superadmin.rptka.*') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.rptka.index')); ?>">
-                            <i class="bi bi-patch-check"></i> <span>Verval RPTKA</span>
-                        </a>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
+            
+            <?php if(Auth::user()->role === 'admin'): ?>
+                <a class="nav-link <?php echo e(request()->routeIs('admin.lks.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.lks.index')); ?>">
+                    <i class="bi bi-gear-wide-connected"></i>
+                    <span>Admin Panel</span>
+                </a>
             <?php endif; ?>
 
-            <!-- Admin Panel -->
-            <?php if(auth()->guard()->check()): ?>
-                <?php if(Auth::user()->role === 'super_admin'): ?>
-                    <a class="nav-link <?php echo e(request()->routeIs('superadmin.index') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.index')); ?>">
-                        <i class="bi bi-shield-check"></i>
-                        <span>Super Admin Panel</span>
-                    </a>
-                <?php endif; ?>
-                <?php if(Auth::user()->role === 'admin'): ?>
-                    <a class="nav-link <?php echo e(request()->routeIs('admin.lks.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.lks.index')); ?>">
-                        <i class="bi bi-gear-wide-connected"></i>
-                        <span>Admin Panel</span>
-                    </a>
-                <?php endif; ?>
+            
+            <?php if(Auth::user()->role === 'super_admin'): ?>
+                <a class="nav-link <?php echo e(request()->routeIs('superadmin.index') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.index')); ?>">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Super Admin Panel</span>
+                </a>
+                <?php $pendingCount = \App\Models\User::where('approval_status','pending')->where('role','user')->count(); ?>
+                <a class="nav-link <?php echo e(request()->routeIs('superadmin.pending-users') ? 'active' : ''); ?>" href="<?php echo e(route('superadmin.pending-users')); ?>">
+                    <i class="bi bi-person-check"></i>
+                    <span>Persetujuan Akun</span>
+                    <?php if($pendingCount > 0): ?>
+                        <span class="badge bg-warning text-dark ms-auto"><?php echo e($pendingCount); ?></span>
+                    <?php endif; ?>
+                </a>
             <?php endif; ?>
+
+            <?php endif; ?>
+
         </nav>
     </div>
 

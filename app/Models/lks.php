@@ -35,7 +35,9 @@ class LKS extends Model
         'kabupaten_kota',
         'sertifikat_path',
         'surat_rekomendasi_path',
-        'user_id'
+        'sertifikat_kabkota_path',
+        'user_id',
+        'kewenangan_type',
     ];
 
     protected $casts = [

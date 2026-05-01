@@ -19,6 +19,16 @@
     </div>
 </div>
 
+<!-- Info Alur -->
+<div class="alert alert-info border-0 shadow-sm mb-4 d-flex align-items-center gap-3">
+    <i class="bi bi-info-circle-fill fs-4 flex-0"></i>
+    <div>
+        <strong>Alur Kewenangan Provinsi:</strong>
+        User mendaftar LKS (Provinsi) → <span class="badge bg-warning text-dark">Admin</span> upload Surat Rekomendasi → <span class="badge bg-primary">Super Admin</span> upload Sertifikat
+        <br><small class="text-muted">Halaman ini hanya menampilkan LKS kewenangan <strong>Provinsi</strong> yang sudah diverifikasi Admin.</small>
+    </div>
+</div>
+
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
     <div class="col-xl-3 col-md-6">
@@ -126,13 +136,21 @@
 <div class="card">
     <div class="card-header bg-white">
         <h5 class="card-title mb-0">
-            <i class="bi bi-table"></i> Daftar LKS - Upload Sertifikat
+            <i class="bi bi-table"></i> Daftar LKS - Upload Tanda Pendaftaran Provinsi
         </h5>
     </div>
     <div class="card-body">
         <?php if(session('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle me-2"></i><?php echo e(session('success')); ?>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if(session('error')): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-circle me-2"></i><?php echo e(session('error')); ?>
 
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
@@ -147,8 +165,8 @@
                             <th>Nama LKS</th>
                             <th>Kabupaten/Kota</th>
                             <th>Status</th>
-                            <th>Surat Rekomendasi</th>
-                            <th>Sertifikat</th>
+                            <th>Surat Rekomendasi (Admin)</th>
+                            <th>Tanda Pendaftaran Provinsi</th>
                             <th>Verifikator</th>
                             <th>Aksi</th>
                         </tr>
