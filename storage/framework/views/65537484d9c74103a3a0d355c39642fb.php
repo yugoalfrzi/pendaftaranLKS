@@ -126,7 +126,7 @@
     </div>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
         <?php if(auth()->guard()->check()): ?>
-            <?php if(Auth::user()->hasRole(['super_admin', 'admin'])): ?>
+            <?php if(Auth::user()->hasRole(['super_admin', 'admin', 'user'])): ?>
                 <a href="<?php echo e(route('kewenangan-kabkota.export-excel')); ?>?search=<?php echo e(request('search')); ?>" class="btn btn-success rounded-pill px-3">
                     <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
                 </a>

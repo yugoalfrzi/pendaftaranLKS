@@ -69,7 +69,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h4 class="text-muted mb-0">{{ $stats['with_sertifikat'] ?? 0 }}</h4>
-                        <p class="mb-0">Sudah Upload Sertifikat</p>
+                        <p class="mb-0">Sudah Upload Tanda Pendaftaran</p>
                     </div>
                     <div class="bg-info bg-opacity-10 p-3 rounded-circle">
                         <i class="bi bi-file-earmark-check fs-3 text-info"></i>
@@ -201,7 +201,7 @@
                                             <form action="{{ route('superadmin.delete-surat', $lksItem->id) }}"
                                                   method="POST"
                                                   class="d-inline"
-                                                  onsubmit="return confirm('Hapus sertifikat?')">
+                                                  onsubmit="return confirm('Hapus tanda pendaftaran?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus">
@@ -220,7 +220,7 @@
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a href="{{ route('superadmin.verification', $lksItem->id) }}"
                                            class="btn btn-primary"
-                                           title="Upload Sertifikat">
+                                           title="Upload Tanda Pendaftaran">
                                             <i class="bi bi-upload"></i> Upload
                                         </a>
                                         <a href="{{ route('superadmin.edit', $lksItem->id) }}"

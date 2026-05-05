@@ -135,7 +135,7 @@
     </div>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
         @auth
-            @if(Auth::user()->hasRole(['super_admin', 'admin']))
+            @if(Auth::user()->hasRole(['super_admin', 'admin', 'user']))
                 <a href="{{ route('kewenangan-provinsi.export-excel') }}?search={{ request('search') }}" class="btn btn-success rounded-pill px-3">
                     <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
                 </a>

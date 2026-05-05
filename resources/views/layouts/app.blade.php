@@ -395,7 +395,19 @@
             {{-- ===== LKS TERDAFTAR (semua role) ===== --}}
             <a class="nav-link {{ request()->routeIs('lks.terdaftar') ? 'active' : '' }}" href="{{ route('lks.terdaftar') }}">
                 <i class="bi bi-patch-check"></i>
-                <span>Download Tanda Pendaftaran</span>
+                @if(auth()->user()->hasRole('user'))
+                    <span>Download Tanda Pendaftaran</span>
+                    @php
+                        $perluPerhatianCount = \App\Models\LKS::where('user_id', auth()->id())
+                            ->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])
+                            ->count();
+                    @endphp
+                    @if($perluPerhatianCount > 0)
+                        <span class="badge bg-danger ms-auto" style="font-size:.65rem">{{ $perluPerhatianCount }}</span>
+                    @endif
+                @else
+                    <span>LKS Terdaftar</span>
+                @endif
             </a>
 
             {{-- ===== DATA LKS JABAR (semua role) ===== --}}

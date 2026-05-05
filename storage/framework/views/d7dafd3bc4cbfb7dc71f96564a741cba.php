@@ -395,7 +395,19 @@
             
             <a class="nav-link <?php echo e(request()->routeIs('lks.terdaftar') ? 'active' : ''); ?>" href="<?php echo e(route('lks.terdaftar')); ?>">
                 <i class="bi bi-patch-check"></i>
-                <span>Download Tanda Pendaftaran</span>
+                <?php if(auth()->user()->hasRole('user')): ?>
+                    <span>Download Tanda Pendaftaran</span>
+                    <?php
+                        $perluPerhatianCount = \App\Models\LKS::where('user_id', auth()->id())
+                            ->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])
+                            ->count();
+                    ?>
+                    <?php if($perluPerhatianCount > 0): ?>
+                        <span class="badge bg-danger ms-auto" style="font-size:.65rem"><?php echo e($perluPerhatianCount); ?></span>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <span>LKS Terdaftar</span>
+                <?php endif; ?>
             </a>
 
             

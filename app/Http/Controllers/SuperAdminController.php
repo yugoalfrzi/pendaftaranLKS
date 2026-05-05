@@ -121,8 +121,20 @@ class SuperAdminController extends Controller
             $filename = 'sertifikat_' . $lks->id . '_' . time() . '.pdf';
             $path = $file->storeAs('sertifikat', $filename, 'public');
             $lks->sertifikat_path = $path;
+
+            // Saat sertifikat diupload → otomatis "Diterima"
+            $lks->status_permohonan   = 'Diterima';
+            $lks->alasan_penolakan    = null;
+            $lks->alasan_dikembalikan = null;
+            $lks->verifikator_id      = $request->verifikator;
+            $lks->nama_verifikator    = $request->nama_verifikator;
+            $lks->save();
+
+            return redirect()->route('superadmin.index')
+                ->with('success', 'Sertifikat berhasil diupload. Status LKS diubah ke "Diterima".');
         }
 
+        // Jika tidak ada upload sertifikat (Ditolak / Dikembalikan)
         $lks->status_permohonan   = $request->status_permohonan;
         $lks->alasan_penolakan    = $request->alasan_penolakan;
         $lks->alasan_dikembalikan = $request->alasan_dikembalikan;

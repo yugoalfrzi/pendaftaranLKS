@@ -136,8 +136,10 @@
                 <div class="info-row"><span class="info-label">Binaan Dalam Panti</span><span class="info-value"><?php echo e($lks->jumlah_binaan_dalam_panti ?? '0'); ?> orang</span></div>
                 <div class="info-row"><span class="info-label">Binaan Luar Panti</span><span class="info-value"><?php echo e($lks->jumlah_binaan_luar_panti ?? '0'); ?> orang</span></div>
                 <div class="info-row"><span class="info-label">Nomor Kontak</span><span class="info-value"><?php echo e($lks->nomor_kontak ?? '-'); ?></span></div>
+                <?php if($lks->kewenangan_type === 'provinsi'): ?>
                 <div class="info-row"><span class="info-label">Pusat LKS</span><span class="info-value"><?php echo e($lks->pusat_lks ?? '-'); ?></span></div>
                 <div class="info-row"><span class="info-label">Cabang LKS</span><span class="info-value"><?php echo e($lks->cabang_lks ?? '-'); ?></span></div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -196,7 +198,7 @@
                                     <i class="bi bi-download"></i> Download
                                 </a>
                                 <?php if(auth()->user()->role === 'admin'): ?>
-                                    <form action="<?php echo e(route('admin.verification.delete-sertifikat-kabkota', $lks->id)); ?>" method="POST" class="d-inline" onsubmit="return confirm('Hapus sertifikat?')">
+                                    <form action="<?php echo e(route('admin.verification.delete-sertifikat-kabkota', $lks->id)); ?>" method="POST" class="d-inline" onsubmit="return confirm('Hapus tanda pendaftaran?')">
                                         <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                         <button class="btn btn-sm btn-outline-danger rounded-pill px-2"><i class="bi bi-trash"></i></button>
                                     </form>
@@ -248,7 +250,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
                             <div>
-                                <div class="fw-semibold small">Sertifikat Provinsi</div>
+                                <div class="fw-semibold small">Tanda Pendaftaran Provinsi</div>
                                 <div class="text-muted" style="font-size:.75rem">Diterbitkan oleh Super Admin</div>
                             </div>
                         </div>

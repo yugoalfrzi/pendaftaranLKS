@@ -186,7 +186,7 @@
     <div class="col-md-4">
         <div class="card-modern">
             <div class="card-header-custom">
-                <i class="bi bi-clipboard-check text-primary"></i> Form Upload Sertifikat
+                <i class="bi bi-clipboard-check text-primary"></i> Form Upload Tanda Pendaftaran
             </div>
             <div class="card-body p-3">
                 <form action="{{ route('superadmin.verification.process', $lks->id) }}" method="POST" enctype="multipart/form-data">
@@ -196,7 +196,9 @@
                         <label for="status_permohonan" class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm @error('status_permohonan') is-invalid @enderror" id="status_permohonan" name="status_permohonan" required>
                             <option value="">Pilih Status</option>
-                            <option value="Diterima untuk proses" {{ old('status_permohonan', $lks->status_permohonan) == 'Diterima untuk proses' ? 'selected' : '' }}>Diterima untuk proses</option>
+                            <option value="Diterima untuk proses" {{ old('status_permohonan', $lks->status_permohonan) == 'Diterima untuk proses' ? 'selected' : '' }}>
+                                Upload Tanda Pendaftaran (Otomatis → Diterima)
+                            </option>
                             <option value="Ditolak" {{ old('status_permohonan', $lks->status_permohonan) == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                             <option value="Dikembalikan" {{ old('status_permohonan', $lks->status_permohonan) == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                         </select>
@@ -204,7 +206,7 @@
                     </div>
 
                     <div class="mb-3" id="sertifikat_div" style="display:none;">
-                        <label for="sertifikat" class="form-label small fw-semibold">Upload Sertifikat (PDF) <span class="text-danger">*</span></label>
+                        <label for="sertifikat" class="form-label small fw-semibold">Upload Tanda Pendaftaran (PDF) <span class="text-danger">*</span></label>
                         <input type="file" class="form-control form-control-sm @error('sertifikat') is-invalid @enderror" id="sertifikat" name="sertifikat" accept=".pdf">
                         <div class="form-text small">Format: PDF. Maks: 5MB</div>
                         @error('sertifikat')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -226,7 +228,7 @@
                         <div class="doc-file-item mt-2">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-file-earmark-pdf text-danger"></i>
-                                <span class="fw-semibold">Sertifikat sudah diupload</span>
+                                <span class="fw-semibold">Tanda Pendaftaran sudah diupload</span>
                             </div>
                             <div class="d-flex gap-1">
                                 <a href="{{ route('superadmin.download-surat', $lks->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-2"><i class="bi bi-download"></i></a>

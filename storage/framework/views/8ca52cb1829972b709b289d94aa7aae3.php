@@ -197,7 +197,7 @@
             <div class="px-3 pt-3 pb-1">
                 <p class="text-muted small mb-0">
                     <i class="bi bi-info-circle me-1"></i>
-                    LKS kewenangan Kab/Kota yang telah mendapatkan <strong>Sertifikat Kab/Kota</strong> dari Admin.
+                    LKS kewenangan Kab/Kota yang telah mendapatkan <strong>Tanda pendaftaran Kab/Kota</strong> dari <?php echo e(auth()->user()->name); ?>.
                 </p>
             </div>
 
@@ -269,7 +269,7 @@
             <div class="px-3 pt-3 pb-1">
                 <p class="text-muted small mb-0">
                     <i class="bi bi-info-circle me-1"></i>
-                    LKS kewenangan Provinsi yang telah mendapatkan <strong>Sertifikat</strong> dari Super Admin.
+                    LKS kewenangan Provinsi yang telah mendapatkan <strong>Tanda pendaftaran<strong> dari <?php echo e(auth()->user()->name); ?>.
                 </p>
             </div>
 

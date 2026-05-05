@@ -85,19 +85,27 @@ class DashboardController extends Controller
         $ditolak      = $myLks->where('status_permohonan', 'Ditolak')->count();
         $dikembalikan = $myLks->where('status_permohonan', 'Dikembalikan')->count();
 
+        // LKS yang perlu perhatian (Ditolak atau Dikembalikan) — untuk badge sidebar
+        $perluPerhatian = $myLks->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])->count();
+
+        // LKS dengan status terbaru yang berubah — untuk section "Status Terkini"
+        $statusTerkini = LKS::where('user_id', $userId)
+            ->whereIn('status_permohonan', ['Diterima untuk proses', 'Diterima', 'Terverifikasi', 'Ditolak', 'Dikembalikan'])
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
+
         $myRptka       = rptka::where('user_id', $userId)->latest()->get();
         $totalRptka    = $myRptka->count();
         $rptkaMenunggu = $myRptka->where('status_permohonan', 'Menunggu')->count();
         $rptkaDiterima = $myRptka->whereIn('status_permohonan', ['Diterima', 'Terverifikasi'])->count();
 
-        $recentLKS   = LKS::where('user_id', $userId)->latest()->take(5)->get();
         $recentRptka = rptka::where('user_id', $userId)->latest()->take(5)->get();
-        $latestLks   = LKS::where('user_id', $userId)->latest()->first();
 
         return view('dashboard.user', compact(
             'totalLks', 'menunggu', 'diterima', 'ditolak', 'dikembalikan',
             'totalRptka', 'rptkaMenunggu', 'rptkaDiterima',
-            'recentLKS', 'recentRptka', 'latestLks'
+            'recentRptka', 'perluPerhatian', 'statusTerkini'
         ));
     }
 

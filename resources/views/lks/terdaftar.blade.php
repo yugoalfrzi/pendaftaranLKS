@@ -260,7 +260,7 @@
             @else
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-inbox fs-1"></i>
-                <p class="mt-2">Belum ada LKS kewenangan Kab/Kota yang sudah bersertifikat.</p>
+                <p class="mt-2">Belum ada LKS kewenangan Kab/Kota yang sudah memiliki tanda pendaftaran.</p>
             </div>
             @endif
         </div>
@@ -331,7 +331,7 @@
             @else
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-inbox fs-1"></i>
-                <p class="mt-2">Belum ada LKS kewenangan Provinsi yang sudah bersertifikat.</p>
+                <p class="mt-2">Belum ada LKS kewenangan Provinsi yang sudah memiliki tanda pendaftaran.</p>
             </div>
             @endif
         </div>

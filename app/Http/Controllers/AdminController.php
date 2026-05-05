@@ -87,6 +87,16 @@ class AdminController extends Controller
             $file = $request->file('surat_rekomendasi');
             $filename = 'surat_rekomendasi_' . $lks->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $lks->surat_rekomendasi_path = $file->storeAs('surat_rekomendasi', $filename, 'public');
+
+            // Provinsi: saat surat rekomendasi diupload → otomatis "Diterima untuk proses"
+            if ($lks->kewenangan_type === 'provinsi' && $request->status_permohonan === 'Diterima') {
+                $lks->status_permohonan = 'Diterima untuk proses';
+                $lks->nama_verifikator  = auth()->user()?->name ?? 'Unknown';
+                $lks->save();
+
+                return redirect()->route('admin.lks.index')
+                    ->with('success', 'Surat rekomendasi berhasil diupload. Status LKS diubah ke "Diterima untuk proses" dan diteruskan ke Super Admin.');
+            }
         }
 
         // Upload sertifikat kabkota (khusus kewenangan kabkota)

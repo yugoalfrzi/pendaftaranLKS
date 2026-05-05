@@ -196,7 +196,7 @@
                                     <i class="bi bi-download"></i> Download
                                 </a>
                                 @if(auth()->user()->role === 'admin')
-                                    <form action="{{ route('admin.verification.delete-sertifikat-kabkota', $lks->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus sertifikat?')">
+                                    <form action="{{ route('admin.verification.delete-sertifikat-kabkota', $lks->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus tanda pendaftaran?')">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger rounded-pill px-2"><i class="bi bi-trash"></i></button>
                                     </form>
@@ -248,7 +248,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
                             <div>
-                                <div class="fw-semibold small">Sertifikat Provinsi</div>
+                                <div class="fw-semibold small">Tanda Pendaftaran Provinsi</div>
                                 <div class="text-muted" style="font-size:.75rem">Diterbitkan oleh Super Admin</div>
                             </div>
                         </div>

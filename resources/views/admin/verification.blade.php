@@ -28,7 +28,7 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
         <h4 class="fw-semibold mb-1">
-            @if($lks->kewenangan_type == 'kabkota') Upload Sertifikat Kab/Kota LKS
+            @if($lks->kewenangan_type == 'kabkota') Upload Tanda Pendaftaran Kab/Kota LKS
             @else Upload Surat Rekomendasi LKS @endif
         </h4>
         <p class="text-muted small mb-0">{{ $lks->nama_lks }}</p>
@@ -172,7 +172,7 @@
         <div class="card-modern">
             <div class="card-header-custom">
                 <i class="bi bi-clipboard-check text-primary"></i>
-                @if($lks->kewenangan_type == 'kabkota') Form Upload Sertifikat Kab/Kota
+                @if($lks->kewenangan_type == 'kabkota') Form Upload Tanda Pendaftaran Kab/Kota
                 @else Form Upload Surat Rekomendasi @endif
             </div>
             <div class="card-body p-3">
@@ -192,7 +192,7 @@
 
                     @if($lks->kewenangan_type == 'kabkota')
                     <div class="mb-3" id="sertifikat_kabkota_div" style="display:none;">
-                        <label for="sertifikat_kabkota" class="form-label small fw-semibold">Upload Sertifikat Kab/Kota</label>
+                        <label for="sertifikat_kabkota" class="form-label small fw-semibold">Upload Tanda Pendaftaran Kab/Kota</label>
                         <input type="file" class="form-control form-control-sm @error('sertifikat_kabkota') is-invalid @enderror" id="sertifikat_kabkota" name="sertifikat_kabkota" accept=".pdf,.jpg,.jpeg,.png">
                         <div class="form-text small">Format: PDF, JPG, PNG. Maks: 5MB</div>
                         @error('sertifikat_kabkota')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -200,7 +200,7 @@
                         <div class="doc-file-item mt-2">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-file-earmark-check text-success"></i>
-                                <span>Sertifikat kab/kota sudah diupload</span>
+                                <span>Tanda pendaftaran kab/kota sudah diupload</span>
                             </div>
                             <div class="d-flex gap-1">
                                 <a href="{{ route('admin.verification.download-sertifikat-kabkota', $lks->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-2"><i class="bi bi-download"></i></a>

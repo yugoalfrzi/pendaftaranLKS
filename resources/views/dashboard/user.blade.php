@@ -216,72 +216,56 @@
     </div>
 </div>
 
-{{-- Tabel Pendaftaran LKS Terbaru --}}
+{{-- Status Terkini Verifikasi --}}
+@if($statusTerkini->count() > 0)
 <div class="card-modern mb-4">
     <div class="card-header-custom d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-clock-history me-2"></i>Pendaftaran LKS Terbaru</span>
-        @if($totalLks > 5)
-            <span class="text-muted small">Menampilkan 5 dari {{ $totalLks }}</span>
+        <span><i class="bi bi-bell me-2 text-primary"></i>Update Status Verifikasi</span>
+        @if($perluPerhatian > 0)
+            <span class="badge bg-danger rounded-pill" style="font-size:.72rem">
+                {{ $perluPerhatian }} perlu tindakan
+            </span>
         @endif
     </div>
-    <div class="table-responsive">
-        <table class="table table-modern mb-0">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama LKS</th>
-                    <th>Kewenangan</th>
-                    <th>Tanggal Masuk</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($recentLKS as $lks)
-                <tr>
-                    <td class="text-muted">{{ $loop->iteration }}</td>
-                    <td class="fw-semibold">{{ $lks->nama_lks }}</td>
-                    <td>
-                        <span class="badge-pill {{ $lks->kewenangan_type === 'kabkota' ? 's-proses' : 's-terverifikasi' }}">
-                            {{ $lks->kewenangan_type === 'kabkota' ? 'Kab/Kota' : 'Provinsi' }}
-                        </span>
-                    </td>
-                    <td>{{ \Carbon\Carbon::parse($lks->tanggal_masuk_dokumen)->format('d/m/Y') }}</td>
-                    <td>
-                        @php
-                            $sc = match($lks->status_permohonan) {
-                                'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                'Diterima untuk proses' => 's-proses',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
-                                'Ditolak' => 's-ditolak',
-                                'Dikembalikan' => 's-dikembalikan',
-                                default => 's-menunggu',
-                            };
-                        @endphp
-                        <span class="badge-pill {{ $sc }}">{{ $lks->status_permohonan }}</span>
-                    </td>
-                    <td>
-                        <a href="{{ route('lks.show', $lks->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size:.75rem">
-                            <i class="bi bi-eye"></i> Detail
-                        </a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="text-center py-5">
-                        <i class="bi bi-inbox fs-2 text-muted d-block mb-2"></i>
-                        <span class="text-muted">Belum ada pendaftaran LKS</span><br>
-                        <a href="{{ route('lks.create') }}" class="btn btn-primary rounded-pill px-4 mt-3 btn-sm">
-                            <i class="bi bi-plus-circle me-1"></i> Mulai Pendaftaran
-                        </a>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="card-body p-3 d-flex flex-column gap-2">
+        @foreach($statusTerkini as $lks)
+        @php
+            $sc = match($lks->status_permohonan) {
+                'Diterima untuk proses' => ['class' => 's-proses', 'icon' => 'bi-hourglass-split', 'bg' => '#eff6ff'],
+                'Diterima'              => ['class' => 's-diterima', 'icon' => 'bi-check-circle-fill', 'bg' => '#f0fdf4'],
+                'Terverifikasi'         => ['class' => 's-terverifikasi', 'icon' => 'bi-patch-check-fill', 'bg' => '#eef2ff'],
+                'Ditolak'               => ['class' => 's-ditolak', 'icon' => 'bi-x-circle-fill', 'bg' => '#fff1f2'],
+                'Dikembalikan'          => ['class' => 's-dikembalikan', 'icon' => 'bi-arrow-counterclockwise', 'bg' => '#f0f9ff'],
+                default                 => ['class' => 's-menunggu', 'icon' => 'bi-clock', 'bg' => '#fffbeb'],
+            };
+        @endphp
+        <div class="d-flex align-items-center justify-content-between p-3 rounded-3 gap-3"
+             style="background:{{ $sc['bg'] }}; border:1px solid rgba(0,0,0,0.05);">
+            <div class="d-flex align-items-center gap-3 flex-1 min-w-0">
+                <i class="bi {{ $sc['icon'] }} fs-5 flex-0 badge-pill {{ $sc['class'] }}" style="padding:.4rem; border-radius:.6rem;"></i>
+                <div class="min-w-0">
+                    <div class="fw-semibold text-truncate" style="font-size:.85rem;">{{ $lks->nama_lks }}</div>
+                    <div class="text-muted" style="font-size:.75rem;">
+                        Diperbarui {{ $lks->updated_at->diffForHumans() }}
+                        @if($lks->status_permohonan === 'Ditolak' && $lks->alasan_penolakan)
+                            &mdash; <span class="text-danger">{{ Str::limit($lks->alasan_penolakan, 60) }}</span>
+                        @elseif($lks->status_permohonan === 'Dikembalikan' && $lks->alasan_dikembalikan)
+                            &mdash; <span class="text-info">{{ Str::limit($lks->alasan_dikembalikan, 60) }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-0">
+                <span class="badge-pill {{ $sc['class'] }}">{{ $lks->status_permohonan }}</span>
+                <a href="{{ route('lks.show', $lks->id) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-2" style="font-size:.72rem;">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        @endforeach
     </div>
 </div>
+@endif
 
 {{-- Tabel RPTKA Terbaru --}}
 @if($totalRptka > 0)
@@ -339,52 +323,4 @@
 </div>
 @endif
 
-{{-- Modal notifikasi status LKS terbaru --}}
-@if($latestLks && in_array($latestLks->status_permohonan, ['Diterima untuk proses','Diterima','Ditolak','Dikembalikan']))
-<div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow">
-            @php
-                $st = $latestLks->status_permohonan;
-                $hc = match($st) { 'Diterima untuk proses','Diterima' => 'bg-success', 'Ditolak' => 'bg-danger', default => 'bg-warning' };
-                $ic = match($st) { 'Diterima untuk proses','Diterima' => 'bi-check-circle', 'Ditolak' => 'bi-x-circle', default => 'bi-arrow-counterclockwise' };
-            @endphp
-            <div class="modal-header {{ $hc }} text-white border-0">
-                <h5 class="modal-title fw-semibold"><i class="bi {{ $ic }} me-2"></i>Update Status: {{ $st }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="fw-semibold mb-1">{{ $latestLks->nama_lks }}</p>
-                @if($st === 'Ditolak')
-                    <div class="alert alert-danger py-2 small">{{ $latestLks->alasan_penolakan ?? 'Tidak ada keterangan.' }}</div>
-                @elseif($st === 'Dikembalikan')
-                    <div class="alert alert-warning py-2 small">{{ $latestLks->alasan_dikembalikan ?? 'Tidak ada keterangan.' }}</div>
-                @else
-                    <div class="alert alert-success py-2 small">Permohonan Anda telah diterima dan sedang diproses.</div>
-                @endif
-                <small class="text-muted">Diperbarui: {{ optional($latestLks->updated_at)->format('d/m/Y H:i') }}</small>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <a href="{{ route('lks.show', $latestLks->id) }}" class="btn btn-outline-primary rounded-pill px-4 btn-sm">Lihat Detail</a>
-                <button type="button" class="btn btn-secondary rounded-pill px-4 btn-sm" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
-
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    @if($latestLks && in_array($latestLks->status_permohonan, ['Diterima untuk proses','Diterima','Ditolak','Dikembalikan']))
-    const key = 'statusModal_{{ $latestLks->id }}_{{ $latestLks->updated_at?->timestamp }}';
-    if (!sessionStorage.getItem(key)) {
-        new bootstrap.Modal(document.getElementById('statusModal')).show();
-        sessionStorage.setItem(key, '1');
-    }
-    @endif
-});
-</script>
-@endpush
