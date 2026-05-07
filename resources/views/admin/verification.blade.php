@@ -54,8 +54,6 @@
                         <div class="info-row"><span class="info-label">Binaan Dalam Panti</span><span class="info-value">{{ $lks->jumlah_binaan_dalam_panti ?? '0' }}</span></div>
                         <div class="info-row"><span class="info-label">Binaan Luar Panti</span><span class="info-value">{{ $lks->jumlah_binaan_luar_panti ?? '0' }}</span></div>
                         <div class="info-row"><span class="info-label">Lokasi LKS</span><span class="info-value">{{ $lks->lokasi_lks ?? '-' }}</span></div>
-                        <div class="info-row"><span class="info-label">Pusat LKS</span><span class="info-value">{{ $lks->pusat_lks ?? '-' }}</span></div>
-                        <div class="info-row"><span class="info-label">Cabang LKS</span><span class="info-value">{{ $lks->cabang_lks ?? '-' }}</span></div>
                         <div class="info-row"><span class="info-label">Nomor Kontak</span><span class="info-value">{{ $lks->nomor_kontak ?? '-' }}</span></div>
                     </div>
                     <div class="col-md-6 ps-md-3" style="border-left:1px solid #f1f5f9;">
@@ -192,6 +190,10 @@
 
                     @if($lks->kewenangan_type == 'kabkota')
                     <div class="mb-3" id="sertifikat_kabkota_div" style="display:none;">
+                        <label for="tanggal_persyaratan" class="form-label small fw-semibold">Tanggal Persyaratan Dinyatakan Lengkap <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control form-control-sm @error('tanggal_persyaratan') is-invalid @enderror" id="tanggal_persyaratan" name="tanggal_persyaratan" value="{{ old('tanggal_persyaratan', $lks->tanggal_persyaratan ? $lks->tanggal_persyaratan->format('Y-m-d') : '') }}">
+                        @error('tanggal_persyaratan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="mb-3 mt-3">
                         <label for="sertifikat_kabkota" class="form-label small fw-semibold">Upload Tanda Pendaftaran Kab/Kota</label>
                         <input type="file" class="form-control form-control-sm @error('sertifikat_kabkota') is-invalid @enderror" id="sertifikat_kabkota" name="sertifikat_kabkota" accept=".pdf,.jpg,.jpeg,.png">
                         <div class="form-text small">Format: PDF, JPG, PNG. Maks: 5MB</div>
@@ -208,9 +210,14 @@
                             </div>
                         </div>
                         @endif
+                        </div>
                     </div>
                     @else
                     <div class="mb-3" id="surat_rekomendasi_div" style="display:none;">
+                        <label for="tanggal_persyaratan" class="form-label small fw-semibold">Tanggal Persyaratan Dinyatakan Lengkap <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control form-control-sm @error('tanggal_persyaratan') is-invalid @enderror" id="tanggal_persyaratan" name="tanggal_persyaratan" value="{{ old('tanggal_persyaratan', $lks->tanggal_persyaratan ? $lks->tanggal_persyaratan->format('Y-m-d') : '') }}">
+                        @error('tanggal_persyaratan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="mb-3 mt-3">
                         <label for="surat_rekomendasi" class="form-label small fw-semibold">Upload Surat Rekomendasi</label>
                         <input type="file" class="form-control form-control-sm @error('surat_rekomendasi') is-invalid @enderror" id="surat_rekomendasi" name="surat_rekomendasi" accept=".pdf,.jpg,.jpeg,.png">
                         <div class="form-text small">Format: PDF, JPG, PNG. Maks: 5MB</div>
@@ -227,6 +234,7 @@
                             </div>
                         </div>
                         @endif
+                        </div>
                     </div>
                     @endif
 

@@ -5,26 +5,123 @@
 
 @section('content')
 <style>
-    .card-modern { border-radius:1.25rem; border:1px solid #edf2f7; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.02); overflow:hidden; }
-    .card-header-custom { background:#fff; border-bottom:1px solid #eef2f6; padding:0.9rem 1.25rem; font-weight:600; font-size:0.9rem; display:flex; align-items:center; gap:0.5rem; }
-    .info-row { display:flex; padding:0.55rem 0; border-bottom:1px solid #f8fafc; font-size:0.85rem; }
-    .info-row:last-child { border-bottom:none; }
-    .info-label { width:42%; color:#64748b; font-weight:500; flex-shrink:0; }
-    .info-value { color:#1e293b; flex:1; }
-    .badge-pill { display:inline-flex; align-items:center; gap:0.25rem; padding:0.2rem 0.65rem; border-radius:2rem; font-size:0.72rem; font-weight:500; }
-    .s-menunggu { background:#fef3c7; color:#b45309; }
-    .s-proses { background:#dbeafe; color:#1d4ed8; }
-    .s-diterima { background:#dcfce7; color:#15803d; }
-    .s-terverifikasi { background:#e0e7ff; color:#4338ca; }
-    .s-ditolak { background:#fee2e2; color:#b91c1c; }
-    .s-dikembalikan { background:#e0f2fe; color:#0369a1; }
-    .s-baru { background:#dcfce7; color:#15803d; }
-    .s-ulang { background:#e0f2fe; color:#0369a1; }
-    .doc-file-item { display:flex; align-items:center; justify-content:space-between; padding:0.5rem 0.75rem; border-radius:0.6rem; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:0.4rem; font-size:0.82rem; }
-    .table-doc th { background:#f8fafc; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; color:#475569; padding:0.7rem 1rem; border-bottom:1px solid #e2e8f0; white-space:nowrap; }
-    .table-doc td { padding:0.75rem 1rem; vertical-align:middle; border-bottom:1px solid #f1f5f9; font-size:0.83rem; }
-    .alasan-box { background:#fff8f0; border:1px solid #fed7aa; border-radius:0.75rem; padding:0.85rem 1rem; font-size:0.83rem; color:#92400e; }
-    .alasan-box.danger { background:#fff1f2; border-color:#fecdd3; color:#9f1239; }
+    .card-modern { 
+        border-radius:1.25rem; 
+        border:1px solid #edf2f7; 
+        background:#fff; 
+        box-shadow:0 2px 8px rgba(0,0,0,0.02); 
+        overflow:hidden; 
+    }
+    .card-header-custom { 
+        background:#fff; 
+        border-bottom:1px solid #eef2f6; 
+        padding:0.9rem 1.25rem; 
+        font-weight:600; 
+        font-size:0.9rem; 
+        display:flex; 
+        align-items:center; 
+        gap:0.5rem; 
+    }
+    .info-row { 
+        display:flex; 
+        padding:0.55rem 0; 
+        border-bottom:1px solid #f8fafc; 
+        font-size:0.85rem; 
+    }
+    .info-row:last-child { 
+        border-bottom:none; 
+    }
+    .info-label { 
+        width:42%; 
+        color:#64748b; 
+        font-weight:500; 
+        flex-shrink:0; 
+    }
+    .info-value { 
+        color:#1e293b; 
+        flex:1; 
+    }
+    .badge-pill { 
+        display:inline-flex; 
+        align-items:center; 
+        gap:0.25rem; 
+        padding:0.2rem 0.65rem; 
+        border-radius:2rem; 
+        font-size:0.72rem; 
+        font-weight:500; 
+    }
+    .s-menunggu { 
+        background:#fef3c7; 
+        color:#b45309; 
+    }
+    .s-proses { 
+        background:#dbeafe; 
+        color:#1d4ed8; 
+    }
+    .s-diterima { 
+        background:#dcfce7; 
+        color:#15803d; 
+    }
+    .s-terverifikasi { 
+        background:#e0e7ff; 
+        color:#4338ca; 
+    }
+    .s-ditolak { 
+        background:#fee2e2; 
+        color:#b91c1c; 
+    }
+    .s-dikembalikan { 
+        background:#e0f2fe; 
+        color:#0369a1; 
+    }
+    .s-baru { 
+        background:#dcfce7; 
+        color:#15803d; 
+    }
+    .s-ulang { 
+        background:#e0f2fe; 
+        color:#0369a1; 
+    }
+    .doc-file-item { 
+        display:flex; 
+        align-items:center; 
+        justify-content:space-between; 
+        padding:0.5rem 0.75rem; 
+        border-radius:0.6rem; 
+        background:#f8fafc; 
+        border:1px solid #e2e8f0; 
+        margin-bottom:0.4rem; 
+        font-size:0.82rem; 
+    }
+    .table-doc th { 
+        background:#f8fafc; 
+        font-size:0.72rem; 
+        text-transform:uppercase; 
+        letter-spacing:0.04em; 
+        color:#475569; 
+        padding:0.7rem 1rem; 
+        border-bottom:1px solid #e2e8f0; w
+        hite-space:nowrap; 
+    }
+    .table-doc td { 
+        padding:0.75rem 1rem; 
+        vertical-align:middle; 
+        border-bottom:1px solid #f1f5f9; 
+        font-size:0.83rem; 
+    }
+    .alasan-box { 
+        background:#fff8f0; 
+        border:1px solid #fed7aa; 
+        border-radius:0.75rem; 
+        padding:0.85rem 1rem; 
+        font-size:0.83rem; 
+        color:#92400e; 
+    }
+    .alasan-box.danger { 
+        background:#fff1f2; 
+        border-color:#fecdd3; 
+        color:#9f1239; 
+    }
 </style>
 
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">

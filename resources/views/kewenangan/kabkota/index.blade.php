@@ -95,8 +95,14 @@
         font-size: 0.7rem;
         font-weight: 500;
     }
-    .badge-pusat { background: #e6f7e6; color: #2e7d32; }
-    .badge-cabang { background: #fef3c7; color: #b45309; }
+    .badge-pusat { 
+        background: #e6f7e6; 
+        color: #2e7d32; 
+    }
+    .badge-cabang { 
+        background: #fef3c7; 
+        color: #b45309; 
+    }
     .badge-pelayanan {
         background: #e0e7ff;
         color: #1e40af;
@@ -128,38 +134,40 @@
     </div>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
         @auth
-            @if(Auth::user()->hasRole(['super_admin', 'admin', 'user']))
+                @if(Auth::user()->hasRole(['super_admin']))
                 <a href="{{ route('kewenangan-kabkota.export-excel') }}?search={{ request('search') }}" class="btn btn-success rounded-pill px-3">
                     <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
                 </a>
-                <a href="{{ route('kewenangan-kabkota.create') }}" class="btn btn-primary rounded-pill px-3">
-                    <i class="bi bi-plus-circle me-1"></i> Tambah Data
-                </a>
-            @endif
+                @endif
         @endauth
     </div>
 </div>
 
-<!-- Tab Navigasi (Kab/Kota, Provinsi, Kemensos) -->
-<div class="mb-4">
-    <ul class="nav nav-pills nav-pills-custom" id="levelTabs">
-        <li class="nav-item">
-            <a class="nav-link active" href="{{ route('kewenangan-kabkota.index') }}">
-                <i class="bi bi-geo-alt-fill"></i> Kab/Kota
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('kewenangan-provinsi.index') }}">
-                <i class="bi bi-building-fill"></i> Provinsi
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('kewenangan-kemensos.index') }}">
-                <i class="bi bi-house-gear"></i> Kemensos
-            </a>
-        </li>
-    </ul>
-</div>
+<!-- Tab Navigasi (Kab/Kota, Provinsi, Kemensos) super admin -->
+@auth
+    @if (Auth::user()->hasRole('super_admin'))
+        <div class="mb-4">
+            <ul class="nav nav-pills nav-pills-custom" id="levelTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ route('kewenangan-kabkota.index') }}">
+                        <i class="bi bi-geo-alt-fill"></i> Kab/Kota
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('kewenangan-provinsi.index') }}">
+                        <i class="bi bi-building-fill"></i> Provinsi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('kewenangan-kemensos.index') }}">
+                        <i class="bi bi-house-gear"></i> Kemensos
+                    </a>
+                </li>
+            </ul>
+        </div>
+    @endif
+@endauth
+
 
 <!-- Statistik Utama -->
 <div class="row g-4 mb-5">
@@ -233,9 +241,47 @@
 
 <!-- Statistik Berdasarkan Jenis Pelayanan -->
 <div class="card-modern mb-4">
-    <div class="card-header-custom">
-        <i class="bi bi-pie-chart me-2"></i> Statistik Berdasarkan Jenis Pelayanan PPKS
+    <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><i class="bi bi-pie-chart me-2"></i> Statistik Berdasarkan Jenis Pelayanan PPKS</span>
+        <form method="GET" action="{{ route('kewenangan-kabkota.index') }}" class="d-flex align-items-center gap-2" id="filterKabkotaForm">
+            @if(request('search'))
+                <input type="hidden" name="search" value="{{ request('search') }}">
+            @endif
+            @if(!$isAdmin)
+            <select name="filter_kabkota" class="form-select form-select-sm rounded-pill" style="min-width:220px; font-size:.82rem;"
+                    onchange="document.getElementById('filterKabkotaForm').submit()">
+                <option value="">— Semua Kabupaten/Kota —</option>
+                @php
+                $kabupatenList = [
+                    'Kabupaten Bogor','Kabupaten Sukabumi','Kabupaten Cianjur','Kabupaten Bandung',
+                    'Kabupaten Garut','Kabupaten Tasikmalaya','Kabupaten Ciamis','Kabupaten Kuningan',
+                    'Kabupaten Cirebon','Kabupaten Majalengka','Kabupaten Sumedang','Kabupaten Indramayu',
+                    'Kabupaten Subang','Kabupaten Purwakarta','Kabupaten Karawang','Kabupaten Bekasi',
+                    'Kabupaten Bandung Barat','Kabupaten Pangandaran',
+                    'Kota Bogor','Kota Sukabumi','Kota Bandung','Kota Cirebon','Kota Bekasi',
+                    'Kota Depok','Kota Cimahi','Kota Tasikmalaya','Kota Banjar',
+                ];
+                @endphp
+                @foreach($kabupatenList as $kab)
+                    <option value="{{ $kab }}" {{ $filterKabkota == $kab ? 'selected' : '' }}>{{ $kab }}</option>
+                @endforeach
+            </select>
+            @if($filterKabkota)
+                <a href="{{ route('kewenangan-kabkota.index', request()->except('filter_kabkota')) }}"
+                   class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Reset filter">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            @endif
+            @endif
+        </form>
     </div>
+    @if($filterKabkota)
+    <div class="px-3 pt-2 pb-0">
+        <span class="badge bg-primary rounded-pill" style="font-size:.75rem;">
+            <i class="bi bi-geo-alt me-1"></i>{{ $filterKabkota }}
+        </span>
+    </div>
+    @endif
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-modern mb-0">
@@ -366,7 +412,7 @@
                                     <a href="{{ route('kewenangan-kabkota.show', $item->id) }}" class="btn btn-sm btn-outline-info rounded-pill me-1" title="Detail">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    @if(Auth::user()->hasRole(['super_admin', 'admin']))
+                                    @if(Auth::user()->hasRole('super_admin'))
                                         <a href="{{ route('kewenangan-kabkota.edit', $item->id) }}" class="btn btn-sm btn-outline-warning rounded-pill me-1" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>

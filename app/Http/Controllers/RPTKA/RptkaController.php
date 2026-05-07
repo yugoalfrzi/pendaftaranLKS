@@ -245,8 +245,12 @@ class RptkaController extends Controller
         $query = rptka::with('user');
 
         // Filter berdasarkan kabupaten/kota admin yang login
+        // Jika RPTKA tidak punya kabupaten_kota (data lama), tetap tampilkan
         if ($adminKabkota) {
-            $query->where('kabupaten_kota', $adminKabkota);
+            $query->where(function($q) use ($adminKabkota) {
+                $q->where('kabupaten_kota', $adminKabkota)
+                  ->orWhereNull('kabupaten_kota');
+            });
         }
 
         if ($request->filled('search')) {
@@ -265,7 +269,10 @@ class RptkaController extends Controller
 
         $baseStats = rptka::query();
         if ($adminKabkota) {
-            $baseStats->where('kabupaten_kota', $adminKabkota);
+            $baseStats->where(function($q) use ($adminKabkota) {
+                $q->where('kabupaten_kota', $adminKabkota)
+                  ->orWhereNull('kabupaten_kota');
+            });
         }
 
         $stats = [

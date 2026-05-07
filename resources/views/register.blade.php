@@ -12,7 +12,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- web icon -->
-    <link rel="icon" href="{{ asset('assets/Apps/vendors/images/favicon.ico') }}" type="image/png">
+    <link rel="icon" href="{{ asset('assets/Apps/vendors/images/silaskar.jpeg') }}" type="image/jpeg">
 
     <style>
         * {
@@ -283,8 +283,8 @@
                 <div class="logo-container">
                     <img src="{{ asset('assets/Apps/vendors/images/logo jawa barat.png') }}"
                          alt="Logo Jawa Barat" class="logo-img">
-                    <img src="{{ asset('assets/Apps/vendors/images/lks2.jpg') }}"
-                         alt="Logo e-LKS Jawa Barat" class="logo-img">
+                    <img src="{{ asset('assets/Apps/vendors/images/silaskar.jpeg') }}"
+                         alt="Logo SI LASKAR" class="logo-img">
                 </div>
 
                 <h2>Registrasi LKS</h2>

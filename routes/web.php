@@ -60,7 +60,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [SuperAdminController::class, 'update'])->name('superadmin.update');
         Route::delete('/{id}', [SuperAdminController::class, 'destroy'])->name('superadmin.destroy');
         
-        // Sertifikat routes (file dari super admin)
+        // Tanda pendaftaran routes (file dari super admin)
         Route::get('/{id}/download-surat', [SuperAdminController::class, 'downloadSuratRekomendasi'])->name('superadmin.download-surat');
         Route::get('/{id}/preview-surat', [SuperAdminController::class, 'previewSuratRekomendasi'])->name('superadmin.preview-surat');
         Route::delete('/{id}/delete-surat', [SuperAdminController::class, 'deleteSuratRekomendasi'])->name('superadmin.delete-surat');
@@ -84,49 +84,70 @@ Route::middleware('auth')->group(function () {
     // Kewenangan Routes
     // Kabkota Routes
     Route::prefix('kewenangan-kabkota')->group(function () {
+        // Index — user akan di-redirect ke create oleh controller
         Route::get('/', [KewenanganKabkotaController::class, 'index'])->name('kewenangan-kabkota.index');
 
-        Route::middleware('rolecheck:super_admin,admin')->group(function () {
-            Route::get('/create', [KewenanganKabkotaController::class, 'create'])->name('kewenangan-kabkota.create');
-            Route::post('/', [KewenanganKabkotaController::class, 'store'])->name('kewenangan-kabkota.store');
-            Route::get('/export-excel', [KewenanganKabkotaController::class, 'exportExcel'])->name('kewenangan-kabkota.export-excel');
-            Route::get('/{kewenangan}/edit', [KewenanganKabkotaController::class, 'edit'])->name('kewenangan-kabkota.edit');
-            Route::put('/{kewenangan}', [KewenanganKabkotaController::class, 'update'])->name('kewenangan-kabkota.update');
-            Route::delete('/{kewenangan}', [KewenanganKabkotaController::class, 'destroy'])->name('kewenangan-kabkota.destroy');
-        });
+        // Create & Store — user, admin, super_admin
+        Route::get('/create', [KewenanganKabkotaController::class, 'create'])->name('kewenangan-kabkota.create');
+        Route::post('/', [KewenanganKabkotaController::class, 'store'])->name('kewenangan-kabkota.store');
 
+        // Export — hanya super_admin & admin
+        Route::get('/export-excel', [KewenanganKabkotaController::class, 'exportExcel'])
+            ->middleware('rolecheck:super_admin,admin')
+            ->name('kewenangan-kabkota.export-excel');
+
+        // Edit, Update, Delete — user, admin, super_admin (user bisa edit/hapus data sendiri)
+        Route::get('/{kewenangan}/edit', [KewenanganKabkotaController::class, 'edit'])->name('kewenangan-kabkota.edit');
+        Route::put('/{kewenangan}', [KewenanganKabkotaController::class, 'update'])->name('kewenangan-kabkota.update');
+        Route::delete('/{kewenangan}', [KewenanganKabkotaController::class, 'destroy'])->name('kewenangan-kabkota.destroy');
+
+        // Show — semua role
         Route::get('/{kewenangan}', [KewenanganKabkotaController::class, 'show'])->name('kewenangan-kabkota.show');
     });
 
     // Provinsi Routes
     Route::prefix('kewenangan-provinsi')->group(function () {
+        // Index — user akan di-redirect ke create oleh controller
         Route::get('/', [KewenanganProvinsiController::class, 'index'])->name('kewenangan-provinsi.index');
 
-        Route::middleware('rolecheck:super_admin,admin')->group(function () {
-            Route::get('/create', [KewenanganProvinsiController::class, 'create'])->name('kewenangan-provinsi.create');
-            Route::post('/', [KewenanganProvinsiController::class, 'store'])->name('kewenangan-provinsi.store');
-            Route::get('/export-excel', [KewenanganProvinsiController::class, 'exportExcel'])->name('kewenangan-provinsi.export-excel');
-            Route::get('/{kewenangan}/edit', [KewenanganProvinsiController::class, 'edit'])->name('kewenangan-provinsi.edit');
-            Route::put('/{kewenangan}', [KewenanganProvinsiController::class, 'update'])->name('kewenangan-provinsi.update');
-            Route::delete('/{kewenangan}', [KewenanganProvinsiController::class, 'destroy'])->name('kewenangan-provinsi.destroy');
-        });
+        // Create & Store — user, admin, super_admin
+        Route::get('/create', [KewenanganProvinsiController::class, 'create'])->name('kewenangan-provinsi.create');
+        Route::post('/', [KewenanganProvinsiController::class, 'store'])->name('kewenangan-provinsi.store');
 
+        // Export — hanya super_admin & admin
+        Route::get('/export-excel', [KewenanganProvinsiController::class, 'exportExcel'])
+            ->middleware('rolecheck:super_admin,admin')
+            ->name('kewenangan-provinsi.export-excel');
+
+        // Edit, Update, Delete — user, admin, super_admin
+        Route::get('/{kewenangan}/edit', [KewenanganProvinsiController::class, 'edit'])->name('kewenangan-provinsi.edit');
+        Route::put('/{kewenangan}', [KewenanganProvinsiController::class, 'update'])->name('kewenangan-provinsi.update');
+        Route::delete('/{kewenangan}', [KewenanganProvinsiController::class, 'destroy'])->name('kewenangan-provinsi.destroy');
+
+        // Show — semua role
         Route::get('/{kewenangan}', [KewenanganProvinsiController::class, 'show'])->name('kewenangan-provinsi.show');
     });
 
-    // Kemensos Routes
+    // Kemensos Routes — index, show, edit, delete hanya super_admin; create & store user juga bisa
     Route::prefix('kewenangan-kemensos')->group(function () {
+        // Index — user akan di-redirect ke create oleh controller
         Route::get('/', [KewenanganKemensosController::class, 'index'])->name('kewenangan-kemensos.index');
 
-        Route::middleware('rolecheck:super_admin,admin')->group(function () {
-            Route::get('/create', [KewenanganKemensosController::class, 'create'])->name('kewenangan-kemensos.create');
-            Route::post('/', [KewenanganKemensosController::class, 'store'])->name('kewenangan-kemensos.store');
-            Route::get('/export-excel', [KewenanganKemensosController::class, 'exportExcel'])->name('kewenangan-kemensos.export-excel');
-            Route::get('/{kewenangan}/edit', [KewenanganKemensosController::class, 'edit'])->name('kewenangan-kemensos.edit');
-            Route::put('/{kewenangan}', [KewenanganKemensosController::class, 'update'])->name('kewenangan-kemensos.update');
-            Route::delete('/{kewenangan}', [KewenanganKemensosController::class, 'destroy'])->name('kewenangan-kemensos.destroy');
-        });
+        // Create & Store — user, admin, super_admin
+        Route::get('/create', [KewenanganKemensosController::class, 'create'])->name('kewenangan-kemensos.create');
+        Route::post('/', [KewenanganKemensosController::class, 'store'])->name('kewenangan-kemensos.store');
 
+        // Export — hanya super_admin
+        Route::get('/export-excel', [KewenanganKemensosController::class, 'exportExcel'])
+            ->middleware('rolecheck:super_admin')
+            ->name('kewenangan-kemensos.export-excel');
+
+        // Edit, Update, Delete — hanya super_admin (dihandle di controller)
+        Route::get('/{kewenangan}/edit', [KewenanganKemensosController::class, 'edit'])->name('kewenangan-kemensos.edit');
+        Route::put('/{kewenangan}', [KewenanganKemensosController::class, 'update'])->name('kewenangan-kemensos.update');
+        Route::delete('/{kewenangan}', [KewenanganKemensosController::class, 'destroy'])->name('kewenangan-kemensos.destroy');
+
+        // Show — hanya super_admin (dihandle di controller)
         Route::get('/{kewenangan}', [KewenanganKemensosController::class, 'show'])->name('kewenangan-kemensos.show');
     });
 
@@ -148,10 +169,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat', [AnnouncementController::class, 'surat'])->name('surat');
 
 
-    // LKS Terdaftar (sudah bersertifikat)
+    // LKS Terdaftar (sudah memiliki tanda pendaftaran)
     Route::get('/lks-terdaftar', [LKSController::class, 'terdaftar'])->name('lks.terdaftar');
 
-    // Sertifikat & dokumen LKS — dapat diakses semua role terautentikasi
+    // Tanda pendaftaran & dokumen LKS — dapat diakses semua role terautentikasi
     Route::get('/lks/{id}/preview-sertifikat-kabkota', [AdminController::class, 'previewSertifikatKabkotaPublic'])->name('lks.preview-sertifikat-kabkota');
     Route::get('/lks/{id}/download-sertifikat-kabkota', [AdminController::class, 'downloadSertifikatKabkotaPublic'])->name('lks.download-sertifikat-kabkota');
     Route::get('/lks/{id}/preview-surat-rekomendasi', [AdminController::class, 'previewSuratRekomendasiPublic'])->name('lks.preview-surat-rekomendasi');
@@ -161,9 +182,9 @@ Route::middleware('auth')->group(function () {
 
     // LKS Resource Routes
     Route::prefix('lks')->group(function () {
-        // View routes - accessible by all authenticated users
-        Route::get('/', [LKSController::class, 'index'])->name('lks.index');
-        
+        // View index - hanya super_admin
+        Route::get('/', [LKSController::class, 'index'])->middleware('rolecheck:super_admin')->name('lks.index');
+
         // Pendaftaran LKS - hanya untuk user biasa (bukan admin/super_admin)
         Route::middleware('rolecheck:user')->group(function () {
             Route::get('/create', [LKSController::class, 'create'])->name('lks.create');
@@ -217,60 +238,31 @@ Route::middleware('auth')->group(function () {
 
     // ==================== HIBAH LKS ROUTES LENGKAP ====================
     Route::prefix('hibah')->group(function () {
-        // Main CRUD Routes
+        // Static routes FIRST (before /{id} wildcard)
         Route::get('/', [HibahLksController::class, 'index'])->name('hibah.index');
         Route::get('/create', [HibahLksController::class, 'create'])->name('hibah.create');
         Route::post('/', [HibahLksController::class, 'store'])->name('hibah.store');
-        Route::get('/{id}', [HibahLksController::class, 'show'])->name('hibah.show');
+        Route::get('/keuangan/{tahun}', [HibahLksController::class, 'keuangan'])->name('hibah.keuangan');
+
+        // Dynamic /{id} routes AFTER static routes
         Route::get('/{id}/edit', [HibahLksController::class, 'edit'])->name('hibah.edit');
         Route::put('/{id}', [HibahLksController::class, 'update'])->name('hibah.update');
         Route::delete('/{id}', [HibahLksController::class, 'destroy'])->name('hibah.destroy');
 
-
-        // Menu links in sidebar
-        Route::get('/data/{tahun}', [HibahLksController::class, 'data'])->name('hibah.data');
-        Route::get('/keuangan/{tahun}', [HibahLksController::class, 'keuangan'])->name('hibah.keuangan');
-
-        // ===== DOKUMEN VERIFIKASI TAHUNAN ROUTES =====
-        // Upload dokumen verifikasi tahunan
-        Route::post('/{id}/upload-dokumen-verifikasi', [HibahLksController::class, 'uploadDokumenVerifikasi'])
-        ->name('hibah.upload-dokumen-verifikasi');
-
-        // Hapus dokumen verifikasi
-        Route::delete('/{id}/delete-dokumen-verifikasi', [HibahLksController::class, 'deleteDokumenVerifikasi'])
-        ->name('hibah.delete-dokumen-verifikasi');
-
         // Update status verifikasi (admin only)
         Route::post('/{id}/update-status-verifikasi', [HibahLksController::class, 'updateStatusVerifikasi'])
-        ->name('hibah.update-status-verifikasi');
-
-        Route::get('/{id}/documents/preview/dokumen_verifikasi', [HibahLksController::class, 'previewDocument'])
-        ->name('hibah.documents.preview.dokumen_verifikasi');
-
-        Route::get('/{id}/documents/download/dokumen_verifikasi', [HibahLksController::class, 'downloadDocument'])
-        ->name('hibah.documents.download.dokumen_verifikasi');
+            ->name('hibah.update-status-verifikasi');
 
         // ===== DOKUMEN PENDUKUNG ROUTES =====
-        // Halaman kelola dokumen pendukung - SIMPLIFIED ROUTE
         Route::get('/{id}/documents', [HibahLksController::class, 'documents'])->name('hibah.documents');
-
-        // Upload dokumen pendukung
         Route::post('/{id}/documents/upload', [HibahLksController::class, 'uploadDocument'])->name('hibah.documents.upload');
-
-        // Bulk upload supporting documents (admin only)
         Route::post('/{id}/bulk-upload-supporting', [HibahLksController::class, 'bulkUploadSupportingDocuments'])->name('hibah.bulk-upload-supporting');
-
-        // Hapus dokumen pendukung
         Route::delete('/{id}/documents/delete', [HibahLksController::class, 'deleteDocument'])->name('hibah.documents.delete');
-
-        // Preview dokumen - Lihat di browser
         Route::get('/{id}/documents/preview/{document_type}', [HibahLksController::class, 'previewDocument'])->name('hibah.documents.preview');
-
-        // Download dokumen - Unduh file
         Route::get('/{id}/documents/download/{document_type}', [HibahLksController::class, 'downloadDocument'])->name('hibah.documents.download');
 
-        // View dokumen - Alternatif view
-        Route::get('/{id}/documents/view/{document_type}', [HibahLksController::class, 'viewDocument'])->name('hibah.documents.view');
+        // Show route LAST (wildcard /{id})
+        Route::get('/{id}', [HibahLksController::class, 'show'])->name('hibah.show');
     });
 
     // ==================== ADMIN PANEL ROUTES (Admin & Super Admin) ====================

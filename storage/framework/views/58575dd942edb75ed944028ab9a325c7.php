@@ -4,15 +4,14 @@
 <?php $__env->startSection('content'); ?>
 <style>
     .stat-card {
-        background: #fff; 
         border-radius: 1.25rem;
-        border: 1px solid rgba(203,213,225,0.4);
+        border: none;
         transition: all 0.2s; 
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     .stat-card:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 10px 20px -10px rgba(0,0,0,0.1); 
+        transform: translateY(-4px); 
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15); 
     }
     .stat-icon {
         width: 44px; 
@@ -22,18 +21,21 @@
         align-items: center; 
         justify-content: center; 
         font-size: 1.2rem;
+        background: rgba(255,255,255,0.25) !important;
+        color: #fff !important;
     }
     .stat-value { 
         font-size: 1.7rem; 
         font-weight: 700; 
-        color: #0f172a; 
+        color: #fff; 
         line-height: 1.1; 
     }
     .stat-label { 
         font-size: .68rem; 
         font-weight: 600; 
         text-transform: uppercase; 
-        letter-spacing: .04em; 
+        letter-spacing: .04em;
+        color: rgba(255,255,255,0.85);
     }
     .card-modern {
         border-radius: 1.25rem; 
@@ -106,46 +108,46 @@
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Total LKS Se-JABAR</div>
+                    <div class="stat-label">Total LKS Se-JABAR</div>
                     <div class="stat-value"><?php echo e(number_format($totalLKSJabar)); ?></div>
                 </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-buildings"></i></div>
+                <div class="stat-icon"><i class="bi bi-buildings"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Kewenangan Kab/Kota</div>
+                    <div class="stat-label">Kewenangan Kab/Kota</div>
                     <div class="stat-value"><?php echo e(number_format($kewenanganKabkota)); ?></div>
                 </div>
-                <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-geo-alt"></i></div>
+                <div class="stat-icon"><i class="bi bi-geo-alt"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Kewenangan Provinsi</div>
+                    <div class="stat-label">Kewenangan Provinsi</div>
                     <div class="stat-value"><?php echo e(number_format($kewenanganProvinsi)); ?></div>
                 </div>
-                <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-building"></i></div>
+                <div class="stat-icon"><i class="bi bi-building"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Kewenangan Kemensos</div>
+                    <div class="stat-label">Kewenangan Kemensos</div>
                     <div class="stat-value"><?php echo e(number_format($kewenanganKemensos)); ?></div>
                 </div>
-                <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-bank2"></i></div>
+                <div class="stat-icon"><i class="bi bi-bank2"></i></div>
             </div>
         </div>
     </div>
@@ -154,46 +156,46 @@
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3" style="border-left: 4px solid #2563eb;">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Total Pendaftaran</div>
-                    <div class="stat-value text-primary"><?php echo e(number_format($totalLKS)); ?></div>
+                    <div class="stat-label">Total Pendaftaran</div>
+                    <div class="stat-value"><?php echo e(number_format($totalLKS)); ?></div>
                 </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-file-earmark-text"></i></div>
+                <div class="stat-icon"><i class="bi bi-file-earmark-text"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3" style="border-left: 4px solid #16a34a;">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Dokumen Lengkap</div>
-                    <div class="stat-value text-success"><?php echo e(number_format($lengkapLKS)); ?></div>
+                    <div class="stat-label">Dokumen Lengkap</div>
+                    <div class="stat-value"><?php echo e(number_format($lengkapLKS)); ?></div>
                 </div>
-                <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle"></i></div>
+                <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3" style="border-left: 4px solid #eab308;">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Menunggu Verifikasi</div>
-                    <div class="stat-value text-warning"><?php echo e(number_format($menungguLKS)); ?></div>
+                    <div class="stat-label">Menunggu Verifikasi</div>
+                    <div class="stat-value"><?php echo e(number_format($menungguLKS)); ?></div>
                 </div>
-                <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-clock"></i></div>
+                <div class="stat-icon"><i class="bi bi-clock"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3" style="border-left: 4px solid #0891b2;">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted stat-label">Diterima</div>
-                    <div class="stat-value text-info"><?php echo e(number_format($diterimaLKS)); ?></div>
+                    <div class="stat-label">Diterima</div>
+                    <div class="stat-value"><?php echo e(number_format($diterimaLKS)); ?></div>
                 </div>
-                <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-patch-check"></i></div>
+                <div class="stat-icon"><i class="bi bi-patch-check"></i></div>
             </div>
         </div>
     </div>
@@ -280,7 +282,7 @@
 <?php endif; ?>
 
 
-<div class="card-modern">
+<div class="card-modern mb-4">
     <div class="card-header-custom"><i class="bi bi-lightning me-2"></i>Akses Cepat</div>
     <div class="card-body p-3">
         <div class="row g-2">
@@ -311,6 +313,73 @@
         </div>
     </div>
 </div>
+
+
+<?php if($totalLKS > 0): ?>
+<div class="card-modern">
+    <div class="card-header-custom d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-check me-2 text-primary"></i>Pendaftaran LKS Terbaru</span>
+        <a href="<?php echo e(route('lks.index')); ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size:.78rem">
+            Lihat Semua <i class="bi bi-arrow-right-short"></i>
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0" style="font-size:.83rem;">
+            <thead>
+                <tr style="background:#f8fafc; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:#475569;">
+                    <th class="px-3 py-2">No</th>
+                    <th class="px-3 py-2">Nama LKS</th>
+                    <th class="px-3 py-2">Kab/Kota</th>
+                    <th class="px-3 py-2">Kewenangan</th>
+                    <th class="px-3 py-2">Tanda Daftar</th>
+                    <th class="px-3 py-2">Status</th>
+                    <th class="px-3 py-2">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $__currentLoopData = $recentLKS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
+                    $sc = match($item->status_permohonan) {
+                        'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
+                        'Diterima untuk proses' => 's-proses',
+                        'Diterima' => 's-diterima',
+                        'Terverifikasi' => 's-terverifikasi',
+                        'Ditolak' => 's-ditolak',
+                        'Dikembalikan' => 's-dikembalikan',
+                        default => 's-menunggu',
+                    };
+                ?>
+                <tr style="border-bottom:1px solid #f1f5f9; vertical-align:middle;">
+                    <td class="px-3 py-2 text-muted"><?php echo e($loop->iteration); ?></td>
+                    <td class="px-3 py-2 fw-semibold"><?php echo e($item->nama_lks); ?></td>
+                    <td class="px-3 py-2 text-muted"><?php echo e($item->kabupaten_kota ?? '-'); ?></td>
+                    <td class="px-3 py-2">
+                        <span class="badge-pill <?php echo e($item->kewenangan_type == 'kabkota' ? 's-proses' : 's-terverifikasi'); ?>">
+                            <?php echo e($item->kewenangan_type == 'kabkota' ? 'Kab/Kota' : 'Provinsi'); ?>
+
+                        </span>
+                    </td>
+                    <td class="px-3 py-2">
+                        <span class="badge-pill <?php echo e($item->tanda_pendaftaran == 'Baru' ? 's-diterima' : 's-proses'); ?>">
+                            <?php echo e($item->tanda_pendaftaran); ?>
+
+                        </span>
+                    </td>
+                    <td class="px-3 py-2">
+                        <span class="badge-pill <?php echo e($sc); ?>"><?php echo e($item->status_permohonan); ?></span>
+                    </td>
+                    <td class="px-3 py-2">
+                        <a href="<?php echo e(route('lks.show', $item->id)); ?>" class="btn btn-sm btn-outline-info rounded-pill px-2">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php $__env->stopSection(); ?>
 

@@ -16,14 +16,44 @@ class LKSController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $lks = LKS::paginate(10);
-        return view('lks.index', compact('lks'));
+    {        $search = request('search');
+        $status = request('status');
+        $kewenangan = request('kewenangan');
+
+        $query = LKS::with('user');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lks', 'like', "%$search%")
+                  ->orWhere('alamat_lks', 'like', "%$search%")
+                  ->orWhere('kabupaten_kota', 'like', "%$search%");
+            });
+        }
+        if ($status) {
+            $query->where('status_permohonan', $status);
+        }
+        if ($kewenangan) {
+            $query->where('kewenangan_type', $kewenangan);
+        }
+
+        $lks = $query->latest()->paginate(15);
+
+        $stats = [
+            'total'      => LKS::count(),
+            'menunggu'   => LKS::where('status_permohonan', 'Menunggu')->count(),
+            'diterima'   => LKS::whereIn('status_permohonan', ['Diterima', 'Diterima untuk proses'])->count(),
+            'ditolak'    => LKS::where('status_permohonan', 'Ditolak')->count(),
+            'dikembalikan' => LKS::where('status_permohonan', 'Dikembalikan')->count(),
+        ];
+
+        return view('lks.index', compact('lks', 'stats'));
     }
 
     public function terdaftar(Request $request)
     {
         $search = $request->search;
+        $userId = auth()->id();
+        $isUser = auth()->user()->hasRole('user');
 
         $baseKabkota = LKS::where('kewenangan_type', 'kabkota')
             ->whereNotNull('sertifikat_kabkota_path')
@@ -32,6 +62,12 @@ class LKSController extends Controller
         $baseProvinsi = LKS::where('kewenangan_type', 'provinsi')
             ->whereNotNull('sertifikat_path')
             ->where('sertifikat_path', '!=', '');
+
+        // Role user hanya melihat data milik akunnya sendiri
+        if ($isUser) {
+            $baseKabkota->where('user_id', $userId);
+            $baseProvinsi->where('user_id', $userId);
+        }
 
         if ($search) {
             $baseKabkota->where(function ($q) use ($search) {
@@ -49,12 +85,28 @@ class LKSController extends Controller
         $lksKabkota  = (clone $baseKabkota)->latest()->paginate(15, ['*'], 'kabkota_page');
         $lksProvinsi = (clone $baseProvinsi)->latest()->paginate(15, ['*'], 'provinsi_page');
 
+        // Stats juga difilter per user jika role user
+        $statsKabkota = LKS::where('kewenangan_type', 'kabkota')->whereNotNull('sertifikat_kabkota_path')->where('sertifikat_kabkota_path', '!=', '');
+        $statsProvinsi = LKS::where('kewenangan_type', 'provinsi')->whereNotNull('sertifikat_path')->where('sertifikat_path', '!=', '');
+        if ($isUser) {
+            $statsKabkota->where('user_id', $userId);
+            $statsProvinsi->where('user_id', $userId);
+        }
         $stats = [
-            'kabkota'  => LKS::where('kewenangan_type', 'kabkota')->whereNotNull('sertifikat_kabkota_path')->where('sertifikat_kabkota_path', '!=', '')->count(),
-            'provinsi' => LKS::where('kewenangan_type', 'provinsi')->whereNotNull('sertifikat_path')->where('sertifikat_path', '!=', '')->count(),
+            'kabkota'  => $statsKabkota->count(),
+            'provinsi' => $statsProvinsi->count(),
         ];
 
-        return view('lks.terdaftar', compact('lksKabkota', 'lksProvinsi', 'stats'));
+        // LKS milik user yang ditolak/dikembalikan (hanya untuk role user)
+        $lksPerluPerhatian = null;
+        if (auth()->check() && $isUser) {
+            $lksPerluPerhatian = LKS::where('user_id', $userId)
+                ->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])
+                ->latest('updated_at')
+                ->get();
+        }
+
+        return view('lks.terdaftar', compact('lksKabkota', 'lksProvinsi', 'stats', 'lksPerluPerhatian'));
     }
 
     /**
@@ -82,9 +134,9 @@ class LKSController extends Controller
             'pusat_lks' => 'required_if:kewenangan_type,provinsi|nullable|string',
             'cabang_lks' => 'required_if:kewenangan_type,provinsi|nullable|string',
             'nomor_kontak'=> 'required|string|max:20',
-            'tanda_pendaftaran' => 'required|in:Baru,Ulang',
+            'tanda_pendaftaran' => 'required|in:Baru,Perpanjangan',
             'tanggal_masuk_dokumen' => 'required|date',
-            'tanggal_persyaratan' => 'required|date',
+            'tanggal_persyaratan' => 'nullable|date',
             'kewenangan_type' => 'required|in:kabkota,provinsi',
             'documents' => 'required|array',
             'documents.*.document_id' => 'required|exists:documents,id',
@@ -104,8 +156,8 @@ class LKSController extends Controller
                 'jumlah_binaan_dalam_panti' => $request->jumlah_binaan_dalam_panti,
                 'jumlah_binaan_luar_panti' => $request->jumlah_binaan_luar_panti,
                 'lokasi_lks' => $request->lokasi_lks,
-                'pusat_lks' => $request->pusat_lks,
-                'cabang_lks' => $request->cabang_lks,
+                'pusat_lks' => $request->kewenangan_type === 'provinsi' ? $request->pusat_lks : null,
+                'cabang_lks' => $request->kewenangan_type === 'provinsi' ? $request->cabang_lks : null,
                 'nomor_kontak' => $request->nomor_kontak,
                 'tanda_pendaftaran' => $request->tanda_pendaftaran,
                 'tanggal_masuk_dokumen' => $request->tanggal_masuk_dokumen,
@@ -143,10 +195,9 @@ class LKSController extends Controller
                     }
                 }
 
-                // Check kelengkapan from hidden input
-                if (isset($documentData['kelengkapan']) && $documentData['kelengkapan'] === 'Ada') {
-                    $kelengkapan = 'Ada';
-                }
+                // kelengkapan = 'Ada' hanya jika ada file yang diupload
+                // Hapus override dari hidden input agar tidak bisa dimanipulasi
+                // $kelengkapan sudah di-set 'Ada' di atas jika ada file valid
 
                 Checklist::create([
                     'lks_id' => $lks->id,
@@ -192,6 +243,13 @@ class LKSController extends Controller
     public function edit($id)
     {
         $lks = LKS::with('checklists.document')->findOrFail($id);
+
+        // User tidak bisa mengedit pendaftaran yang ditolak — harus daftar ulang dari awal
+        if (auth()->user()->hasRole('user') && $lks->status_permohonan === 'Ditolak') {
+            return redirect()->route('lks.index')
+                ->with('error', 'Pendaftaran yang ditolak tidak dapat diedit. Silakan buat pendaftaran baru.');
+        }
+
         $documents = Document::all();
 
         return view('lks.edit', compact('lks', 'documents'));
@@ -205,6 +263,12 @@ class LKSController extends Controller
         return DB::transaction(function () use ($request, $id) {
             $lks = LKS::findOrFail($id);
 
+            // User tidak bisa mengupdate pendaftaran yang ditolak — harus daftar ulang dari awal
+            if (auth()->user()->hasRole('user') && $lks->status_permohonan === 'Ditolak') {
+                return redirect()->route('lks.index')
+                    ->with('error', 'Pendaftaran yang ditolak tidak dapat diedit. Silakan buat pendaftaran baru.');
+            }
+
             // Validasi data utama LKS
             $validated = $request->validate([
                 'nama_lks' => 'required|string|max:255',
@@ -217,9 +281,9 @@ class LKSController extends Controller
                 'pusat_lks' => 'required_if:kewenangan_type,provinsi|nullable|string',
                 'cabang_lks' => 'required_if:kewenangan_type,provinsi|nullable|string',
                 'nomor_kontak'=> 'required|string|max:20',
-                'tanda_pendaftaran' => 'required|in:Baru,Ulang',
+                'tanda_pendaftaran' => 'required|in:Baru,Perpanjangan',
                 'tanggal_masuk_dokumen' => 'required|date',
-                'tanggal_persyaratan' => 'required|date',
+                'tanggal_persyaratan' => 'nullable|date',
                 'documents' => 'sometimes|array',
                 'documents.*.document_id' => 'required_with:documents|exists:documents,id',
                 'documents.*.keterangan' => 'nullable|string',
@@ -227,7 +291,18 @@ class LKSController extends Controller
             ]);
 
             // Update data LKS termasuk kabupaten_kota
-            $validated['kabupaten_kota'] = $request->lokasi_lks; // UPDATE KABUPATEN/KOTA
+            $validated['kabupaten_kota'] = $request->lokasi_lks;
+
+            // Jika status Dikembalikan dan yang mengedit adalah user, reset ke Menunggu
+            if (
+                $lks->status_permohonan === 'Dikembalikan' &&
+                auth()->user()->hasRole('user')
+            ) {
+                $validated['status_permohonan'] = 'Menunggu';
+                $validated['alasan_penolakan']    = null;
+                $validated['alasan_dikembalikan'] = null;
+            }
+
             $lks->update($validated);
 
             // Proses checklist documents dengan multiple files
@@ -281,6 +356,9 @@ class LKSController extends Controller
                     // Hitung jumlah file
                     $fileCount = count($filePaths);
 
+                    // kelengkapan ditentukan dari jumlah file aktual, bukan dari input form
+                    $kelengkapan = $fileCount > 0 ? 'Ada' : 'Tidak Ada';
+
                     // Update atau buat checklist
                     $checklistData = [
                         'kelengkapan' => $kelengkapan,
@@ -302,8 +380,12 @@ class LKSController extends Controller
             // Update status pendaftaran_lengkap
             $lks->update(['pendaftaran_lengkap' => $lks->isComplete()]);
 
+            $successMsg = in_array($lks->getOriginal('status_permohonan') ?? $lks->status_permohonan, ['Dikembalikan', 'Ditolak']) && auth()->user()->hasRole('user')
+                ? 'Data LKS berhasil diperbarui dan dikirim kembali ke admin untuk verifikasi.'
+                : 'Data LKS berhasil diperbarui!';
+
             return redirect()->route('lks.show', $lks->id)
-                ->with('success', 'Data LKS berhasil diperbarui!');
+                ->with('success', $successMsg);
 
         });
     }

@@ -24,19 +24,24 @@ class SuperAdminController extends Controller
     public function index(Request $request)
     {
         // Hanya tampilkan LKS kewenangan PROVINSI yang sudah diverifikasi admin
-        // (sudah ada surat rekomendasi & status Diterima) — kabkota berhenti di admin
+        // (sudah ada surat rekomendasi & status Diterima untuk proses) — kabkota berhenti di admin
         $query = lks::with('user')
-            ->where('status_permohonan', 'Diterima')
+            ->where('status_permohonan', 'Diterima untuk proses')
             ->whereNotNull('surat_rekomendasi_path')
-            ->where('kewenangan_type', 'provinsi');
+            ->where('kewenangan_type', 'provinsi')
+            // Sembunyikan data yang sudah diverifikasi super admin lebih dari 24 jam
+            ->where(function($q) {
+                $q->whereNull('verified_at')
+                  ->orWhere('verified_at', '>=', now()->subHours(24));
+            });
 
-        // Filter by status sertifikat
+        // Filter by status tanda pendaftaran
         if ($request->has('has_sertifikat')) {
             if ($request->has_sertifikat == 'yes') {
-                // Sudah ada sertifikat (sudah diproses super admin)
+                // Sudah ada tanda pendaftaran (sudah diproses super admin)
                 $query->whereNotNull('sertifikat_path');
             } elseif ($request->has_sertifikat == 'no') {
-                // Belum ada sertifikat (baru dari admin)
+                // Belum ada tanda pendaftaran (baru dari admin)
                 $query->whereNull('sertifikat_path');
             }
         }
@@ -60,14 +65,14 @@ class SuperAdminController extends Controller
         
         // Calculate statistics (hanya untuk kewenangan provinsi)
         $stats = [
-            'total'          => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_path')->count(),
-            'menunggu'       => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_path')->whereNull('sertifikat_path')->count(),
+            'total'          => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->whereNotNull('surat_rekomendasi_path')->count(),
+            'menunggu'       => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->whereNotNull('surat_rekomendasi_path')->whereNull('sertifikat_path')->count(),
             'diterima_proses'=> lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->count(),
             'diterima'       => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->count(),
             'terverifikasi'  => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Terverifikasi')->count(),
             'ditolak'        => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Ditolak')->count(),
             'dikembalikan'   => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Dikembalikan')->count(),
-            'with_sertifikat'=> lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_path')->whereNotNull('sertifikat_path')->count(),
+            'with_sertifikat'=> lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->whereNotNull('sertifikat_path')->count(),
         ];
         
         return view('superadmin.index', compact('lks', 'stats'));
@@ -87,16 +92,16 @@ class SuperAdminController extends Controller
         }
 
         // Cek apakah sudah ada surat rekomendasi dari admin
-        if (!$lks->surat_rekomendasi_path || $lks->status_permohonan != 'Diterima') {
+        if (!$lks->surat_rekomendasi_path || $lks->status_permohonan != 'Diterima untuk proses') {
             return redirect()->route('superadmin.index')
-                ->with('error', 'LKS ini belum memiliki surat rekomendasi dari admin. Tidak dapat upload sertifikat.');
+                ->with('error', 'LKS ini belum memiliki surat rekomendasi dari admin. Tidak dapat upload tanda pendaftaran.');
         }
         
         return view('superadmin.verification', compact('lks'));
     }
 
     /**
-     * Process verification and upload sertifikat
+     * Process verification and upload tanda pendaftaran
      */
     public function processVerification(Request $request, $id)
     {
@@ -111,7 +116,7 @@ class SuperAdminController extends Controller
             'nama_verifikator'    => 'required',
         ]);
 
-        // Handle sertifikat upload (dari super admin)
+        // Handle tanda pendaftaran upload (dari super admin)
         if ($request->hasFile('sertifikat')) {
             if ($lks->sertifikat_path) {
                 Storage::disk('public')->delete($lks->sertifikat_path);
@@ -122,24 +127,26 @@ class SuperAdminController extends Controller
             $path = $file->storeAs('sertifikat', $filename, 'public');
             $lks->sertifikat_path = $path;
 
-            // Saat sertifikat diupload → otomatis "Diterima"
+            // Saat tanda pendaftaran diupload → otomatis "Diterima"
             $lks->status_permohonan   = 'Diterima';
             $lks->alasan_penolakan    = null;
             $lks->alasan_dikembalikan = null;
             $lks->verifikator_id      = $request->verifikator;
             $lks->nama_verifikator    = $request->nama_verifikator;
+            $lks->verified_at         = now();
             $lks->save();
 
             return redirect()->route('superadmin.index')
-                ->with('success', 'Sertifikat berhasil diupload. Status LKS diubah ke "Diterima".');
+                ->with('success', 'Tanda pendaftaran berhasil diupload. Status LKS diubah ke "Diterima".');
         }
 
-        // Jika tidak ada upload sertifikat (Ditolak / Dikembalikan)
+        // Jika tidak ada upload tanda pendaftaran (Ditolak / Dikembalikan)
         $lks->status_permohonan   = $request->status_permohonan;
         $lks->alasan_penolakan    = $request->alasan_penolakan;
         $lks->alasan_dikembalikan = $request->alasan_dikembalikan;
         $lks->verifikator_id      = $request->verifikator;
         $lks->nama_verifikator    = $request->nama_verifikator;
+        $lks->verified_at         = now();
         $lks->save();
 
         return redirect()->route('superadmin.index')
@@ -204,14 +211,14 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Download sertifikat
+     * Download tanda pendaftaran
      */
     public function downloadSuratRekomendasi($id)
     {
         $lks = lks::findOrFail($id);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
-            abort(404, 'Sertifikat tidak ditemukan');
+            abort(404, 'Tanda pendaftaran tidak ditemukan');
         }
 
         /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
@@ -220,14 +227,14 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Preview sertifikat
+     * Preview tanda pendaftaran
      */
     public function previewSuratRekomendasi($id)
     {
         $lks = lks::findOrFail($id);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
-            abort(404, 'Sertifikat tidak ditemukan');
+            abort(404, 'Tanda pendaftaran tidak ditemukan');
         }
 
         /** @var \Illuminate\Contracts\Filesystem\Filesystem $disk */
@@ -239,7 +246,7 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Delete sertifikat
+     * Delete tanda pendaftaran
      */
     public function deleteSuratRekomendasi($id)
     {
@@ -251,7 +258,7 @@ class SuperAdminController extends Controller
             $lks->save();
         }
 
-        return redirect()->back()->with('success', 'Sertifikat berhasil dihapus');
+        return redirect()->back()->with('success', 'Tanda pendaftaran berhasil dihapus');
     }
 
     /**

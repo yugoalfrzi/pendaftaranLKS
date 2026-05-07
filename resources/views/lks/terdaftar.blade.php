@@ -64,17 +64,23 @@
         font-size:0.83rem; 
     }
     .stat-card { 
-        background:#fff; 
         border-radius:1.25rem; 
-        border:1px solid rgba(203,213,225,0.4); 
+        border:none; 
         transition:all 0.2s; 
-        box-shadow:0 2px 6px rgba(0,0,0,0.02); 
+        box-shadow:0 4px 15px rgba(0,0,0,0.1); 
     }
+    .stat-card:hover { transform:translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,0.15); }
     .stat-value { 
         font-size:1.7rem; 
         font-weight:700; 
-        color:#0f172a; 
+        color:#fff; 
         line-height:1.1; 
+    }
+    .stat-label { color:rgba(255,255,255,0.85); font-size:.72rem; font-weight:600; text-transform:uppercase; }
+    .stat-icon-sm { 
+        width:36px; height:36px; border-radius:0.65rem;
+        display:flex; align-items:center; justify-content:center;
+        background:rgba(255,255,255,0.25); color:#fff; font-size:1rem; flex-shrink:0;
     }
     .nav-tabs-modern { 
         border-bottom:2px solid #eef2f6; 
@@ -106,39 +112,74 @@
     <h4 class="fw-semibold mb-0"><i class="bi bi-patch-check me-2 text-primary"></i>LKS Terdaftar</h4>
 </div>
 
+{{-- Notifikasi LKS Ditolak/Dikembalikan (hanya untuk user) --}}
+@if($lksPerluPerhatian && $lksPerluPerhatian->count() > 0)
+<div class="card-modern mb-4" style="border-left:4px solid #f87171;">
+    <div class="card-header-custom d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-exclamation-triangle me-2 text-danger"></i>Pendaftaran Perlu Tindakan</span>
+        <span class="badge bg-danger rounded-pill" style="font-size:.72rem;">{{ $lksPerluPerhatian->count() }} perlu tindakan</span>
+    </div>
+    <div class="card-body p-3 d-flex flex-column gap-2">
+        @foreach($lksPerluPerhatian as $lks)
+        @php
+            $isDitolak = $lks->status_permohonan === 'Ditolak';
+            $bg  = $isDitolak ? '#fff1f2' : '#fff8f0';
+            $bc  = $isDitolak ? '#fecdd3' : '#fed7aa';
+            $cls = $isDitolak ? 's-ditolak' : 's-dikembalikan';
+            $ico = $isDitolak ? 'bi-x-circle-fill' : 'bi-arrow-counterclockwise';
+        @endphp
+        <div class="d-flex align-items-center justify-content-between p-3 rounded-3 gap-3"
+             style="background:{{ $bg }}; border:1px solid {{ $bc }};">
+            <div class="d-flex align-items-center gap-3 flex-1 min-w-0">
+                <i class="bi {{ $ico }} fs-5 flex-0 badge-pill {{ $cls }}" style="padding:.4rem; border-radius:.6rem;"></i>
+                <div class="min-w-0">
+                    <div class="fw-semibold text-truncate" style="font-size:.85rem;">{{ $lks->nama_lks }}</div>
+                    <div class="text-muted" style="font-size:.75rem;">
+                        {{ $lks->updated_at->diffForHumans() }}
+                        @if($isDitolak && $lks->alasan_penolakan)
+                            &mdash; <span class="text-danger">{{ Str::limit($lks->alasan_penolakan, 70) }}</span>
+                        @elseif(!$isDitolak && $lks->alasan_dikembalikan)
+                            &mdash; <span style="color:#b45309;">{{ Str::limit($lks->alasan_dikembalikan, 70) }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-0">
+                <span class="badge-pill {{ $cls }}">{{ $lks->status_permohonan }}</span>
+                <a href="{{ route('lks.show', $lks->id) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-2" style="font-size:.72rem;">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
 {{-- Stats --}}
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Total LKS Terdaftar</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#eff6ff;">
-                    <i class="bi bi-patch-check text-primary"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Total LKS Terdaftar</div><div class="stat-value">{{ $stats['kabkota'] + $stats['provinsi'] }}</div></div>
+                <div class="stat-icon-sm"><i class="bi bi-patch-check"></i></div>
             </div>
-            <div class="stat-value">{{ $stats['kabkota'] + $stats['provinsi'] }}</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Kewenangan Kab/Kota</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#eff6ff;">
-                    <i class="bi bi-building text-primary"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Kewenangan Kab/Kota</div><div class="stat-value">{{ $stats['kabkota'] }}</div></div>
+                <div class="stat-icon-sm"><i class="bi bi-building"></i></div>
             </div>
-            <div class="stat-value" style="color:#1d4ed8;">{{ $stats['kabkota'] }}</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Kewenangan Provinsi</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#f0fdf4;">
-                    <i class="bi bi-map text-success"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Kewenangan Provinsi</div><div class="stat-value">{{ $stats['provinsi'] }}</div></div>
+                <div class="stat-icon-sm"><i class="bi bi-map"></i></div>
             </div>
-            <div class="stat-value" style="color:#15803d;">{{ $stats['provinsi'] }}</div>
         </div>
     </div>
 </div>

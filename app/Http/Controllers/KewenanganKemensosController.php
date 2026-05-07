@@ -10,7 +10,25 @@ class KewenanganKemensosController extends Controller
 {
     public function index(Request $request)
     {
+        // User tidak bisa lihat daftar kemensos, redirect ke form input
+        if (auth()->check() && auth()->user()->hasRole('user')) {
+            return redirect()->route('kewenangan-kemensos.create');
+        }
+
+        // Admin hanya boleh lihat kewenangan kabkota
+        if (auth()->check() && auth()->user()->hasRole('admin')) {
+            return redirect()->route('kewenangan-kabkota.index');
+        }
+
+        $isAdmin = auth()->user()->hasRole('admin');
+        $adminKabkota = auth()->user()->kabupaten_kota;
+
         $query = KewenanganKemensos::query();
+
+        // Admin hanya melihat data sesuai kabupaten/kotanya
+        if ($isAdmin && $adminKabkota) {
+            $query->where('kabupaten_kota', $adminKabkota);
+        }
         
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -23,9 +41,10 @@ class KewenanganKemensosController extends Controller
         
         $kewenangan = $query->paginate(20);
 
-        $statistics = $this->getStatistics();
+        $filterKabkota = $isAdmin ? $adminKabkota : $request->get('filter_kabkota');
+        $statistics = $this->getStatistics($filterKabkota);
         
-        return view('kewenangan.kemensos.index', compact('kewenangan', 'statistics'));
+        return view('kewenangan.kemensos.index', compact('kewenangan', 'statistics', 'filterKabkota', 'isAdmin'));
     }
 
     public function create()
@@ -137,17 +156,29 @@ class KewenanganKemensosController extends Controller
 
         KewenanganKemensos::create($validated);
 
+        // User tidak bisa akses index kemensos, arahkan ke create
+        if (auth()->user()->hasRole('user')) {
+            return redirect()->route('kewenangan-kemensos.create')
+                             ->with('success', 'Data Kewenangan Kemensos berhasil ditambahkan.');
+        }
+
         return redirect()->route('kewenangan-kemensos.index')
                          ->with('success', 'Data Kewenangan Kemensos berhasil ditambahkan.');
     }
 
     public function show(KewenanganKemensos $kewenangan)
     {
+        if (auth()->check() && !auth()->user()->hasRole('super_admin')) {
+            return redirect()->route('kewenangan-kemensos.create');
+        }
         return view('kewenangan.kemensos.show', compact('kewenangan'));
     }
 
     public function edit(KewenanganKemensos $kewenangan)
     {
+        if (auth()->check() && !auth()->user()->hasRole('super_admin')) {
+            return redirect()->route('kewenangan-kemensos.create');
+        }
         return view('kewenangan.kemensos.edit', compact('kewenangan'));
     }
 
@@ -270,10 +301,14 @@ class KewenanganKemensosController extends Controller
     /**
      * Get statistics for dashboard
      */
-    private function getStatistics()
+    private function getStatistics($filterKabkota = null)
     {
-        // Total statistics across all records
-        $totalStats = KewenanganKemensos::select(
+        $baseQuery = KewenanganKemensos::query();
+        if ($filterKabkota) {
+            $baseQuery->where('kabupaten_kota', $filterKabkota);
+        }
+
+        $totalStats = (clone $baseQuery)->select(
             DB::raw('SUM(jumlah_dalam_panti) as total_dalam_panti'),
             DB::raw('SUM(jumlah_luar_panti) as total_luar_panti'),
             DB::raw('SUM(jumlah_seluruh_binaan) as total_seluruh_binaan'),
@@ -292,14 +327,14 @@ class KewenanganKemensosController extends Controller
         ->orderBy('total_seluruh_binaan', 'desc')
         ->get();
 
-        // statistics by jenis pelayanan
-        $statsByJenisPelayanan = $this->getStatsByJenisPelayanan();
+        // statistics by jenis pelayanan (dengan filter kabkota)
+        $statsByJenisPelayanan = $this->getStatsByJenisPelayanan($filterKabkota);
 
         return [
             'total' => [
                 'dalam_panti' => $totalStats->total_dalam_panti ?? 0,
                 'luar_panti' => $totalStats->total_luar_panti ?? 0,
-                'seluruh_binaan' => ($totalStats->total_dalam_panti ?? 0) + ($totalStats->total_luar_panti ?? 0), // Hitung dari dalam + luar panti
+                'seluruh_binaan' => ($totalStats->total_dalam_panti ?? 0) + ($totalStats->total_luar_panti ?? 0),
                 'total_lks' => $totalStats->total_lks ?? 0
             ],
             'by_kabupaten' => $statsByKabupaten,
@@ -307,7 +342,7 @@ class KewenanganKemensosController extends Controller
         ];
     }
 
-    private function getStatsByJenisPelayanan()
+    private function getStatsByJenisPelayanan($filterKabkota = null)
     {
         // Daftar tetap semua jenis pelayanan
         $jenisPelayananList = [
@@ -339,10 +374,13 @@ class KewenanganKemensosController extends Controller
             'Komunitas adat terpencil'
         ];
 
-        // Ambil semua data
-        $allData = KewenanganKemensos::whereNotNull('jenis_pelayanan_PPKS')
-                                   ->where('jenis_pelayanan_PPKS', '!=', '')
-                                   ->get();
+        // Ambil semua data (dengan filter kabkota jika ada)
+        $allDataQuery = KewenanganKemensos::whereNotNull('jenis_pelayanan_PPKS')
+                                   ->where('jenis_pelayanan_PPKS', '!=', '');
+        if ($filterKabkota) {
+            $allDataQuery->where('kabupaten_kota', $filterKabkota);
+        }
+        $allData = $allDataQuery->get();
 
         // Inisialisasi statistik
         $pelayananStats = [];

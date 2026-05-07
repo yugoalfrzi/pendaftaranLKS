@@ -18,8 +18,15 @@ class AdminController extends Controller
         // Query Kab/Kota — hanya tampilkan LKS dari kabupaten/kota admin yang login
         $queryKabkota = lks::with('user')->where('kewenangan_type', 'kabkota');
         if ($adminKabkota) {
-            $queryKabkota->where('kabupaten_kota', $adminKabkota);
+            $queryKabkota->where(function($q) use ($adminKabkota) {
+                $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
+            });
         }
+        // Sembunyikan data yang sudah diverifikasi lebih dari 24 jam
+        $queryKabkota->where(function($q) {
+            $q->whereNull('verified_at')
+              ->orWhere('verified_at', '>=', now()->subHours(24));
+        });
         if ($status) $queryKabkota->where('status_permohonan', $status);
         if ($search) $queryKabkota->where(fn($q) => $q->where('nama_lks', 'like', "%$search%")->orWhere('alamat_lks', 'like', "%$search%"));
         $lksKabkota = $queryKabkota->latest()->paginate(15, ['*'], 'kabkota_page');
@@ -27,8 +34,15 @@ class AdminController extends Controller
         // Query Provinsi — hanya tampilkan LKS dari kabupaten/kota admin yang login
         $queryProvinsi = lks::with('user')->where('kewenangan_type', 'provinsi');
         if ($adminKabkota) {
-            $queryProvinsi->where('kabupaten_kota', $adminKabkota);
+            $queryProvinsi->where(function($q) use ($adminKabkota) {
+                $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
+            });
         }
+        // Sembunyikan data yang sudah diverifikasi lebih dari 24 jam
+        $queryProvinsi->where(function($q) {
+            $q->whereNull('verified_at')
+              ->orWhere('verified_at', '>=', now()->subHours(24));
+        });
         if ($status) $queryProvinsi->where('status_permohonan', $status);
         if ($search) $queryProvinsi->where(fn($q) => $q->where('nama_lks', 'like', "%$search%")->orWhere('alamat_lks', 'like', "%$search%"));
         $lksProvinsi = $queryProvinsi->latest()->paginate(15, ['*'], 'provinsi_page');
@@ -36,7 +50,9 @@ class AdminController extends Controller
         // Stats hanya untuk kabupaten/kota admin yang login
         $baseStats = lks::query();
         if ($adminKabkota) {
-            $baseStats->where('kabupaten_kota', $adminKabkota);
+            $baseStats->where(function($q) use ($adminKabkota) {
+                $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
+            });
         }
 
         $stats = [
@@ -69,10 +85,11 @@ class AdminController extends Controller
             'status_permohonan'   => 'required|in:Diterima,Ditolak,Dikembalikan',
             'alasan_penolakan'    => 'required_if:status_permohonan,Ditolak',
             'alasan_dikembalikan' => 'required_if:status_permohonan,Dikembalikan',
+            'tanggal_persyaratan' => 'required_if:status_permohonan,Diterima|nullable|date',
             'surat_rekomendasi'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ];
 
-        // Sertifikat kabkota hanya untuk kewenangan kabkota
+        // Tanda pendaftaran kabkota hanya untuk kewenangan kabkota
         if ($lks->kewenangan_type === 'kabkota') {
             $rules['sertifikat_kabkota'] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120';
         }
@@ -92,6 +109,7 @@ class AdminController extends Controller
             if ($lks->kewenangan_type === 'provinsi' && $request->status_permohonan === 'Diterima') {
                 $lks->status_permohonan = 'Diterima untuk proses';
                 $lks->nama_verifikator  = auth()->user()?->name ?? 'Unknown';
+                $lks->verified_at       = now();
                 $lks->save();
 
                 return redirect()->route('admin.lks.index')
@@ -99,7 +117,7 @@ class AdminController extends Controller
             }
         }
 
-        // Upload sertifikat kabkota (khusus kewenangan kabkota)
+        // Upload tanda pendaftaran kabkota (khusus kewenangan kabkota)
         if ($lks->kewenangan_type === 'kabkota' && $request->hasFile('sertifikat_kabkota')) {
             if ($lks->sertifikat_kabkota_path) {
                 Storage::disk('public')->delete($lks->sertifikat_kabkota_path);
@@ -113,6 +131,10 @@ class AdminController extends Controller
         $lks->alasan_penolakan    = $request->alasan_penolakan;
         $lks->alasan_dikembalikan = $request->alasan_dikembalikan;
         $lks->nama_verifikator    = auth()->user()?->name ?? 'Unknown';
+        $lks->verified_at         = now();
+        if ($request->status_permohonan === 'Diterima' && $request->filled('tanggal_persyaratan')) {
+            $lks->tanggal_persyaratan = $request->tanggal_persyaratan;
+        }
         $lks->save();
 
         return redirect()->route('admin.lks.index')
@@ -184,12 +206,12 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Surat rekomendasi berhasil dihapus');
     }
 
-    // ===== Sertifikat Kab/Kota =====
+    // ===== Tanda Pendaftaran Kab/Kota =====
     public function downloadSertifikatKabkota($id)
     {
         $lks = lks::findOrFail($id);
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
-            abort(404, 'Sertifikat kab/kota tidak ditemukan');
+            abort(404, 'Tanda pendaftaran kab/kota tidak ditemukan');
         }
         return Storage::disk('public')->download($lks->sertifikat_kabkota_path);
     }
@@ -198,7 +220,7 @@ class AdminController extends Controller
     {
         $lks = lks::findOrFail($id);
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
-            abort(404, 'Sertifikat kab/kota tidak ditemukan');
+            abort(404, 'Tanda pendaftaran kab/kota tidak ditemukan');
         }
         $disk = Storage::disk('public');
         return response($disk->get($lks->sertifikat_kabkota_path), 200)
@@ -213,7 +235,7 @@ class AdminController extends Controller
             $lks->sertifikat_kabkota_path = null;
             $lks->save();
         }
-        return redirect()->back()->with('success', 'Sertifikat kab/kota berhasil dihapus');
+        return redirect()->back()->with('success', 'Tanda pendaftaran kab/kota berhasil dihapus');
     }
 
     public function verifyDocuments(Request $request, $id)
@@ -241,7 +263,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
-    // ===== PUBLIC: akses sertifikat untuk semua role =====
+    // ===== PUBLIC: akses tanda pendaftaran untuk semua role =====
 
     private function checkLksAccess(lks $lks): void
     {
@@ -257,7 +279,7 @@ class AdminController extends Controller
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
-            abort(404, 'Sertifikat kab/kota tidak ditemukan');
+            abort(404, 'Tanda pendaftaran kab/kota tidak ditemukan');
         }
         $disk = Storage::disk('public');
         return response($disk->get($lks->sertifikat_kabkota_path), 200)
@@ -270,7 +292,7 @@ class AdminController extends Controller
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
-            abort(404, 'Sertifikat kab/kota tidak ditemukan');
+            abort(404, 'Tanda pendaftaran kab/kota tidak ditemukan');
         }
         return Storage::disk('public')->download($lks->sertifikat_kabkota_path);
     }
@@ -305,7 +327,7 @@ class AdminController extends Controller
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
-            abort(404, 'Sertifikat provinsi tidak ditemukan');
+            abort(404, 'Tanda pendaftaran provinsi tidak ditemukan');
         }
         $disk = Storage::disk('public');
         return response($disk->get($lks->sertifikat_path), 200)
@@ -318,7 +340,7 @@ class AdminController extends Controller
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
-            abort(404, 'Sertifikat provinsi tidak ditemukan');
+            abort(404, 'Tanda pendaftaran provinsi tidak ditemukan');
         }
         return Storage::disk('public')->download($lks->sertifikat_path);
     }

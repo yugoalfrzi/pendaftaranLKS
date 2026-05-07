@@ -12,7 +12,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- web icon -->
-    <link rel="icon" href="<?php echo e(asset('assets/Apps/vendors/images/favicon.ico')); ?>" type="image/png">
+    <link rel="icon" href="<?php echo e(asset('assets/Apps/vendors/images/silaskar.jpeg')); ?>" type="image/jpeg">
 
     <style>
         * {
@@ -307,8 +307,8 @@
                 <div class="logo-container">
                     <img src="<?php echo e(asset('assets/Apps/vendors/images/logo jawa barat.png')); ?>"
                          alt="Logo Jawa Barat" class="logo-img">
-                    <img src="<?php echo e(asset('assets/Apps/vendors/images/lks2.jpg')); ?>"
-                         alt="Logo e-LKS Jawa Barat" class="logo-img">
+                    <img src="<?php echo e(asset('assets/Apps/vendors/images/silaskar.jpeg')); ?>"
+                         alt="Logo SI LASKAR" class="logo-img">
                 </div>
 
                 <h2>Selamat Datang</h2>
@@ -380,7 +380,7 @@
 
                 <!-- Divider -->
                 <div class="d-flex align-items-center my-3">
-                    <hr class="flex-grow-1"><span class="px-2 text-muted small">atau</span><hr class="flex-grow-1">
+                    <hr class="flex-1"><span class="px-2 text-muted small">atau</span><hr class="flex-1">
                 </div>
 
                 <!-- Google Login -->

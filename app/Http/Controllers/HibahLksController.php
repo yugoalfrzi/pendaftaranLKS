@@ -76,7 +76,10 @@ class HibahLksController extends Controller
                     ->orWhereNotNull('data_penerima_hibah_path')
                     ->orWhereNotNull('spm_path')
                     ->orWhereNotNull('sp2d_path')
-                    ->orWhereNotNull('petunjuk_teknis_path');
+                    ->orWhereNotNull('petunjuk_teknis_path')
+                    ->orWhereNotNull('surat_ket_lampiran_verifikasi_path')
+                    ->orWhereNotNull('bukti_pembayaran_transfer_path')
+                    ->orWhereNotNull('sk_kadinsos_tim_verifikasi_path');
             })
             ->orderBy('tahun', 'desc')
             ->get();
@@ -126,62 +129,45 @@ class HibahLksController extends Controller
         $validated = $request->validate([
             'nama_lks' => 'required|string|max:255',
             'tahun' => 'required|integer|min:2023|max:2100',
-            'proposal' => 'nullable|file|mimes:pdf|max:10240',
+            'proposal' => 'nullable|file|max:51200',
+            'lpj'      => 'nullable|file|max:51200',
         ]);
 
         $data = [
             'nama_lks' => $validated['nama_lks'],
             'tahun' => $validated['tahun'],
         ];
-        
-        // Always allow proposal from public
+
+        // Simpan proposal
         if ($request->hasFile('proposal')) {
             $data['proposal_path'] = $request->file('proposal')->store('hibah', 'public');
         }
 
-        // Copy supporting documents from previous years if available
-        $previousDocs = $this->getAvailableSupportingDocuments($validated['nama_lks'])->first();
-        if ($previousDocs) {
-            $supportingFields = [
-                'hasil_verifikasi_path',
-                'pergub_penjabaran_apbd_path',
-                'dpa_path',
-                'hasil_identifikasi_path',
-                'data_penerima_hibah_path',
-                'spm_path',
-                'sp2d_path',
-                'petunjuk_teknis_path'
-            ];
-            
-            foreach ($supportingFields as $field) {
-                if ($previousDocs->$field) {
-                    $data[$field] = $previousDocs->$field;
-                }
-            }
+        // Simpan LPJ (semua role bisa upload)
+        if ($request->hasFile('lpj')) {
+            $data['lpj_path'] = $request->file('lpj')->store('hibah', 'public');
         }
 
-        // Other files only by admin
-        if (Auth::user() && Auth::user()->role === 'admin') {
+        // Semua dokumen pendukung berlaku per-tahun (update semua LKS dalam tahun yang sama)
+        if (Auth::user() && in_array(Auth::user()->role, ['admin', 'super_admin'])) {
             $adminMap = [
-                'hasil_verifikasi' => 'hasil_verifikasi_path',
-                'pergub_penjabaran_apbd' => 'pergub_penjabaran_apbd_path',
-                'dpa' => 'dpa_path',
-                'hasil_identifikasi' => 'hasil_identifikasi_path',
-                'data_penerima_hibah' => 'data_penerima_hibah_path',
-                'spm' => 'spm_path',
-                'sp2d' => 'sp2d_path',
-                'lpj' => 'lpj_path',
-                'petunjuk_teknis' => 'petunjuk_teknis_path',
+                'hasil_verifikasi'              => 'hasil_verifikasi_path',
+                'pergub_penjabaran_apbd'        => 'pergub_penjabaran_apbd_path',
+                'dpa'                           => 'dpa_path',
+                'hasil_identifikasi'            => 'hasil_identifikasi_path',
+                'data_penerima_hibah'           => 'data_penerima_hibah_path',
+                'spm'                           => 'spm_path',
+                'sp2d'                          => 'sp2d_path',
+                'petunjuk_teknis'               => 'petunjuk_teknis_path',
+                'surat_ket_lampiran_verifikasi' => 'surat_ket_lampiran_verifikasi_path',
+                'bukti_pembayaran_transfer'     => 'bukti_pembayaran_transfer_path',
+                'sk_kadinsos_tim_verifikasi'    => 'sk_kadinsos_tim_verifikasi_path',
             ];
             foreach ($adminMap as $input => $column) {
                 if ($request->hasFile($input)) {
                     $data[$column] = $request->file($input)->store('hibah', 'public');
-                    
-                    // Update semua data LKS dengan nama yang sama untuk dokumen pendukung
-                    if ($input !== 'lpj') {
-                        HibahLks::where('nama_lks', $validated['nama_lks'])
-                            ->update([$column => $data[$column]]);
-                    }
+                    HibahLks::where('tahun', $validated['tahun'])
+                        ->update([$column => $data[$column]]);
                 }
             }
         }
@@ -219,12 +205,13 @@ class HibahLksController extends Controller
         $validated = $request->validate([
             'nama_lks' => 'required|string|max:255',
             'tahun' => 'required|integer|min:2023|max:2100',
-            'proposal' => 'nullable|file|mimes:pdf|max:10240',
+            'proposal' => 'nullable|file|max:51200',
+            'lpj'      => 'nullable|file|max:51200',
         ]);
 
         $hibah->nama_lks = $validated['nama_lks'];
         $hibah->tahun = $validated['tahun'];
-        
+
         if ($request->hasFile('proposal')) {
             if ($hibah->proposal_path) {
                 Storage::disk('public')->delete($hibah->proposal_path);
@@ -232,17 +219,28 @@ class HibahLksController extends Controller
             $hibah->proposal_path = $request->file('proposal')->store('hibah', 'public');
         }
 
-        if (Auth::user() && Auth::user()->role === 'admin') {
+        // LPJ bisa diupload semua role
+        if ($request->hasFile('lpj')) {
+            if ($hibah->lpj_path) {
+                Storage::disk('public')->delete($hibah->lpj_path);
+            }
+            $hibah->lpj_path = $request->file('lpj')->store('hibah', 'public');
+        }
+
+        if (Auth::user() && in_array(Auth::user()->role, ['admin', 'super_admin'])) {
+            // Semua dokumen pendukung berlaku per-tahun
             $adminMap = [
-                'hasil_verifikasi' => 'hasil_verifikasi_path',
-                'pergub_penjabaran_apbd' => 'pergub_penjabaran_apbd_path',
-                'dpa' => 'dpa_path',
-                'hasil_identifikasi' => 'hasil_identifikasi_path',
-                'data_penerima_hibah' => 'data_penerima_hibah_path',
-                'spm' => 'spm_path',
-                'sp2d' => 'sp2d_path',
-                'lpj' => 'lpj_path',
-                'petunjuk_teknis' => 'petunjuk_teknis_path',
+                'hasil_verifikasi'              => 'hasil_verifikasi_path',
+                'pergub_penjabaran_apbd'        => 'pergub_penjabaran_apbd_path',
+                'dpa'                           => 'dpa_path',
+                'hasil_identifikasi'            => 'hasil_identifikasi_path',
+                'data_penerima_hibah'           => 'data_penerima_hibah_path',
+                'spm'                           => 'spm_path',
+                'sp2d'                          => 'sp2d_path',
+                'petunjuk_teknis'               => 'petunjuk_teknis_path',
+                'surat_ket_lampiran_verifikasi' => 'surat_ket_lampiran_verifikasi_path',
+                'bukti_pembayaran_transfer'     => 'bukti_pembayaran_transfer_path',
+                'sk_kadinsos_tim_verifikasi'    => 'sk_kadinsos_tim_verifikasi_path',
             ];
             foreach ($adminMap as $input => $column) {
                 if ($request->hasFile($input)) {
@@ -251,12 +249,8 @@ class HibahLksController extends Controller
                     }
                     $newPath = $request->file($input)->store('hibah', 'public');
                     $hibah->$column = $newPath;
-
-                    // Update semua data LKS dengan nama yang sama untuk dokumen pendukung
-                    if ($input !== 'lpj') {
-                        HibahLks::where('nama_lks', $hibah->nama_lks)
-                            ->update([$column => $newPath]);
-                    }
+                    HibahLks::where('tahun', $hibah->tahun)
+                        ->update([$column => $newPath]);
                 }
             }
         }
@@ -285,6 +279,9 @@ class HibahLksController extends Controller
             'sp2d_path',
             'lpj_path',
             'petunjuk_teknis_path',
+            'surat_ket_lampiran_verifikasi_path',
+            'bukti_pembayaran_transfer_path',
+            'sk_kadinsos_tim_verifikasi_path',
         ];
         foreach ($map as $column) {
             if ($hibah->$column) {
@@ -312,7 +309,7 @@ class HibahLksController extends Controller
 
         $request->validate([
             'document_type' => 'required|string',
-            'document_file' => 'required|file|mimes:pdf|max:10240'
+            'document_file' => 'required|file|max:51200'
         ]);
 
         $documentType = $request->document_type;
@@ -320,14 +317,19 @@ class HibahLksController extends Controller
 
         // Validasi field yang diizinkan
         $allowedFields = [
+            'proposal',
+            'lpj',
             'hasil_verifikasi',
             'pergub_penjabaran_apbd',
-            'dpa', 
+            'dpa',
             'hasil_identifikasi',
             'data_penerima_hibah',
             'spm',
             'sp2d',
-            'petunjuk_teknis'
+            'petunjuk_teknis',
+            'surat_ket_lampiran_verifikasi',
+            'bukti_pembayaran_transfer',
+            'sk_kadinsos_tim_verifikasi',
         ];
 
         if (!in_array($documentType, $allowedFields)) {
@@ -335,6 +337,28 @@ class HibahLksController extends Controller
         }
 
         try {
+            // Untuk proposal dan lpj: update hanya record ini (per-LKS)
+            // Untuk dokumen pendukung lainnya: update semua LKS dalam tahun yang sama
+            $isPerLks = in_array($documentType, ['proposal', 'lpj']);
+
+            if ($isPerLks) {
+                // Hapus file lama jika ada
+                if ($hibah->$fileField && Storage::disk('public')->exists($hibah->$fileField)) {
+                    Storage::disk('public')->delete($hibah->$fileField);
+                }
+
+                // Upload file baru
+                $file = $request->file('document_file');
+                $fileName = $this->generateBulkFileName($documentType, $tahun, $file);
+                $filePath = $file->storeAs('hibah', $fileName, 'public');
+
+                // Update hanya record ini
+                $hibah->update([$fileField => $filePath]);
+
+                return redirect()->route('hibah.documents', $hibah->id)
+                    ->with('success', "Dokumen {$documentType} berhasil diupload!");
+            }
+
             // Hapus file lama jika ada (untuk semua LKS di tahun ini)
             $this->deleteOldBulkFiles($tahun, $fileField);
 
@@ -373,6 +397,8 @@ class HibahLksController extends Controller
 
         // Validasi field yang diizinkan
         $allowedFields = [
+            'proposal',
+            'lpj',
             'hasil_verifikasi',
             'pergub_penjabaran_apbd',
             'dpa',
@@ -380,7 +406,10 @@ class HibahLksController extends Controller
             'data_penerima_hibah',
             'spm',
             'sp2d',
-            'petunjuk_teknis'
+            'petunjuk_teknis',
+            'surat_ket_lampiran_verifikasi',
+            'bukti_pembayaran_transfer',
+            'sk_kadinsos_tim_verifikasi',
         ];
 
         if (!in_array($documentType, $allowedFields)) {
@@ -421,47 +450,45 @@ class HibahLksController extends Controller
         // Validasi yang lebih fleksibel
         $request->validate([
             'supporting_documents' => 'sometimes|array',
-            'supporting_documents.*' => 'sometimes|file|mimes:pdf|max:10240'
+            'supporting_documents.*' => 'sometimes|file|max:51200'
         ]);
     
         try {
+            // Semua dokumen pendukung berlaku per-tahun
             $documentMap = [
-                'hasil_verifikasi' => 'hasil_verifikasi_path',
-                'pergub_penjabaran_apbd' => 'pergub_penjabaran_apbd_path',
-                'dpa' => 'dpa_path',
-                'hasil_identifikasi' => 'hasil_identifikasi_path',
-                'data_penerima_hibah' => 'data_penerima_hibah_path',
-                'spm' => 'spm_path',
-                'sp2d' => 'sp2d_path',
-                'petunjuk_teknis' => 'petunjuk_teknis_path',
+                'hasil_verifikasi'              => 'hasil_verifikasi_path',
+                'pergub_penjabaran_apbd'        => 'pergub_penjabaran_apbd_path',
+                'dpa'                           => 'dpa_path',
+                'hasil_identifikasi'            => 'hasil_identifikasi_path',
+                'data_penerima_hibah'           => 'data_penerima_hibah_path',
+                'spm'                           => 'spm_path',
+                'sp2d'                          => 'sp2d_path',
+                'petunjuk_teknis'               => 'petunjuk_teknis_path',
+                'surat_ket_lampiran_verifikasi' => 'surat_ket_lampiran_verifikasi_path',
+                'bukti_pembayaran_transfer'     => 'bukti_pembayaran_transfer_path',
+                'sk_kadinsos_tim_verifikasi'    => 'sk_kadinsos_tim_verifikasi_path',
             ];
-        
+
             $uploadedCount = 0;
-        
+
             foreach ($documentMap as $docType => $field) {
                 if ($request->hasFile("supporting_documents.{$docType}")) {
                     $file = $request->file("supporting_documents.{$docType}");
-                    
                     if ($file && $file->isValid()) {
-                        // Hapus file lama jika ada (untuk semua tahun LKS ini)
-                        $existingRecords = HibahLks::where('nama_lks', $hibah->nama_lks)
-                            ->whereNotNull($field)
-                            ->get();
-                    
-                        foreach ($existingRecords as $record) {
-                            if ($record->$field && Storage::disk('public')->exists($record->$field)) {
-                                Storage::disk('public')->delete($record->$field);
-                            }
+                        // Hapus file lama untuk tahun ini
+                        $existingRecord = HibahLks::where('tahun', $hibah->tahun)
+                            ->whereNotNull($field)->first();
+                        if ($existingRecord && $existingRecord->$field && Storage::disk('public')->exists($existingRecord->$field)) {
+                            Storage::disk('public')->delete($existingRecord->$field);
                         }
-                    
-                        // Upload file baru
-                        $fileName = $this->generateFileName($hibah, $docType, $file);
+
+                        $fileName = $this->generateBulkFileName($docType, $hibah->tahun, $file);
                         $filePath = $file->storeAs('hibah', $fileName, 'public');
-                    
-                        // Update semua record dengan nama LKS yang sama
-                        HibahLks::where('nama_lks', $hibah->nama_lks)
+
+                        // Update semua LKS dalam tahun yang sama
+                        HibahLks::where('tahun', $hibah->tahun)
                             ->update([$field => $filePath]);
-                    
+
                         $uploadedCount++;
                     }
                 }
@@ -469,7 +496,7 @@ class HibahLksController extends Controller
         
             if ($uploadedCount > 0) {
                 return redirect()->route('hibah.documents', $hibah->id)
-                    ->with('success', $uploadedCount . ' dokumen pendukung berhasil diupload untuk semua tahun!');
+                    ->with('success', $uploadedCount . ' dokumen pendukung berhasil diupload!');
             } else {
                 return redirect()->back()->with('warning', 'Tidak ada dokumen yang dipilih untuk diupload.');
             }
@@ -796,7 +823,7 @@ class HibahLksController extends Controller
      */
     private function authorizeAdmin(): void
     {
-        if (!(Auth::user() && Auth::user()->role === 'admin')) {
+        if (!(Auth::user() && in_array(Auth::user()->role, ['admin', 'super_admin']))) {
             abort(403, 'Unauthorized');
         }
     }

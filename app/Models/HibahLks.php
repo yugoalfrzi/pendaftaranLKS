@@ -23,7 +23,10 @@ class HibahLks extends Model
         'spm_path',
         'sp2d_path',
         'lpj_path',
-        'petunjuk_teknis_path'
+        'petunjuk_teknis_path',
+        'surat_ket_lampiran_verifikasi_path',
+        'bukti_pembayaran_transfer_path',
+        'sk_kadinsos_tim_verifikasi_path',
     ];
 
     protected $casts = [
@@ -72,7 +75,10 @@ class HibahLks extends Model
             'spm_path',
             'sp2d_path',
             'lpj_path',
-            'petunjuk_teknis_path'
+            'petunjuk_teknis_path',
+            'surat_ket_lampiran_verifikasi_path',
+            'bukti_pembayaran_transfer_path',
+            'sk_kadinsos_tim_verifikasi_path',
         ];
 
         $uploaded = 0;

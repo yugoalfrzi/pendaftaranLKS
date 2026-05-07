@@ -108,9 +108,16 @@ class DocumentSeeder extends Seeder
 
             [
                 'nama_dokumen' => 'Proposal :',
-                'deskripsi' => 'Proposal program kegiatan, modal kerja, nomor rekening LKS, SDM dan kelengkapan sarana prasarana ' ,
+                'deskripsi' => 'Berisi program kegiatan, modal kerja, nomor rekening LKS, SDM dan kelengkapan sarana prasarana ' ,
                 'wajib' => true,
                 'urutan' => 16,
+            ],
+
+            [
+                'nama_dokumen' => 'Tanda Pendaftaran sebelumnya dari Dinas Sosial Kabupaten Kota',
+                'deskripsi' => 'Tanda Pendaftaran sebelumnya',
+                'wajib' => true,
+                'urutan' => 17,
             ],
 
             [
@@ -126,6 +133,15 @@ class DocumentSeeder extends Seeder
                 'wajib' => true,
                 'urutan' => 18,
             ],
+
+            [
+                'nama_dokumen' => 'Tanda Pendaftaran sebelumnya dari Dinas Sosial Provinsi Jawa Barat',
+                'deskripsi' => 'Tanda pendaftaran dari Dinas Sosial Provinsi Jawa Barat',
+                'wajib' => true,
+                'urutan' => 19,
+            ],
+
+
         ];
 
         foreach ($documents as $document) {

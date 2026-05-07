@@ -3,21 +3,99 @@
 
 <?php $__env->startSection('content'); ?>
 <style>
-    .card-modern { border-radius:1.25rem; border:1px solid #edf2f7; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.02); overflow:hidden; }
-    .card-header-custom { background:#fff; border-bottom:1px solid #eef2f6; padding:0.9rem 1.25rem; font-weight:600; font-size:0.9rem; display:flex; align-items:center; gap:0.5rem; }
-    .badge-pill { display:inline-flex; align-items:center; gap:0.25rem; padding:0.2rem 0.65rem; border-radius:2rem; font-size:0.72rem; font-weight:500; }
-    .s-menunggu { background:#fef3c7; color:#b45309; }
-    .s-proses { background:#dbeafe; color:#1d4ed8; }
-    .s-diterima { background:#dcfce7; color:#15803d; }
-    .s-terverifikasi { background:#e0e7ff; color:#4338ca; }
-    .s-ditolak { background:#fee2e2; color:#b91c1c; }
-    .s-dikembalikan { background:#e0f2fe; color:#0369a1; }
-    .s-baru { background:#dcfce7; color:#15803d; }
-    .s-ulang { background:#e0f2fe; color:#0369a1; }
-    .table-doc th { background:#f8fafc; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; color:#475569; padding:0.7rem 1rem; border-bottom:1px solid #e2e8f0; white-space:nowrap; }
-    .table-doc td { padding:0.75rem 1rem; vertical-align:middle; border-bottom:1px solid #f1f5f9; font-size:0.83rem; }
-    .stat-card { background:#fff; border-radius:1.25rem; border:1px solid rgba(203,213,225,0.4); transition:all 0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.02); }
-    .stat-value { font-size:1.7rem; font-weight:700; color:#0f172a; line-height:1.1; }
+    .card-modern { 
+        border-radius:1.25rem; 
+        border:1px solid #edf2f7; 
+        background:#fff; 
+        box-shadow:0 2px 8px rgba(0,0,0,0.02); 
+        overflow:hidden; 
+    }
+    .card-header-custom { 
+        background:#fff; 
+        border-bottom:1px solid #eef2f6; 
+        padding:0.9rem 1.25rem; 
+        font-weight:600; 
+        font-size:0.9rem; 
+        display:flex; 
+        align-items:center; 
+        gap:0.5rem; 
+    }
+    .badge-pill { 
+        display:inline-flex; 
+        align-items:center; 
+        gap:0.25rem; 
+        padding:0.2rem 0.65rem; 
+        border-radius:2rem; 
+        font-size:0.72rem; 
+        font-weight:500; 
+    }
+    .s-menunggu { 
+        background:#fef3c7; 
+        color:#b45309; 
+    }
+    .s-proses { 
+        background:#dbeafe; 
+        color:#1d4ed8; 
+    }
+    .s-diterima { 
+        background:#dcfce7; 
+        color:#15803d; 
+    }
+    .s-terverifikasi { 
+        background:#e0e7ff; 
+        color:#4338ca; 
+    }
+    .s-ditolak { 
+        background:#fee2e2; 
+        color:#b91c1c; 
+    }
+    .s-dikembalikan { 
+        background:#e0f2fe; 
+        color:#0369a1; 
+    }
+    .s-baru { 
+        background:#dcfce7; 
+        color:#15803d; 
+    }
+    .s-ulang { 
+        background:#e0f2fe; 
+        color:#0369a1; 
+    }
+    .table-doc th { 
+        background:#f8fafc; 
+        font-size:0.72rem; 
+        text-transform:uppercase; 
+        letter-spacing:0.04em; 
+        color:#475569; 
+        padding:0.7rem 1rem; 
+        border-bottom:1px solid #e2e8f0; 
+        white-space:nowrap; 
+    }
+    .table-doc td { 
+        padding:0.75rem 1rem; 
+        vertical-align:middle; 
+        border-bottom:1px solid #f1f5f9; 
+        font-size:0.83rem; 
+    }
+    .stat-card { 
+        border-radius:1.25rem; 
+        border:none; 
+        transition:all 0.2s; 
+        box-shadow:0 4px 15px rgba(0,0,0,0.1); 
+    }
+    .stat-card:hover { transform:translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,0.15); }
+    .stat-value { 
+        font-size:1.7rem; 
+        font-weight:700; 
+        color:#fff; 
+        line-height:1.1; 
+    }
+    .stat-label { color:rgba(255,255,255,0.85); font-size:.72rem; font-weight:600; text-transform:uppercase; }
+    .stat-icon-sm { 
+        width:36px; height:36px; border-radius:0.65rem;
+        display:flex; align-items:center; justify-content:center;
+        background:rgba(255,255,255,0.25); color:#fff; font-size:1rem; flex-shrink:0;
+    }
 </style>
 
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
@@ -31,47 +109,35 @@
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Total Permohonan</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#eff6ff;">
-                    <i class="bi bi-folder2-open text-primary"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Total Permohonan</div><div class="stat-value"><?php echo e($stats['total']); ?></div></div>
+                <div class="stat-icon-sm"><i class="bi bi-folder2-open"></i></div>
             </div>
-            <div class="stat-value"><?php echo e($stats['total']); ?></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Menunggu Verifikasi</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#fffbeb;">
-                    <i class="bi bi-hourglass-split text-warning"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Menunggu Verifikasi</div><div class="stat-value"><?php echo e($stats['menunggu']); ?></div></div>
+                <div class="stat-icon-sm"><i class="bi bi-hourglass-split"></i></div>
             </div>
-            <div class="stat-value" style="color:#b45309;"><?php echo e($stats['menunggu']); ?></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Diterima</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#f0fdf4;">
-                    <i class="bi bi-check-circle text-success"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Diterima</div><div class="stat-value"><?php echo e($stats['diterima']); ?></div></div>
+                <div class="stat-icon-sm"><i class="bi bi-check-circle"></i></div>
             </div>
-            <div class="stat-value" style="color:#15803d;"><?php echo e($stats['diterima']); ?></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small">Terverifikasi</span>
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#eef2ff;">
-                    <i class="bi bi-patch-check" style="color:#4338ca;"></i>
-                </div>
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Terverifikasi</div><div class="stat-value"><?php echo e($stats['terverifikasi']); ?></div></div>
+                <div class="stat-icon-sm"><i class="bi bi-patch-check"></i></div>
             </div>
-            <div class="stat-value" style="color:#4338ca;"><?php echo e($stats['terverifikasi']); ?></div>
         </div>
     </div>
 </div>

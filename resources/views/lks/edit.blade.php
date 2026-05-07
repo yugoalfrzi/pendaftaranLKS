@@ -568,22 +568,14 @@
                                 id="tanda_pendaftaran" name="tanda_pendaftaran" required>
                                 <option value="">Pilih Tanda Pendaftaran</option>
                                 <option value="Baru" {{ old('tanda_pendaftaran', $lks->tanda_pendaftaran) == 'Baru' ? 'selected' : ''}}>Baru</option>
-                                <option value="Ulang" {{ old('tanda_pendaftaran', $lks->tanda_pendaftaran) == 'Ulang' ? 'selected' : '' }}>Ulang</option>
+                                <option value="Perpanjangan" {{ old('tanda_pendaftaran', $lks->tanda_pendaftaran) == 'Perpanjangan' ? 'selected' : '' }}>Perpanjangan</option>
                             </select>
                             @error('tanda_pendaftaran')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="tanggal_persyaratan" class="form-label required-label">Tanggal Persyaratan Dinyatakan Lengkap</label>
-                            <input type="date" class="form-control @error('tanggal_persyaratan') is-invalid @enderror" 
-                                   id="tanggal_persyaratan" name="tanggal_persyaratan" 
-                                   value="{{ old('tanggal_persyaratan', $lks->tanggal_persyaratan ? $lks->tanggal_persyaratan->format('Y-m-d') : '') }}" required>
-                            @error('tanggal_persyaratan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+
 
                         <div class="col-md-6 mb-3">
                             <label for="tanggal_masuk_dokumen" class="form-label required-label">Tanggal Masuk Dokumen</label>
@@ -622,7 +614,20 @@
                                     </thead>
                                     <tbody>
                                         @foreach($lks->checklists as $index => $checklist)
-                                        <tr>
+                                        @php
+                                            $docName = $checklist->document->nama_dokumen ?? '';
+                                            $isPerpanjanganKabkota = str_contains($docName, 'sebelumnya') && str_contains(strtolower($docName), 'kabupaten kota');
+                                            $isPerpanjanganProvinsi = str_contains($docName, 'sebelumnya') && str_contains(strtolower($docName), 'provinsi');
+                                            $editRowClass = '';
+                                            if ($isPerpanjanganKabkota) {
+                                                $editRowClass = 'doc-perpanjangan-kabkota';
+                                            } elseif ($isPerpanjanganProvinsi) {
+                                                $editRowClass = 'doc-perpanjangan-provinsi doc-provinsi-only';
+                                            } elseif (($checklist->document->urutan ?? 0) >= 17) {
+                                                $editRowClass = 'doc-provinsi-only';
+                                            }
+                                        @endphp
+                                        <tr class="{{ $editRowClass }}">
                                             <td>{{ $index + 1 }}</td>
                                             <td>
                                                 <strong>{{ $checklist->document->nama_dokumen }}</strong>
@@ -721,15 +726,58 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // ========== KEWENANGAN & PERPANJANGAN TOGGLE DOKUMEN ==========
+    const kewRadios = document.querySelectorAll('input[name="kewenangan_type"]');
+    const tandaPendaftaranSelect = document.getElementById('tanda_pendaftaran');
+
+    function toggleDokumen() {
+        const isProvinsi = document.querySelector('input[name="kewenangan_type"]:checked')?.value === 'provinsi';
+        const isPerpanjangan = tandaPendaftaranSelect?.value === 'Perpanjangan';
+
+        // Baris provinsi-only biasa
+        document.querySelectorAll('tr.doc-provinsi-only').forEach(row => {
+            if (row.classList.contains('doc-perpanjangan-provinsi')) return;
+            const show = isProvinsi;
+            row.style.display = show ? '' : 'none';
+            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+        });
+
+        // Baris perpanjangan kabkota: tampil hanya jika kabkota + perpanjangan
+        document.querySelectorAll('tr.doc-perpanjangan-kabkota').forEach(row => {
+            const show = !isProvinsi && isPerpanjangan;
+            row.style.display = show ? '' : 'none';
+            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+        });
+
+        // Baris perpanjangan provinsi: tampil hanya jika provinsi + perpanjangan
+        document.querySelectorAll('tr.doc-perpanjangan-provinsi').forEach(row => {
+            const show = isProvinsi && isPerpanjangan;
+            row.style.display = show ? '' : 'none';
+            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+        });
+
+        // Toggle pusat & cabang LKS
+        const pusatCabangSection = document.getElementById('pusat_cabang_section');
+        if (pusatCabangSection) {
+            pusatCabangSection.style.display = isProvinsi ? '' : 'none';
+            const pusatSelect = document.getElementById('pusat_lks');
+            if (pusatSelect) pusatSelect.required = isProvinsi;
+            pusatCabangSection.querySelectorAll('input, select').forEach(el => {
+                el.disabled = !isProvinsi;
+            });
+        }
+    }
+
+    toggleDokumen();
+    kewRadios.forEach(radio => radio.addEventListener('change', toggleDokumen));
+    if (tandaPendaftaranSelect) {
+        tandaPendaftaranSelect.addEventListener('change', toggleDokumen);
+    }
+
     // Auto-fill today's date for tanggal_masuk_dokumen if empty
     const tanggalMasukInput = document.getElementById('tanggal_masuk_dokumen');
     if (tanggalMasukInput && !tanggalMasukInput.value) {
         tanggalMasukInput.value = new Date().toISOString().split('T')[0];
-    }
-
-    const tanggalPersyaratanInput = document.getElementById('tanggal_persyaratan');
-    if (tanggalPersyaratanInput && !tanggalPersyaratanInput.value) {
-        tanggalPersyaratanInput.value = new Date().toISOString().split('T')[0];
     }
 
     // ========== JENIS PELAYANAN FUNCTIONALITY ==========

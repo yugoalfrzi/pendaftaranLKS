@@ -103,7 +103,7 @@
                             </tr>
                             @if($lks->sertifikat_path)
                             <tr>
-                                <td><strong>Sertifikat</strong></td>
+                                <td><strong>Tanda Pendaftaran</strong></td>
                                 <td>
                                     <span class="badge bg-success">
                                         <i class="bi bi-file-earmark-pdf"></i> Tersedia
@@ -213,10 +213,10 @@
                         @enderror
                     </div>
 
-                    <!-- Field Upload Sertifikat - Muncul hanya ketika status "Diterima untuk proses" dipilih -->
+                    <!-- Field Upload Tanda Pendaftaran - Muncul hanya ketika status "Diterima untuk proses" dipilih -->
                     <div class="mb-3" id="sertifikat_upload_div" style="display: {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Diterima untuk proses' ? 'block' : 'none' }};">
                         <label for="sertifikat" class="form-label">
-                            Upload Sertifikat (PDF) 
+                            Upload Tanda Pendaftaran (PDF) 
                             @if(!$lks->sertifikat_path)
                                 <span class="text-danger">*</span>
                             @endif
@@ -230,14 +230,14 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         
-                        <!-- Tampilkan sertifikat yang sudah ada jika ada -->
+                        <!-- Tampilkan tanda pendaftaran yang sudah ada jika ada -->
                         @if($lks->sertifikat_path)
                         <div class="mt-2">
                             <div class="alert alert-info p-2">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <i class="bi bi-file-earmark-pdf text-danger"></i>
-                                        <span class="ms-2">Sertifikat sudah diupload</span>
+                                        <span class="ms-2">Tanda pendaftaran sudah diupload</span>
                                     </div>
                                     <a href="{{ route('admin.verification.download-sertifikat', $lks->id) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-download"></i> Download

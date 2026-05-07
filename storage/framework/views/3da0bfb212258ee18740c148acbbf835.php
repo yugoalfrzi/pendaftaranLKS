@@ -1,9 +1,7 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Data Keuangan Hibah LKS'); ?>
+<?php $__env->startSection('page-title', 'Hibah LKS'); ?>
 
-@section('title', 'Data Keuangan Hibah LKS')
-@section('page-title', 'Hibah LKS')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     .card-modern { 
         border-radius:1.25rem; 
@@ -80,29 +78,29 @@
     }
 </style>
 
-{{-- Header --}}
+
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
         <h4 class="fw-semibold mb-1">
             <i class="bi bi-cash-stack me-2 text-primary"></i>Data Keuangan Hibah LKS
-            <span class="badge-pill s-tersedia ms-2">{{ $selectedYear ?? now()->year }}</span>
+            <span class="badge-pill s-tersedia ms-2"><?php echo e($selectedYear ?? now()->year); ?></span>
         </h4>
     </div>
-    @auth
-        @if(Auth::user()->hasRole(['super_admin', 'admin']))
-        <a href="{{ route('hibah.create') }}" class="btn btn-primary btn-sm rounded-pill px-3">
+    <?php if(auth()->guard()->check()): ?>
+        <?php if(Auth::user()->hasRole(['super_admin', 'admin'])): ?>
+        <a href="<?php echo e(route('hibah.create')); ?>" class="btn btn-primary btn-sm rounded-pill px-3">
             <i class="bi bi-plus-circle me-1"></i> Tambah Data Hibah
         </a>
-        @endif
-    @endauth
+        <?php endif; ?>
+    <?php endif; ?>
 </div>
 
-{{-- Stat Cards --}}
+
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Total Proposal</div><div class="stat-value">{{ $totalProposal }}</div></div>
+                <div><div class="stat-label">Total Proposal</div><div class="stat-value"><?php echo e($totalProposal); ?></div></div>
                 <div class="stat-icon-sm"><i class="bi bi-file-text"></i></div>
             </div>
         </div>
@@ -110,7 +108,7 @@
     <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Proposal Terupload</div><div class="stat-value">{{ $proposalTerupload }}</div></div>
+                <div><div class="stat-label">Proposal Terupload</div><div class="stat-value"><?php echo e($proposalTerupload); ?></div></div>
                 <div class="stat-icon-sm"><i class="bi bi-check-circle"></i></div>
             </div>
         </div>
@@ -118,7 +116,7 @@
     <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">LPJ Terupload</div><div class="stat-value">{{ $lpjTerupload }}</div></div>
+                <div><div class="stat-label">LPJ Terupload</div><div class="stat-value"><?php echo e($lpjTerupload); ?></div></div>
                 <div class="stat-icon-sm"><i class="bi bi-file-earmark-text"></i></div>
             </div>
         </div>
@@ -126,14 +124,14 @@
     <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Dokumen Lengkap</div><div class="stat-value">{{ $dokumenLengkap }}</div></div>
+                <div><div class="stat-label">Dokumen Lengkap</div><div class="stat-value"><?php echo e($dokumenLengkap); ?></div></div>
                 <div class="stat-icon-sm"><i class="bi bi-folder-check"></i></div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Filter --}}
+
 <div class="card-modern mb-4">
     <div class="card-header-custom"><i class="bi bi-funnel text-primary"></i> Filter & Pencarian</div>
     <div class="card-body p-3">
@@ -141,18 +139,18 @@
             <div class="col-md-4">
                 <label class="form-label small fw-semibold mb-1">Tahun</label>
                 <input type="number" id="filterTahun" class="form-control form-control-sm"
-                       value="{{ $selectedYear ?? now()->year }}" min="2020" max="2100">
+                       value="<?php echo e($selectedYear ?? now()->year); ?>" min="2020" max="2100">
             </div>
             <div class="col-md-5">
                 <label class="form-label small fw-semibold mb-1">Pencarian</label>
                 <input type="text" id="filterSearch" class="form-control form-control-sm"
-                       value="{{ request('search') }}" placeholder="Cari nama LKS...">
+                       value="<?php echo e(request('search')); ?>" placeholder="Cari nama LKS...">
             </div>
             <div class="col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-primary btn-sm rounded-pill w-100">
                     <i class="bi bi-search me-1"></i> Cari
                 </button>
-                <a href="{{ route('hibah.keuangan', now()->year) }}" class="btn btn-outline-secondary btn-sm rounded-pill w-100">
+                <a href="<?php echo e(route('hibah.keuangan', now()->year)); ?>" class="btn btn-outline-secondary btn-sm rounded-pill w-100">
                     Reset
                 </a>
             </div>
@@ -163,7 +161,7 @@
 <script>
 function handleFilterSubmit(e) {
     e.preventDefault();
-    const tahun = document.getElementById('filterTahun').value || {{ now()->year }};
+    const tahun = document.getElementById('filterTahun').value || <?php echo e(now()->year); ?>;
     const search = document.getElementById('filterSearch').value;
     let url = '/hibah/keuangan/' + tahun;
     if (search) url += '?search=' + encodeURIComponent(search);
@@ -171,12 +169,13 @@ function handleFilterSubmit(e) {
 }
 </script>
 
-{{-- Tabel --}}
+
 <div class="card-modern">
     <div class="card-header-custom">
-        <i class="bi bi-table text-primary"></i> Daftar Data Hibah Tahun {{ $selectedYear ?? now()->year }}
+        <i class="bi bi-table text-primary"></i> Daftar Data Hibah Tahun <?php echo e($selectedYear ?? now()->year); ?>
+
     </div>
-    @if($items->count() > 0)
+    <?php if($items->count() > 0): ?>
     <div class="table-responsive">
         <table class="table table-doc mb-0">
             <thead>
@@ -190,8 +189,8 @@ function handleFilterSubmit(e) {
                 </tr>
             </thead>
             <tbody>
-                @foreach($items as $index => $row)
-                @php
+                <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                     $docFields = [
                         'hasil_verifikasi_path','pergub_penjabaran_apbd_path','dpa_path',
                         'hasil_identifikasi_path','data_penerima_hibah_path',
@@ -205,90 +204,93 @@ function handleFilterSubmit(e) {
                     $statusClass  = $percentage == 100 ? 'success' : ($percentage >= 50 ? 'warning' : 'danger');
                     $statusText   = $percentage == 100 ? 'Lengkap' : ($percentage >= 50 ? 'Sebagian' : 'Minimal');
                     $pillClass    = $percentage == 100 ? 's-tersedia' : ($percentage >= 50 ? 's-sebagian' : 's-belum');
-                @endphp
+                ?>
                 <tr>
-                    <td class="text-muted">{{ $items->firstItem() + $index }}</td>
+                    <td class="text-muted"><?php echo e($items->firstItem() + $index); ?></td>
                     <td>
-                        <span class="fw-semibold">{{ $row->nama_lks }}</span>
-                        <br><small class="text-muted">Tahun: {{ $row->tahun }}</small>
+                        <span class="fw-semibold"><?php echo e($row->nama_lks); ?></span>
+                        <br><small class="text-muted">Tahun: <?php echo e($row->tahun); ?></small>
                     </td>
                     <td>
-                        @if($row->proposal_path)
-                            <a href="{{ Storage::disk('public')->url($row->proposal_path) }}" target="_blank"
+                        <?php if($row->proposal_path): ?>
+                            <a href="<?php echo e(Storage::disk('public')->url($row->proposal_path)); ?>" target="_blank"
                                class="btn btn-sm btn-outline-primary rounded-pill px-2">
                                 <i class="bi bi-eye"></i> Lihat
                             </a>
-                        @else
+                        <?php else: ?>
                             <span class="badge-pill s-belum">Belum Ada</span>
-                        @endif
+                        <?php endif; ?>
                     </td>
                     <td>
-                        @if($row->lpj_path)
-                            <a href="{{ Storage::disk('public')->url($row->lpj_path) }}" target="_blank"
+                        <?php if($row->lpj_path): ?>
+                            <a href="<?php echo e(Storage::disk('public')->url($row->lpj_path)); ?>" target="_blank"
                                class="btn btn-sm btn-outline-success rounded-pill px-2">
                                 <i class="bi bi-eye"></i> Lihat
                             </a>
-                        @else
+                        <?php else: ?>
                             <span class="badge-pill s-sebagian">Belum Ada</span>
-                        @endif
+                        <?php endif; ?>
                     </td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
                             <div class="flex-1">
                                 <div class="progress" style="height:6px; border-radius:1rem;">
-                                    <div class="progress-bar bg-{{ $statusClass }}" style="width:{{ $percentage }}%; border-radius:1rem;"></div>
+                                    <div class="progress-bar bg-<?php echo e($statusClass); ?>" style="width:<?php echo e($percentage); ?>%; border-radius:1rem;"></div>
                                 </div>
                             </div>
-                            <span class="badge-pill {{ $pillClass }}" style="font-size:.65rem;">{{ $statusText }} {{ $uploadedDocs }}/{{ $totalDocs }}</span>
+                            <span class="badge-pill <?php echo e($pillClass); ?>" style="font-size:.65rem;"><?php echo e($statusText); ?> <?php echo e($uploadedDocs); ?>/<?php echo e($totalDocs); ?></span>
                         </div>
                     </td>
                     <td>
                         <div class="d-flex gap-1 flex-wrap">
-                            <a href="{{ route('hibah.show', $row) }}" class="btn btn-sm btn-outline-info rounded-pill px-2" title="Detail">
+                            <a href="<?php echo e(route('hibah.show', $row)); ?>" class="btn btn-sm btn-outline-info rounded-pill px-2" title="Detail">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            @auth
-                                @if(Auth::user()->hasRole(['super_admin', 'admin']))
-                                <a href="{{ route('hibah.edit', $row) }}" class="btn btn-sm btn-outline-warning rounded-pill px-2" title="Edit">
+                            <?php if(auth()->guard()->check()): ?>
+                                <?php if(Auth::user()->hasRole(['super_admin', 'admin'])): ?>
+                                <a href="<?php echo e(route('hibah.edit', $row)); ?>" class="btn btn-sm btn-outline-warning rounded-pill px-2" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{{ route('hibah.documents', $row->id) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-2" title="Dokumen">
+                                <a href="<?php echo e(route('hibah.documents', $row->id)); ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-2" title="Dokumen">
                                     <i class="bi bi-folder2-open"></i>
                                 </a>
-                                <form action="{{ route('hibah.destroy', $row) }}" method="POST" class="d-inline"
-                                      onsubmit="return confirm('Hapus data hibah {{ $row->nama_lks }}?')">
-                                    @csrf @method('DELETE')
+                                <form action="<?php echo e(route('hibah.destroy', $row)); ?>" method="POST" class="d-inline"
+                                      onsubmit="return confirm('Hapus data hibah <?php echo e($row->nama_lks); ?>?')">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                     <button class="btn btn-sm btn-outline-danger rounded-pill px-2" title="Hapus">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
-                                @endif
-                            @endauth
+                                <?php endif; ?>
+                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
     </div>
     <div class="px-3 py-2 d-flex justify-content-between align-items-center">
         <small class="text-muted">
-            Menampilkan {{ $items->firstItem() }}–{{ $items->lastItem() }} dari {{ $items->total() }} data
+            Menampilkan <?php echo e($items->firstItem()); ?>–<?php echo e($items->lastItem()); ?> dari <?php echo e($items->total()); ?> data
         </small>
-        {{ $items->links() }}
+        <?php echo e($items->links()); ?>
+
     </div>
-    @else
+    <?php else: ?>
     <div class="text-center py-5 text-muted">
         <i class="bi bi-inbox fs-1"></i>
-        <p class="mt-2">Belum ada data hibah untuk tahun {{ $selectedYear ?? now()->year }}</p>
-        @auth
-            @if(Auth::user()->hasRole(['super_admin', 'admin']))
-            <a href="{{ route('hibah.create') }}" class="btn btn-primary btn-sm rounded-pill px-4 mt-2">
+        <p class="mt-2">Belum ada data hibah untuk tahun <?php echo e($selectedYear ?? now()->year); ?></p>
+        <?php if(auth()->guard()->check()): ?>
+            <?php if(Auth::user()->hasRole(['super_admin', 'admin'])): ?>
+            <a href="<?php echo e(route('hibah.create')); ?>" class="btn btn-primary btn-sm rounded-pill px-4 mt-2">
                 <i class="bi bi-plus-circle me-1"></i> Tambah Data Hibah
             </a>
-            @endif
-        @endauth
+            <?php endif; ?>
+        <?php endif; ?>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\pendaftaranLKS\resources\views/hibah/index.blade.php ENDPATH**/ ?>

@@ -38,12 +38,14 @@ class LKS extends Model
         'sertifikat_kabkota_path',
         'user_id',
         'kewenangan_type',
+        'verified_at',
     ];
 
     protected $casts = [
         'tanggal_masuk_dokumen' => 'date',
         'tanggal_persyaratan' => 'date',
         'pendaftaran_lengkap' => 'boolean',
+        'verified_at' => 'datetime',
     ];
 
     public function user()
@@ -70,17 +72,38 @@ class LKS extends Model
     }
 
     /**
-     * Check if all required documents are complete
+     * Check if all required documents are complete (ada + file diupload)
      */
     public function isComplete()
     {
         $requiredDocuments = Document::where('wajib', true)->count();
+
+        if ($requiredDocuments === 0) {
+            return false;
+        }
+
+        // Cek semua field wajib LKS terisi
+        $requiredFields = [
+            'nama_lks', 'alamat_lks', 'nama_ketua_lks', 'jenis_pelayanan',
+            'jumlah_binaan_dalam_panti', 'jumlah_binaan_luar_panti',
+            'nomor_kontak', 'lokasi_lks', 'tanda_pendaftaran',
+            'tanggal_masuk_dokumen', 'tanggal_persyaratan',
+        ];
+
+        foreach ($requiredFields as $field) {
+            if (empty($this->$field) && $this->$field !== 0) {
+                return false;
+            }
+        }
+
+        // Cek semua dokumen wajib: kelengkapan = 'Ada' DAN file sudah diupload
         $completedDocuments = $this->checklists()
-                                  ->whereHas('document', function($query) {
-                                      $query->where('wajib', true);
-                                  })
-                                  ->where('kelengkapan', 'Ada')
-                                  ->count();
+            ->whereHas('document', function ($query) {
+                $query->where('wajib', true);
+            })
+            ->where('kelengkapan', 'Ada')
+            ->where('file_count', '>', 0)
+            ->count();
 
         return $requiredDocuments === $completedDocuments;
     }

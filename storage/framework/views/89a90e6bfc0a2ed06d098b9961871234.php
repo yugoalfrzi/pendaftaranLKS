@@ -400,7 +400,7 @@
 
                 <!-- Divider -->
                 <div class="d-flex align-items-center my-3">
-                    <hr class="flex-grow-1"><span class="px-2 text-muted small">atau</span><hr class="flex-grow-1">
+                    <hr class="flex-1"><span class="px-2 text-muted small">atau</span><hr class="flex-1">
                 </div>
 
                 <!-- Google Register -->

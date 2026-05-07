@@ -11,7 +11,25 @@ class KewenanganProvinsiController extends Controller
 {
     public function index(Request $request)
     {
+        // User tidak bisa lihat daftar, redirect ke form input
+        if (auth()->check() && auth()->user()->hasRole('user')) {
+            return redirect()->route('kewenangan-provinsi.create');
+        }
+
+        // Admin hanya boleh lihat kewenangan kabkota
+        if (auth()->check() && auth()->user()->hasRole('admin')) {
+            return redirect()->route('kewenangan-kabkota.index');
+        }
+
+        $isAdmin = auth()->user()->hasRole('admin');
+        $adminKabkota = auth()->user()->kabupaten_kota;
+
         $query = KewenanganProvinsi::query();
+
+        // Admin hanya melihat data sesuai kabupaten/kotanya
+        if ($isAdmin && $adminKabkota) {
+            $query->where('kabupaten_kota', $adminKabkota);
+        }
         
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -24,9 +42,10 @@ class KewenanganProvinsiController extends Controller
         
         $kewenangan = $query->paginate(20);
 
-        $statistics = $this->getStatistics();
+        $filterKabkota = $isAdmin ? $adminKabkota : $request->get('filter_kabkota');
+        $statistics = $this->getStatistics($filterKabkota);
         
-        return view('kewenangan.provinsi.index', compact('kewenangan', 'statistics'));
+        return view('kewenangan.provinsi.index', compact('kewenangan', 'statistics', 'filterKabkota', 'isAdmin'));
     }
 
     public function create()
@@ -137,6 +156,12 @@ class KewenanganProvinsiController extends Controller
         ]);
 
         KewenanganProvinsi::create($validated);
+
+        // User tidak bisa akses index, arahkan ke create
+        if (auth()->user()->hasRole('user')) {
+            return redirect()->route('kewenangan-provinsi.create')
+                             ->with('success', 'Data Kewenangan Provinsi berhasil ditambahkan.');
+        }
 
         return redirect()->route('kewenangan-provinsi.index')
                          ->with('success', 'Data Kewenangan Provinsi berhasil ditambahkan.');
@@ -264,6 +289,12 @@ class KewenanganProvinsiController extends Controller
     {
         $kewenangan->delete();
 
+        // User tidak bisa akses index, arahkan ke create
+        if (auth()->user()->hasRole('user')) {
+            return redirect()->route('kewenangan-provinsi.create')
+                             ->with('success', 'Data Kewenangan Provinsi berhasil dihapus.');
+        }
+
         return redirect()->route('kewenangan-provinsi.index')
                          ->with('success', 'Data Kewenangan Provinsi berhasil dihapus.');
     }
@@ -271,10 +302,14 @@ class KewenanganProvinsiController extends Controller
     /**
      * Get statistics for dashboard
      */
-    private function getStatistics()
+    private function getStatistics($filterKabkota = null)
     {
-        // Total statistics across all records
-        $totalStats = KewenanganProvinsi::select(
+        $baseQuery = KewenanganProvinsi::query();
+        if ($filterKabkota) {
+            $baseQuery->where('kabupaten_kota', $filterKabkota);
+        }
+
+        $totalStats = (clone $baseQuery)->select(
             DB::raw('SUM(jumlah_dalam_panti) as total_dalam_panti'),
             DB::raw('SUM(jumlah_luar_panti) as total_luar_panti'),
             DB::raw('COUNT(*) as total_lks')
@@ -291,8 +326,8 @@ class KewenanganProvinsiController extends Controller
         ->orderBy('total_dalam_panti', 'desc')
         ->get();
 
-        // statistics by jenis pelayanan
-        $statsByJenisPelayanan = $this->getStatsByJenisPelayanan();
+        // statistics by jenis pelayanan (dengan filter kabkota)
+        $statsByJenisPelayanan = $this->getStatsByJenisPelayanan($filterKabkota);
 
         return [
             'total' => [
@@ -306,7 +341,7 @@ class KewenanganProvinsiController extends Controller
         ];
     }
 
-    private function getStatsByJenisPelayanan()
+    private function getStatsByJenisPelayanan($filterKabkota = null)
     {
         // Daftar tetap semua jenis pelayanan
         $jenisPelayananList = [
@@ -338,10 +373,13 @@ class KewenanganProvinsiController extends Controller
             'Komunitas adat terpencil'
         ];
 
-        // Ambil semua data
-        $allData = KewenanganProvinsi::whereNotNull('jenis_pelayanan_PPKS')
-                                   ->where('jenis_pelayanan_PPKS', '!=', '')
-                                   ->get();
+        // Ambil semua data (dengan filter kabkota jika ada)
+        $allDataQuery = KewenanganProvinsi::whereNotNull('jenis_pelayanan_PPKS')
+                                   ->where('jenis_pelayanan_PPKS', '!=', '');
+        if ($filterKabkota) {
+            $allDataQuery->where('kabupaten_kota', $filterKabkota);
+        }
+        $allData = $allDataQuery->get();
 
         // Inisialisasi statistik
         $pelayananStats = [];

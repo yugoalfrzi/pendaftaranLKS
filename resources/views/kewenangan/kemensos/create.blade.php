@@ -432,7 +432,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Nama Lembaga/Yayasan <span class="text-danger">*</span></label>
+                                    <label class="form-label">Nama Lembaga/Yayasan (sesuai akta notaris) <span class="text-danger">*</span></label>
                                     <textarea class="form-control" name="Nama_Lembaga_Yayasan" rows="3" required placeholder="Masukkan nama lengkap lembaga/yayasan">{{ old('Nama_Lembaga_Yayasan') }}</textarea>
                                     @error('Nama_Lembaga_Yayasan')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
@@ -492,7 +492,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Ketua Yayasan <span class="text-danger">*</span></label>
+                                    <label class="form-label">Ketua Yayasan (sesuai akta notaris) <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="ketua_yayasan" value="{{ old('ketua_yayasan') }}" required placeholder="Masukkan nama ketua yayasan">
                                     @error('ketua_yayasan')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>

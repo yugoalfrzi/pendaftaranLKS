@@ -723,7 +723,7 @@ unset($__errorArgs, $__bag); ?>"
                                 id="tanda_pendaftaran" name="tanda_pendaftaran" required>
                                 <option value="">Pilih Tanda Pendaftaran</option>
                                 <option value="Baru" <?php echo e(old('tanda_pendaftaran') == 'Baru' ? 'selected' : ''); ?>>Baru</option>
-                                <option value="Ulang" <?php echo e(old('tanda_pendaftaran') == 'Ulang' ? 'selected' : ''); ?>>Ulang</option>
+                                <option value="Perpanjangan" <?php echo e(old('tanda_pendaftaran') == 'Perpanjangan' ? 'selected' : ''); ?>>Perpanjangan</option>
                             </select>
                             <?php $__errorArgs = ['tanda_pendaftaran'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -737,29 +737,7 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="tanggal_persyaratan" class="form-label">Tanggal Persyaratan Dinyatakan Lengkap<span class="text-danger">*</span></label>
-                            <input type="date" class="form-control <?php $__errorArgs = ['tanggal_persyaratan'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                                   id="tanggal_persyaratan" name="tanggal_persyaratan" 
-                                   value="<?php echo e(old('tanggal_persyaratan')); ?>" required>
-                            <?php $__errorArgs = ['tanggal_persyaratan'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                <div class="invalid-feedback"><?php echo e($message); ?></div>
-                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                        </div>
+
 
                         <div class="col-md-6 mb-3">
                             <label for="tanggal_masuk_dokumen" class="form-label">Tanggal Masuk Dokumen <span class="text-danger">*</span></label>
@@ -812,7 +790,19 @@ unset($__errorArgs, $__bag); ?>
                                     </thead>
                                     <tbody>
                                         <?php $__currentLoopData = $documents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $document): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <tr class="<?php echo e($document->urutan >= 17 ? 'doc-provinsi-only' : ''); ?>">
+                                        <?php
+                                            $isPerpanjanganKabkota = str_contains($document->nama_dokumen, 'sebelumnya') && str_contains(strtolower($document->nama_dokumen), 'kabupaten kota');
+                                            $isPerpanjanganProvinsi = str_contains($document->nama_dokumen, 'sebelumnya') && str_contains(strtolower($document->nama_dokumen), 'provinsi');
+                                            $rowClass = '';
+                                            if ($isPerpanjanganKabkota) {
+                                                $rowClass = 'doc-perpanjangan-kabkota';
+                                            } elseif ($isPerpanjanganProvinsi) {
+                                                $rowClass = 'doc-perpanjangan-provinsi doc-provinsi-only';
+                                            } elseif ($document->urutan >= 17) {
+                                                $rowClass = 'doc-provinsi-only';
+                                            }
+                                        ?>
+                                        <tr class="<?php echo e($rowClass); ?>" data-doc-urutan="<?php echo e($document->urutan); ?>">
                                             <td><?php echo e($index + 1); ?></td>
                                             <td>
                                                 <strong><?php echo e($document->nama_dokumen); ?></strong>
@@ -892,18 +882,34 @@ unset($__errorArgs, $__bag); ?>
 <?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ========== KEWENANGAN TOGGLE DOKUMEN 17 & 18 ==========
+    // ========== KEWENANGAN & PERPANJANGAN TOGGLE DOKUMEN ==========
     const kewRadios = document.querySelectorAll('input[name="kewenangan_type"]');
-    const provinsiOnlyRows = document.querySelectorAll('tr.doc-provinsi-only');
+    const tandaPendaftaranSelect = document.getElementById('tanda_pendaftaran');
 
-    function toggleProvinsiDocs() {
+    function toggleDokumen() {
         const isProvinsi = document.querySelector('input[name="kewenangan_type"]:checked')?.value === 'provinsi';
-        provinsiOnlyRows.forEach(row => {
-            row.style.display = isProvinsi ? '' : 'none';
-            // disable/enable semua input agar tidak ikut submit saat kabkota
-            row.querySelectorAll('input, textarea, select').forEach(el => {
-                el.disabled = !isProvinsi;
-            });
+        const isPerpanjangan = tandaPendaftaranSelect?.value === 'Perpanjangan';
+
+        // Baris provinsi-only biasa (urutan >= 17, bukan perpanjangan)
+        document.querySelectorAll('tr.doc-provinsi-only').forEach(row => {
+            if (row.classList.contains('doc-perpanjangan-provinsi')) return;
+            const show = isProvinsi;
+            row.style.display = show ? '' : 'none';
+            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+        });
+
+        // Baris perpanjangan kabkota: tampil hanya jika kabkota + perpanjangan
+        document.querySelectorAll('tr.doc-perpanjangan-kabkota').forEach(row => {
+            const show = !isProvinsi && isPerpanjangan;
+            row.style.display = show ? '' : 'none';
+            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+        });
+
+        // Baris perpanjangan provinsi: tampil hanya jika provinsi + perpanjangan
+        document.querySelectorAll('tr.doc-perpanjangan-provinsi').forEach(row => {
+            const show = isProvinsi && isPerpanjangan;
+            row.style.display = show ? '' : 'none';
+            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
         });
 
         // Toggle pusat & cabang LKS
@@ -912,7 +918,6 @@ document.addEventListener('DOMContentLoaded', function() {
             pusatCabangSection.style.display = isProvinsi ? '' : 'none';
             const pusatSelect = document.getElementById('pusat_lks');
             if (pusatSelect) pusatSelect.required = isProvinsi;
-            // Disable semua input di dalam section saat kabkota
             pusatCabangSection.querySelectorAll('input, select').forEach(el => {
                 el.disabled = !isProvinsi;
             });
@@ -920,20 +925,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Jalankan saat load
-    toggleProvinsiDocs();
+    toggleDokumen();
 
     // Jalankan saat pilihan berubah
-    kewRadios.forEach(radio => radio.addEventListener('change', toggleProvinsiDocs));
+    kewRadios.forEach(radio => radio.addEventListener('change', toggleDokumen));
+    if (tandaPendaftaranSelect) {
+        tandaPendaftaranSelect.addEventListener('change', toggleDokumen);
+    }
 
     // Auto-fill today's date for tanggal_masuk_dokumen if empty
     const tanggalMasukInput = document.getElementById('tanggal_masuk_dokumen');
     if (tanggalMasukInput && !tanggalMasukInput.value) {
         tanggalMasukInput.value = new Date().toISOString().split('T')[0];
-    }
-
-    const tanggalPersyaratanInput = document.getElementById('tanggal_persyaratan');
-    if (tanggalPersyaratanInput && !tanggalPersyaratanInput.value) {
-        tanggalPersyaratanInput.value = new Date().toISOString().split('T')[0];
     }
 
     // ========== JENIS PELAYANAN FUNCTIONALITY ==========

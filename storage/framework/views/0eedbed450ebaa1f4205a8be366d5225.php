@@ -6,15 +6,14 @@
 <?php $__env->startSection('content'); ?>
 <style>
     .stat-card {
-        background: #fff;
         border-radius: 1.25rem;
-        border: 1px solid rgba(203,213,225,0.4);
+        border: none;
         transition: all 0.2s;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     .stat-card:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 10px 20px -10px rgba(0,0,0,0.1); 
+        transform: translateY(-4px); 
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15); 
     }
     .stat-icon {
         width: 44px; height: 44px; 
@@ -23,12 +22,20 @@
         align-items: center; 
         justify-content: center; 
         font-size: 1.2rem;
+        background: rgba(255,255,255,0.25) !important;
+        color: #fff !important;
     }
     .stat-value { 
         font-size: 1.7rem; 
         font-weight: 700; 
-        color: #0f172a; 
+        color: #fff; 
         line-height: 1.1; 
+    }
+    .stat-label {
+        color: rgba(255,255,255,0.85);
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
     }
     .card-modern {
         border-radius: 1.25rem; 
@@ -125,68 +132,68 @@
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-2">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small fw-semibold text-uppercase" style="font-size:.7rem">Total LKS</div>
+                    <div class="stat-label">Total LKS</div>
                     <div class="stat-value"><?php echo e($totalLKS); ?></div>
                 </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-buildings"></i></div>
+                <div class="stat-icon"><i class="bi bi-buildings"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small fw-semibold text-uppercase" style="font-size:.7rem">Menunggu</div>
-                    <div class="stat-value text-warning"><?php echo e($menunggu); ?></div>
+                    <div class="stat-label">Menunggu</div>
+                    <div class="stat-value"><?php echo e($menunggu); ?></div>
                 </div>
-                <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-clock"></i></div>
+                <div class="stat-icon"><i class="bi bi-clock"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background: linear-gradient(135deg, #16a34a, #15803d);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small fw-semibold text-uppercase" style="font-size:.7rem">Diterima</div>
-                    <div class="stat-value text-success"><?php echo e($diterima + $terverifikasi); ?></div>
+                    <div class="stat-label">Diterima</div>
+                    <div class="stat-value"><?php echo e($diterima + $terverifikasi); ?></div>
                 </div>
-                <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle"></i></div>
+                <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small fw-semibold text-uppercase" style="font-size:.7rem">Ditolak</div>
-                    <div class="stat-value text-danger"><?php echo e($ditolak); ?></div>
+                    <div class="stat-label">Ditolak</div>
+                    <div class="stat-value"><?php echo e($ditolak); ?></div>
                 </div>
-                <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-x-circle"></i></div>
+                <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background: linear-gradient(135deg, #0891b2, #0e7490);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small fw-semibold text-uppercase" style="font-size:.7rem">Dikembalikan</div>
-                    <div class="stat-value text-info"><?php echo e($dikembalikan); ?></div>
+                    <div class="stat-label">Dikembalikan</div>
+                    <div class="stat-value"><?php echo e($dikembalikan); ?></div>
                 </div>
-                <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <div class="stat-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small fw-semibold text-uppercase" style="font-size:.7rem">Diterima Proses</div>
-                    <div class="stat-value text-primary"><?php echo e($diterimaProses); ?></div>
+                    <div class="stat-label">Diterima Proses</div>
+                    <div class="stat-value"><?php echo e($diterimaProses); ?></div>
                 </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-hourglass-split"></i></div>
+                <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
             </div>
         </div>
     </div>
