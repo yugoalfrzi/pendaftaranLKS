@@ -141,7 +141,7 @@ class LKSController extends Controller
             'documents' => 'required|array',
             'documents.*.document_id' => 'required|exists:documents,id',
             'documents.*.keterangan' => 'nullable|string',
-            'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:2048',
+            'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:20480',
         ]);
 
         DB::beginTransaction();
@@ -287,7 +287,7 @@ class LKSController extends Controller
                 'documents' => 'sometimes|array',
                 'documents.*.document_id' => 'required_with:documents|exists:documents,id',
                 'documents.*.keterangan' => 'nullable|string',
-                'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:2048',
+                'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:20480',
             ]);
 
             // Update data LKS termasuk kabupaten_kota
