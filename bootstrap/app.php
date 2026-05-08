@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Alias middleware
         $middleware->alias([
+            'auth'       => \App\Http\Middleware\Authenticate::class,
             'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
             'admin'      => \App\Http\Middleware\AdminMiddleware::class,
             'rolecheck'  => \App\Http\Middleware\Rolecheck::class,
