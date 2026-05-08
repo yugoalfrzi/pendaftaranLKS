@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Install semua system dependencies yang dibutuhkan phpspreadsheet
+# Install semua system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nginx
 
-# Install semua PHP extensions (lengkap)
+# Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     gd \
@@ -39,8 +39,17 @@ COPY . /var/www/html
 # Hapus vendor folder yang mungkin corrupt
 RUN rm -rf vendor
 
-# Install dependencies dengan mengabaikan check extension yang bermasalah
-RUN composer install --ignore-platform-req=ext-gd --ignore-platform-req=ext-zip --no-scripts --no-interaction --optimize-autoloader
+# Install dependencies
+RUN composer install --ignore-platform-req=ext-gd --ignore-platform-req=ext-zip --no-interaction --optimize-autoloader
+
+# Generate APP_KEY jika belum ada
+RUN php artisan key:generate --force || true
+
+# **INI YANG PENTING: Cache semua konfigurasi**
+RUN php artisan config:clear
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
 # Set permission
 RUN chown -R www-data:www-data /var/www/html \
@@ -49,4 +58,5 @@ RUN chown -R www-data:www-data /var/www/html \
 
 EXPOSE 8000
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# **GANTI: Gunakan perintah yang benar untuk membaca env**
+CMD sh -c "php artisan config:clear && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=8000"
