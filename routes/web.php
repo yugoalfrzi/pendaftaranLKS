@@ -151,15 +151,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/{kewenangan}', [KewenanganKemensosController::class, 'show'])->name('kewenangan-kemensos.show');
     });
 
-    // Announcements Routes
+    // Announcements Routes — read-only untuk semua user terautentikasi
     Route::prefix('announcements')->group(function () {
         Route::get('/regulasi', [AnnouncementController::class, 'regulasi'])->name('announcements.regulasi');
         Route::get('/panduan', [AnnouncementController::class, 'panduan'])->name('announcements.panduan');
         Route::get('/surat', [AnnouncementController::class, 'surat'])->name('announcements.surat');
-        Route::get('/create', [AnnouncementController::class, 'create'])->name('announcements.create');
-        Route::post('/store', [AnnouncementController::class, 'store'])->name('announcements.store');
         Route::get('/download/{type}/{filename}', [AnnouncementController::class, 'download'])->name('announcements.download');
         Route::get('/preview/{type}/{filename}', [AnnouncementController::class, 'viewFile'])->name('announcements.preview');
+    });
+
+    // Announcements CRUD — hanya super_admin
+    Route::prefix('announcements')->middleware('superadmin')->group(function () {
+        Route::get('/', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/create', [AnnouncementController::class, 'create'])->name('announcements.create');
+        Route::post('/store', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::get('/{id}/edit', [AnnouncementController::class, 'edit'])->name('announcements.edit');
+        Route::put('/{id}', [AnnouncementController::class, 'update'])->name('announcements.update');
         Route::delete('/{id}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
     });
 

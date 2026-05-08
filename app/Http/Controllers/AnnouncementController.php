@@ -10,6 +10,25 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class AnnouncementController extends Controller
 {
     /**
+     * Display management index for super admin
+     */
+    public function index()
+    {
+        $announcements = Announcement::orderBy('announcement_type')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $stats = [
+            'total'    => Announcement::count(),
+            'regulasi' => Announcement::byType('regulasi')->count(),
+            'panduan'  => Announcement::byType('panduan')->count(),
+            'surat'    => Announcement::byType('surat')->count(),
+        ];
+
+        return view('announcements.index', compact('announcements', 'stats'));
+    }
+
+    /**
      * Display the regulasi page
      */
     public function regulasi()
@@ -110,6 +129,90 @@ class AnnouncementController extends Controller
         $activeTemplates = count($letters);
 
         return view('announcements.surat', compact('letters', 'currentYear', 'activeTemplates'));
+    }
+
+    /**
+     * Show form edit announcement
+     */
+    public function edit(int $id)
+    {
+        $announcement = Announcement::findOrFail($id);
+
+        $announcementTypes = [
+            'panduan'  => 'Panduan',
+            'regulasi' => 'Regulasi',
+            'surat'    => 'Surat',
+        ];
+
+        $formats = ['PDF' => 'pdf', 'DOCX' => 'docx', 'DOC' => 'doc', 'PPT' => 'ppt', 'PPTX' => 'pptx'];
+
+        return view('announcements.edit', compact('announcement', 'announcementTypes', 'formats'));
+    }
+
+    /**
+     * Update announcement
+     */
+    public function update(Request $request, int $id)
+    {
+        $announcement = Announcement::findOrFail($id);
+
+        $request->validate([
+            'announcement_type' => 'required|in:panduan,regulasi,surat',
+            'title'             => 'required|string|max:255',
+            'description'       => 'required|string',
+            'category'          => 'required|string',
+            'format'            => 'required|string',
+            'file'              => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx|max:10240',
+            'year'              => 'nullable|integer|min:1900|max:' . date('Y'),
+            'date'              => 'nullable|date',
+            'type'              => 'nullable|string',
+            'is_active'         => 'nullable|boolean',
+        ]);
+
+        try {
+            $data = [
+                'title'             => $request->title,
+                'description'       => $request->description,
+                'announcement_type' => $request->announcement_type,
+                'category'          => $request->category,
+                'format'            => $request->format,
+                'is_active'         => $request->boolean('is_active', true),
+                'last_updated'      => now(),
+            ];
+
+            if ($request->announcement_type === 'regulasi') {
+                $data['year'] = $request->year;
+            }
+            if ($request->announcement_type === 'surat') {
+                $data['type'] = $request->type;
+                $data['date'] = $request->date ?: now();
+            }
+
+            // Ganti file jika ada upload baru
+            if ($request->hasFile('file')) {
+                // Hapus file lama
+                if ($announcement->file_path && Storage::disk('public')->exists($announcement->file_path)) {
+                    Storage::disk('public')->delete($announcement->file_path);
+                }
+
+                $file     = $request->file('file');
+                $folder   = $request->announcement_type . 's';
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs($folder, $fileName, 'public');
+
+                $data['file_name'] = $fileName;
+                $data['file_path'] = $filePath;
+                $data['file_size'] = $this->formatBytes($file->getSize());
+                $data['file_type'] = $file->getClientOriginalExtension();
+            }
+
+            $announcement->update($data);
+
+            return redirect()->route('announcements.index')
+                ->with('success', 'Dokumen berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**

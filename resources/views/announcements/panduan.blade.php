@@ -297,7 +297,7 @@
 
 <!-- Quick Actions (Admin only) -->
 @auth
-@if(Auth::user()->hasRole('admin'))
+@if(Auth::user()->hasRole('super_admin'))
 <div class="row mt-4">
     <div class="col-12">
         <div class="card-modern">

@@ -264,6 +264,11 @@
                 <i class="bi bi-chevron-down dd-arrow"></i>
             </button>
             <div class="submenu {{ $infoActive ? 'open' : '' }}" id="infoSubmenu">
+                @if(auth()->user()->role === 'super_admin')
+                <a class="nav-link {{ request()->routeIs('announcements.index') ? 'active' : '' }}" href="{{ route('announcements.index') }}">
+                    <i class="bi bi-gear"></i><span>Kelola Pengumuman</span>
+                </a>
+                @endif
                 <a class="nav-link {{ request()->routeIs('announcements.regulasi') ? 'active' : '' }}" href="{{ route('announcements.regulasi') }}">
                     <i class="bi bi-file-earmark-text"></i><span>Regulasi</span>
                 </a>
