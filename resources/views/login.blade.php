@@ -447,48 +447,56 @@
                 loginSpinner.classList.remove('d-none');
 
                 fetch(loginForm.action, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: new URLSearchParams(new FormData(loginForm))
-                })
-                .then(async response => {
-                    if (response.status === 419) {
-                        showAlert('Sesi kedaluwarsa. Muat ulang halaman dan coba lagi.', 'danger');
-                        throw new Error('CSRF token mismatch');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        showAlert('Login berhasil! Mengalihkan...', 'success');
-                        setTimeout(() => {
-                            window.location.href = data.redirect || '/dashboard';
-                        }, 1500);
-                    } else {
-                        showAlert(data.message || 'Email atau kata sandi salah!', 'danger');
-                        loginButton.disabled = false;
-                        loginText.textContent = 'Masuk';
-                        loginSpinner.classList.add('d-none');
-                    }
-                })
-                .catch(async error => {
-                    console.error('Error asli:', error);
-                                
-                    showAlert(
-                        error.message || 'Terjadi kesalahan.',
-                        'danger'
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                credentials: 'include',
+                body: new URLSearchParams(new FormData(loginForm))
+            })
+            .then(async response => {
+            
+                // Ambil text mentah dulu
+                const text = await response.text();
+            
+                let data;
+            
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('Response bukan JSON:', text);
+                
+                    throw new Error(
+                        'Server mengembalikan response tidak valid. Cek Railway Logs.'
                     );
-                                
-                    loginButton.disabled = false;
-                    loginText.textContent = 'Masuk';
-                    loginSpinner.classList.add('d-none');
-                });
+                }
+            
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login gagal');
+                }
+            
+                if (data.success) {
+                    showAlert('Login berhasil! Mengalihkan...', 'success');
+                
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/dashboard';
+                    }, 1200);
+                
+                } else {
+                    throw new Error(data.message || 'Email atau password salah');
+                }
+            })
+            .catch(error => {
+                console.error('ERROR LOGIN:', error);
+            
+                showAlert(error.message, 'danger');
+            
+                loginButton.disabled = false;
+                loginText.textContent = 'Masuk';
+                loginSpinner.classList.add('d-none');
             });
 
             function showAlert(message, type) {
