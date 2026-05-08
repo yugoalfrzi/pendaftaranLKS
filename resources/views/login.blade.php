@@ -454,7 +454,7 @@
                         'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
                         'Accept': 'application/json'
                     },
-                    credentials: 'same-origin',
+                    credentials: 'include',
                     body: new URLSearchParams(new FormData(loginForm))
                 })
                 .then(async response => {
@@ -477,9 +477,14 @@
                         loginSpinner.classList.add('d-none');
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showAlert('Terjadi kesalahan. Silakan coba lagi.', 'danger');
+                .catch(async error => {
+                    console.error('Error asli:', error);
+                                
+                    showAlert(
+                        error.message || 'Terjadi kesalahan.',
+                        'danger'
+                    );
+                                
                     loginButton.disabled = false;
                     loginText.textContent = 'Masuk';
                     loginSpinner.classList.add('d-none');
