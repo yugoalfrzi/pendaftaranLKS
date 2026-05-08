@@ -314,8 +314,7 @@
                 <h2>Selamat Datang</h2>
                 <p class="subtitle">Silakan masuk ke akun Anda</p>
 
-                <!-- Alert placeholder -->
-                <div id="loginAlert" class="alert-custom d-none" role="alert"></div>
+                <!-- Alert placeholder tidak dipakai lagi (form submit biasa) -->
 
                 @if(session('pending'))
                 <div class="alert-custom alert-warning mb-3" style="background:#fff8e1;color:#856404;border-left:4px solid #ffc107;">
@@ -335,6 +334,12 @@
                 </div>
                 @endif
 
+                @if ($errors->any())
+                <div class="alert-custom alert-danger mb-3">
+                    <i class="bi bi-exclamation-circle me-2"></i>{{ $errors->first() }}
+                </div>
+                @endif
+
                 <form id="loginForm" action="{{ route('login') }}" method="POST">
                     @csrf
                     <div class="mb-3">
@@ -342,7 +347,7 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control" id="email" name="email"
-                                   placeholder="nama@contoh.com" required autofocus>
+                                   placeholder="nama@contoh.com" value="{{ old('email') }}" required autofocus>
                         </div>
                     </div>
 
@@ -403,13 +408,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            const loginAlert = document.getElementById('loginAlert');
-            const loginButton = document.getElementById('loginButton');
-            const loginText = document.getElementById('loginText');
-            const loginSpinner = document.getElementById('loginSpinner');
-
-            // ===== PASSWORD TOGGLE FUNCTIONALITY =====
+            // ===== PASSWORD TOGGLE =====
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
 
@@ -417,97 +416,23 @@
                 togglePassword.addEventListener('click', function() {
                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                     passwordInput.setAttribute('type', type);
-
                     const icon = this.querySelector('i');
-                    if (type === 'password') {
-                        icon.classList.remove('bi-eye-slash');
-                        icon.classList.add('bi-eye');
-                    } else {
-                        icon.classList.remove('bi-eye');
-                        icon.classList.add('bi-eye-slash');
-                    }
+                    icon.classList.toggle('bi-eye');
+                    icon.classList.toggle('bi-eye-slash');
                 });
             }
 
-            // ===== LOGIN FORM HANDLING =====
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+            // ===== LOADING SPINNER ON SUBMIT =====
+            const loginForm = document.getElementById('loginForm');
+            const loginButton = document.getElementById('loginButton');
+            const loginText = document.getElementById('loginText');
+            const loginSpinner = document.getElementById('loginSpinner');
 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-
-                if (!email || !password) {
-                    showAlert('Email dan kata sandi harus diisi!', 'danger');
-                    return;
-                }
-
-                // Loading state
+            loginForm.addEventListener('submit', function() {
                 loginButton.disabled = true;
                 loginText.textContent = 'Memproses...';
                 loginSpinner.classList.remove('d-none');
-
-                fetch(loginForm.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                credentials: 'include',
-                body: new URLSearchParams(new FormData(loginForm))
-            })
-            .then(async response => {
-            
-                // Ambil text mentah dulu
-                const text = await response.text();
-            
-                let data;
-            
-                try {
-                    data = JSON.parse(text);
-                } catch (e) {
-                    console.error('Response bukan JSON:', text);
-                
-                    throw new Error(
-                        'Server mengembalikan response tidak valid. Cek Railway Logs.'
-                    );
-                }
-            
-                if (!response.ok) {
-                    throw new Error(data.message || 'Login gagal');
-                }
-            
-                if (data.success) {
-                    showAlert('Login berhasil! Mengalihkan...', 'success');
-                
-                    setTimeout(() => {
-                        window.location.href = data.redirect || '/dashboard';
-                    }, 1200);
-                
-                } else {
-                    throw new Error(data.message || 'Email atau password salah');
-                }
-            })
-            .catch(error => {
-                console.error('ERROR LOGIN:', error);
-            
-                showAlert(error.message, 'danger');
-            
-                loginButton.disabled = false;
-                loginText.textContent = 'Masuk';
-                loginSpinner.classList.add('d-none');
             });
-
-            function showAlert(message, type) {
-                loginAlert.textContent = message;
-                loginAlert.className = `alert-custom alert-${type}`;
-                loginAlert.classList.remove('d-none');
-
-                setTimeout(() => {
-                    loginAlert.classList.add('d-none');
-                }, 5000);
-            }
         });
     </script>
 </body>
