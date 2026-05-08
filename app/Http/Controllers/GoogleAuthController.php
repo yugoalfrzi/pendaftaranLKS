@@ -55,18 +55,24 @@ class GoogleAuthController extends Controller
                     ]);
                 }
 
-                // Cek approval status
-                if ($user->approval_status === 'pending') {
+                // Admin & super_admin tidak perlu approval
+                $needsApproval = !in_array($user->role, ['admin', 'super_admin']);
+
+                if ($needsApproval && $user->approval_status === 'pending') {
                     return redirect()->route('login.show')
                         ->with('pending', 'Akun kamu sedang menunggu persetujuan admin. Kami akan mengirim email setelah akun disetujui.');
                 }
 
-                if ($user->approval_status === 'rejected') {
+                if ($needsApproval && $user->approval_status === 'rejected') {
                     return redirect()->route('login.show')
                         ->with('error', 'Akun kamu telah ditolak oleh admin. Hubungi admin untuk informasi lebih lanjut.');
                 }
 
-                // Admin & super_admin langsung bisa login tanpa approval
+                if ($needsApproval && $user->approval_status !== 'approved') {
+                    return redirect()->route('login.show')
+                        ->with('pending', 'Akun kamu sedang menunggu persetujuan admin.');
+                }
+
                 Auth::login($user, true);
                 return redirect()->intended('/dashboard');
             }
