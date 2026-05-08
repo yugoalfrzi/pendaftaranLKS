@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\RPTKA;
 
 use App\Http\Controllers\Controller;
-use App\Models\rptka;
-use App\Models\rptkaDocumentStatus;
+use App\Models\Rptka;
+use App\Models\RptkaDocumentStatus;
 use App\Models\MasterDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +16,7 @@ class RptkaController extends Controller
 
     public function index(Request $request)
     {
-        $query = rptka::query();
+        $query = Rptka::query();
 
         // User hanya lihat miliknya sendiri
         if (auth()->user()->role === 'user') {
@@ -42,8 +42,8 @@ class RptkaController extends Controller
         $rptkas = $query->latest()->paginate(15);
 
         $baseQuery = auth()->user()->role === 'user'
-            ? rptka::where('user_id', auth()->id())
-            : rptka::query();
+            ? Rptka::where('user_id', auth()->id())
+            : Rptka::query();
 
         $stats = [
             'total'        => (clone $baseQuery)->count(),
@@ -83,7 +83,7 @@ class RptkaController extends Controller
 
         DB::beginTransaction();
         try {
-            $rptka = rptka::create([
+            $rptka = Rptka::create([
                 'user_id'               => auth()->id(),
                 'nama_lks'              => $request->nama_lks,
                 'nama_tka_pemohon'      => $request->nama_tka_pemohon,
@@ -104,7 +104,7 @@ class RptkaController extends Controller
                         $filename = 'rptka_' . $rptka->id . '_' . $docId . '_' . time() . '.' . $file->getClientOriginalExtension();
                         $filePath = $file->storeAs('rptka_documents', $filename, 'public');
                     }
-                    rptkaDocumentStatus::updateOrCreate(
+                    RptkaDocumentStatus::updateOrCreate(
                         ['rptka_id' => $rptka->id, 'master_document_id' => $docId],
                         [
                             'is_ada'     => isset($docData['is_ada']) ? true : false,
@@ -128,13 +128,13 @@ class RptkaController extends Controller
 
     public function show($id)
     {
-        $rptka = rptka::with(['documentStatuses.masterDocument'])->findOrFail($id);
+        $rptka = Rptka::with(['documentStatuses.masterDocument'])->findOrFail($id);
         return view('RPTKA.show', compact('rptka'));
     }
 
     public function edit($id)
     {
-        $rptka = rptka::with(['documentStatuses.masterDocument'])->findOrFail($id);
+        $rptka = Rptka::with(['documentStatuses.masterDocument'])->findOrFail($id);
 
         // User hanya bisa edit miliknya sendiri dan status Menunggu/Dikembalikan
         if (auth()->user()->role === 'user') {
@@ -150,7 +150,7 @@ class RptkaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
 
         if (auth()->user()->role === 'user') {
             if ($rptka->user_id !== auth()->id()) abort(403);
@@ -183,7 +183,7 @@ class RptkaController extends Controller
 
             if ($request->has('documents')) {
                 foreach ($request->documents as $docId => $docData) {
-                    $status   = rptkaDocumentStatus::where('rptka_id', $rptka->id)
+                    $status   = RptkaDocumentStatus::where('rptka_id', $rptka->id)
                                     ->where('master_document_id', $docId)->first();
                     $filePath = $status?->file_path;
 
@@ -194,7 +194,7 @@ class RptkaController extends Controller
                         $filePath = $file->storeAs('rptka_documents', $filename, 'public');
                     }
 
-                    rptkaDocumentStatus::updateOrCreate(
+                    RptkaDocumentStatus::updateOrCreate(
                         ['rptka_id' => $rptka->id, 'master_document_id' => $docId],
                         [
                             'is_ada'     => isset($docData['is_ada']) ? true : false,
@@ -218,7 +218,7 @@ class RptkaController extends Controller
 
     public function destroy($id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
 
         if (auth()->user()->role === 'user' && $rptka->user_id !== auth()->id()) abort(403);
 
@@ -242,7 +242,7 @@ class RptkaController extends Controller
     public function adminIndex(Request $request)
     {
         $adminKabkota = auth()->user()->kabupaten_kota;
-        $query = rptka::with('user');
+        $query = Rptka::with('user');
 
         // Filter berdasarkan kabupaten/kota admin yang login
         // Jika RPTKA tidak punya kabupaten_kota (data lama), tetap tampilkan
@@ -267,7 +267,7 @@ class RptkaController extends Controller
 
         $rptkas = $query->latest()->paginate(15);
 
-        $baseStats = rptka::query();
+        $baseStats = Rptka::query();
         if ($adminKabkota) {
             $baseStats->where(function($q) use ($adminKabkota) {
                 $q->where('kabupaten_kota', $adminKabkota)
@@ -289,13 +289,13 @@ class RptkaController extends Controller
 
     public function adminVerification($id)
     {
-        $rptka = rptka::with(['documentStatuses.masterDocument', 'user'])->findOrFail($id);
+        $rptka = Rptka::with(['documentStatuses.masterDocument', 'user'])->findOrFail($id);
         return view('admin.rptka.verification', compact('rptka'));
     }
 
     public function adminProcessVerification(Request $request, $id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
 
         $request->validate([
             'status_permohonan'       => 'required|in:Diterima,Ditolak,Dikembalikan',
@@ -326,7 +326,7 @@ class RptkaController extends Controller
 
     public function adminDownloadSuratRekomendasi($id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
         if (!$rptka->surat_rekomendasi_rptka_path || !Storage::disk('public')->exists($rptka->surat_rekomendasi_rptka_path)) {
             abort(404, 'Surat rekomendasi RPTKA tidak ditemukan');
         }
@@ -335,7 +335,7 @@ class RptkaController extends Controller
 
     public function adminPreviewSuratRekomendasi($id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
         if (!$rptka->surat_rekomendasi_rptka_path || !Storage::disk('public')->exists($rptka->surat_rekomendasi_rptka_path)) {
             abort(404, 'Surat rekomendasi RPTKA tidak ditemukan');
         }
@@ -349,7 +349,7 @@ class RptkaController extends Controller
     public function superAdminIndex(Request $request)
     {
         // Hanya tampilkan yang sudah ada surat rekomendasi dari admin (status Diterima)
-        $query = rptka::with('user')
+        $query = Rptka::with('user')
             ->where('status_permohonan', 'Diterima')
             ->whereNotNull('surat_rekomendasi_rptka_path');
 
@@ -372,10 +372,10 @@ class RptkaController extends Controller
         $rptkas = $query->latest()->paginate(15);
 
         $stats = [
-            'total'         => rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_path')->count(),
-            'belum_verval'  => rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_path')->whereNull('surat_rekomendasi_rptka_final_path')->count(),
-            'sudah_verval'  => rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_final_path')->count(),
-            'terverifikasi' => rptka::where('status_permohonan', 'Terverifikasi')->count(),
+            'total'         => Rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_path')->count(),
+            'belum_verval'  => Rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_path')->whereNull('surat_rekomendasi_rptka_final_path')->count(),
+            'sudah_verval'  => Rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_final_path')->count(),
+            'terverifikasi' => Rptka::where('status_permohonan', 'Terverifikasi')->count(),
         ];
 
         return view('superadmin.rptka.index', compact('rptkas', 'stats'));
@@ -383,7 +383,7 @@ class RptkaController extends Controller
 
     public function superAdminVerification($id)
     {
-        $rptka = rptka::with(['documentStatuses.masterDocument', 'user'])->findOrFail($id);
+        $rptka = Rptka::with(['documentStatuses.masterDocument', 'user'])->findOrFail($id);
 
         if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Diterima') {
             return redirect()->route('superadmin.rptka.index')
@@ -395,7 +395,7 @@ class RptkaController extends Controller
 
     public function superAdminProcessVerification(Request $request, $id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
 
         if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Diterima') {
             return redirect()->route('superadmin.rptka.index')
@@ -426,7 +426,7 @@ class RptkaController extends Controller
 
     public function superAdminDownloadSuratFinal($id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
         if (!$rptka->surat_rekomendasi_rptka_final_path || !Storage::disk('public')->exists($rptka->surat_rekomendasi_rptka_final_path)) {
             abort(404, 'Surat rekomendasi final tidak ditemukan');
         }
@@ -435,7 +435,7 @@ class RptkaController extends Controller
 
     public function superAdminPreviewSuratFinal($id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
         if (!$rptka->surat_rekomendasi_rptka_final_path || !Storage::disk('public')->exists($rptka->surat_rekomendasi_rptka_final_path)) {
             abort(404, 'Surat rekomendasi final tidak ditemukan');
         }
@@ -448,7 +448,7 @@ class RptkaController extends Controller
 
     public function previewDocument($id, $docId)
     {
-        $status = rptkaDocumentStatus::where('rptka_id', $id)
+        $status = RptkaDocumentStatus::where('rptka_id', $id)
                     ->where('master_document_id', $docId)->firstOrFail();
 
         if (!$status->file_path || !Storage::disk('public')->exists($status->file_path)) {
@@ -462,7 +462,7 @@ class RptkaController extends Controller
 
     public function downloadDocument($id, $docId)
     {
-        $status = rptkaDocumentStatus::where('rptka_id', $id)
+        $status = RptkaDocumentStatus::where('rptka_id', $id)
                     ->where('master_document_id', $docId)->firstOrFail();
 
         if (!$status->file_path || !Storage::disk('public')->exists($status->file_path)) {
@@ -475,7 +475,7 @@ class RptkaController extends Controller
     // User download surat rekomendasi final
     public function downloadSuratFinal($id)
     {
-        $rptka = rptka::findOrFail($id);
+        $rptka = Rptka::findOrFail($id);
 
         if (auth()->user()->role === 'user' && $rptka->user_id !== auth()->id()) abort(403);
 

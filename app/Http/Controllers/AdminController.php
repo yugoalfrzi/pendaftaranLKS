@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\lks;
+use App\Models\LKS;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +16,7 @@ class AdminController extends Controller
         $adminKabkota = auth()->user()->kabupaten_kota;
 
         // Query Kab/Kota — hanya tampilkan LKS dari kabupaten/kota admin yang login
-        $queryKabkota = lks::with('user')->where('kewenangan_type', 'kabkota');
+        $queryKabkota = LKS::with('user')->where('kewenangan_type', 'kabkota');
         if ($adminKabkota) {
             $queryKabkota->where(function($q) use ($adminKabkota) {
                 $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
@@ -32,7 +32,7 @@ class AdminController extends Controller
         $lksKabkota = $queryKabkota->latest()->paginate(15, ['*'], 'kabkota_page');
 
         // Query Provinsi — hanya tampilkan LKS dari kabupaten/kota admin yang login
-        $queryProvinsi = lks::with('user')->where('kewenangan_type', 'provinsi');
+        $queryProvinsi = LKS::with('user')->where('kewenangan_type', 'provinsi');
         if ($adminKabkota) {
             $queryProvinsi->where(function($q) use ($adminKabkota) {
                 $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
@@ -48,7 +48,7 @@ class AdminController extends Controller
         $lksProvinsi = $queryProvinsi->latest()->paginate(15, ['*'], 'provinsi_page');
 
         // Stats hanya untuk kabupaten/kota admin yang login
-        $baseStats = lks::query();
+        $baseStats = LKS::query();
         if ($adminKabkota) {
             $baseStats->where(function($q) use ($adminKabkota) {
                 $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
@@ -73,13 +73,13 @@ class AdminController extends Controller
 
     public function showVerification($id)
     {
-        $lks = lks::with(['checklists.document', 'user'])->findOrFail($id);
+        $lks = LKS::with(['checklists.document', 'user'])->findOrFail($id);
         return view('admin.verification', compact('lks'));
     }
 
     public function verification(Request $request, $id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         $rules = [
             'status_permohonan'   => 'required|in:Diterima,Ditolak,Dikembalikan',
@@ -143,13 +143,13 @@ class AdminController extends Controller
 
     public function edit($id)
     {
-        $lks = lks::with('user')->findOrFail($id);
+        $lks = LKS::with('user')->findOrFail($id);
         return view('admin.edit', compact('lks'));
     }
 
     public function update(Request $request, $id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $request->validate([
             'nama_lks'         => 'required|string|max:255',
             'alamat_lks'       => 'required|string',
@@ -161,13 +161,13 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $lks = lks::with(['checklists.document', 'user'])->findOrFail($id);
+        $lks = LKS::with(['checklists.document', 'user'])->findOrFail($id);
         return view('lks.show', compact('lks'));
     }
 
     public function destroy($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if ($lks->sertifikat_path) Storage::disk('public')->delete($lks->sertifikat_path);
         if ($lks->sertifikat_kabkota_path) Storage::disk('public')->delete($lks->sertifikat_kabkota_path);
         $lks->delete();
@@ -177,7 +177,7 @@ class AdminController extends Controller
     // ===== Surat Rekomendasi =====
     public function downloadSertifikat($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if (!$lks->surat_rekomendasi_path || !Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
             abort(404, 'Surat rekomendasi tidak ditemukan');
         }
@@ -186,7 +186,7 @@ class AdminController extends Controller
 
     public function previewSertifikat($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if (!$lks->surat_rekomendasi_path || !Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
             abort(404, 'Surat rekomendasi tidak ditemukan');
         }
@@ -197,7 +197,7 @@ class AdminController extends Controller
 
     public function deleteSertifikat($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if ($lks->surat_rekomendasi_path && Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
             Storage::disk('public')->delete($lks->surat_rekomendasi_path);
             $lks->surat_rekomendasi_path = null;
@@ -209,7 +209,7 @@ class AdminController extends Controller
     // ===== Tanda Pendaftaran Kab/Kota =====
     public function downloadSertifikatKabkota($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
             abort(404, 'Tanda pendaftaran kab/kota tidak ditemukan');
         }
@@ -218,7 +218,7 @@ class AdminController extends Controller
 
     public function previewSertifikatKabkota($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
             abort(404, 'Tanda pendaftaran kab/kota tidak ditemukan');
         }
@@ -229,7 +229,7 @@ class AdminController extends Controller
 
     public function deleteSertifikatKabkota($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         if ($lks->sertifikat_kabkota_path && Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
             Storage::disk('public')->delete($lks->sertifikat_kabkota_path);
             $lks->sertifikat_kabkota_path = null;
@@ -240,7 +240,7 @@ class AdminController extends Controller
 
     public function verifyDocuments(Request $request, $id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $lks->updatePendaftaranLengkap();
         return redirect()->back()->with('success', 'Status kelengkapan dokumen berhasil diperbarui');
     }
@@ -253,11 +253,11 @@ class AdminController extends Controller
             'status' => 'required_if:action,update_status',
         ]);
         if ($request->action === 'delete') {
-            lks::whereIn('id', $request->ids)->delete();
+            LKS::whereIn('id', $request->ids)->delete();
             return redirect()->back()->with('success', 'Data berhasil dihapus');
         }
         if ($request->action === 'update_status') {
-            lks::whereIn('id', $request->ids)->update(['status_permohonan' => $request->status]);
+            LKS::whereIn('id', $request->ids)->update(['status_permohonan' => $request->status]);
             return redirect()->back()->with('success', 'Status berhasil diperbarui');
         }
         return redirect()->back();
@@ -275,7 +275,7 @@ class AdminController extends Controller
 
     public function previewSertifikatKabkotaPublic($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
@@ -288,7 +288,7 @@ class AdminController extends Controller
 
     public function downloadSertifikatKabkotaPublic($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_kabkota_path || !Storage::disk('public')->exists($lks->sertifikat_kabkota_path)) {
@@ -299,7 +299,7 @@ class AdminController extends Controller
 
     public function previewSuratRekomendasiPublic($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $this->checkLksAccess($lks);
 
         if (!$lks->surat_rekomendasi_path || !Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
@@ -312,7 +312,7 @@ class AdminController extends Controller
 
     public function downloadSuratRekomendasiPublic($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $this->checkLksAccess($lks);
 
         if (!$lks->surat_rekomendasi_path || !Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
@@ -323,7 +323,7 @@ class AdminController extends Controller
 
     public function previewSertifikatProvinsiPublic($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
@@ -336,7 +336,7 @@ class AdminController extends Controller
 
     public function downloadSertifikatProvinsiPublic($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         $this->checkLksAccess($lks);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {

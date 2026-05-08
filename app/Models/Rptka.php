@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class rptka extends Model
+class Rptka extends Model
 {
     use HasFactory;
 
@@ -55,14 +55,14 @@ class rptka extends Model
     // Relationship ke status dokumen (pivot)
     public function documentStatuses()
     {
-        return $this->hasMany(rptkaDocumentStatus::class, 'rptka_id');
+        return $this->hasMany(RptkaDocumentStatus::class, 'rptka_id');
     }
 
     // Relationship ke master documents melalui pivot
     public function documents()
     {
         return $this->belongsToMany(MasterDocument::class, 'rptka_document_status')
-                    ->using(rptkaDocumentStatus::class)
+                    ->using(RptkaDocumentStatus::class)
                     ->withPivot('is_ada', 'keterangan', 'file_path')
                     ->withTimestamps()
                     ->orderBy('urutan');
@@ -142,7 +142,7 @@ class rptka extends Model
         $requiredDocs = $this->getRequiredDocuments();
 
         foreach ($requiredDocs as $doc) {
-            rptkaDocumentStatus::firstOrCreate([
+            RptkaDocumentStatus::firstOrCreate([
                 'rptka_id' => $this->id,
                 'master_document_id' => $doc->id,
             ], [

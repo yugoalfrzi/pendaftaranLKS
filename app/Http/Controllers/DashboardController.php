@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LKS;
-use App\Models\rptka;
+use App\Models\Rptka;
 use App\Models\KewenanganKabkota;
 use App\Models\KewenanganProvinsi;
 use App\Models\KewenanganKemensos;
@@ -44,7 +44,7 @@ class DashboardController extends Controller
         $dikembalikan   = (clone $base)->where('status_permohonan', 'Dikembalikan')->count();
         $lengkap        = (clone $base)->where('pendaftaran_lengkap', true)->count();
 
-        $rptkaBase     = rptka::query();
+        $rptkaBase     = Rptka::query();
         if ($kabkota) $rptkaBase->where('kabupaten_kota', $kabkota);
         $totalRptka    = (clone $rptkaBase)->count();
         $rptkaMenunggu = (clone $rptkaBase)->where('status_permohonan', 'Menunggu')->count();
@@ -95,20 +95,20 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $myRptka       = rptka::where('user_id', $userId)->latest()->get();
+        $myRptka       = Rptka::where('user_id', $userId)->latest()->get();
         $totalRptka    = $myRptka->count();
         $rptkaMenunggu = $myRptka->where('status_permohonan', 'Menunggu')->count();
         $rptkaDiterima = $myRptka->whereIn('status_permohonan', ['Diterima', 'Terverifikasi'])->count();
 
         // RPTKA yang ditolak/dikembalikan
         $rptkaPerluPerhatian = $myRptka->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])->count();
-        $rptkaStatusTerkini  = rptka::where('user_id', $userId)
+        $rptkaStatusTerkini  = Rptka::where('user_id', $userId)
             ->whereIn('status_permohonan', ['Diterima', 'Terverifikasi', 'Ditolak', 'Dikembalikan'])
             ->latest('updated_at')
             ->take(5)
             ->get();
 
-        $recentRptka = rptka::where('user_id', $userId)->latest()->take(5)->get();
+        $recentRptka = Rptka::where('user_id', $userId)->latest()->take(5)->get();
 
         return view('dashboard.user', compact(
             'totalLks', 'menunggu', 'diterima', 'ditolak', 'dikembalikan',

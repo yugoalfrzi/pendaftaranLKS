@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class rptkaDocumentStatus extends Model
+class RptkaDocumentStatus extends Model
 {
     protected $table = 'rptka_document_status';
 
@@ -22,7 +22,7 @@ class rptkaDocumentStatus extends Model
 
     public function application()
     {
-        return $this->belongsTo(rptka::class, 'rptka_id');
+        return $this->belongsTo(Rptka::class, 'rptka_id');
     }
 
     public function masterDocument()

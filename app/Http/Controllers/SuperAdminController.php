@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\lks;
+use App\Models\LKS;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +25,7 @@ class SuperAdminController extends Controller
     {
         // Hanya tampilkan LKS kewenangan PROVINSI yang sudah diverifikasi admin
         // (sudah ada surat rekomendasi & status Diterima untuk proses) — kabkota berhenti di admin
-        $query = lks::with('user')
+        $query = LKS::with('user')
             ->where('status_permohonan', 'Diterima untuk proses')
             ->whereNotNull('surat_rekomendasi_path')
             ->where('kewenangan_type', 'provinsi')
@@ -65,14 +65,14 @@ class SuperAdminController extends Controller
         
         // Calculate statistics (hanya untuk kewenangan provinsi)
         $stats = [
-            'total'          => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->whereNotNull('surat_rekomendasi_path')->count(),
-            'menunggu'       => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->whereNotNull('surat_rekomendasi_path')->whereNull('sertifikat_path')->count(),
-            'diterima_proses'=> lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->count(),
-            'diterima'       => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->count(),
-            'terverifikasi'  => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Terverifikasi')->count(),
-            'ditolak'        => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Ditolak')->count(),
-            'dikembalikan'   => lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Dikembalikan')->count(),
-            'with_sertifikat'=> lks::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->whereNotNull('sertifikat_path')->count(),
+            'total'          => LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->whereNotNull('surat_rekomendasi_path')->count(),
+            'menunggu'       => LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->whereNotNull('surat_rekomendasi_path')->whereNull('sertifikat_path')->count(),
+            'diterima_proses'=> LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima untuk proses')->count(),
+            'diterima'       => LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->count(),
+            'terverifikasi'  => LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Terverifikasi')->count(),
+            'ditolak'        => LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Ditolak')->count(),
+            'dikembalikan'   => LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Dikembalikan')->count(),
+            'with_sertifikat'=> LKS::where('kewenangan_type', 'provinsi')->where('status_permohonan', 'Diterima')->whereNotNull('sertifikat_path')->count(),
         ];
         
         return view('superadmin.index', compact('lks', 'stats'));
@@ -83,7 +83,7 @@ class SuperAdminController extends Controller
      */
     public function verification($id)
     {
-        $lks = lks::with(['checklists.document', 'user'])->findOrFail($id);
+        $lks = LKS::with(['checklists.document', 'user'])->findOrFail($id);
         
         // Hanya LKS provinsi yang bisa diproses super admin
         if ($lks->kewenangan_type !== 'provinsi') {
@@ -105,7 +105,7 @@ class SuperAdminController extends Controller
      */
     public function processVerification(Request $request, $id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         $request->validate([
             'status_permohonan'   => 'required|in:Diterima untuk proses,Ditolak,Dikembalikan',
@@ -158,7 +158,7 @@ class SuperAdminController extends Controller
      */
     public function edit($id)
     {
-        $lks = lks::with('user')->findOrFail($id);
+        $lks = LKS::with('user')->findOrFail($id);
         
         return view('superadmin.edit', compact('lks'));
     }
@@ -168,7 +168,7 @@ class SuperAdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         $request->validate([
             'nama_lks' => 'required|string|max:255',
@@ -197,7 +197,7 @@ class SuperAdminController extends Controller
      */
     public function destroy($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
         
         // Delete surat rekomendasi if exists
         if ($lks->sertifikat_path) {
@@ -215,7 +215,7 @@ class SuperAdminController extends Controller
      */
     public function downloadSuratRekomendasi($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
             abort(404, 'Tanda pendaftaran tidak ditemukan');
@@ -231,7 +231,7 @@ class SuperAdminController extends Controller
      */
     public function previewSuratRekomendasi($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         if (!$lks->sertifikat_path || !Storage::disk('public')->exists($lks->sertifikat_path)) {
             abort(404, 'Tanda pendaftaran tidak ditemukan');
@@ -250,7 +250,7 @@ class SuperAdminController extends Controller
      */
     public function deleteSuratRekomendasi($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         if ($lks->sertifikat_path && Storage::disk('public')->exists($lks->sertifikat_path)) {
             Storage::disk('public')->delete($lks->sertifikat_path);
@@ -266,7 +266,7 @@ class SuperAdminController extends Controller
      */
     public function downloadSuratRekomendasiAdmin($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         if (!$lks->surat_rekomendasi_path || !Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
             abort(404, 'Surat rekomendasi tidak ditemukan');
@@ -282,7 +282,7 @@ class SuperAdminController extends Controller
      */
     public function previewSuratRekomendasiAdmin($id)
     {
-        $lks = lks::findOrFail($id);
+        $lks = LKS::findOrFail($id);
 
         if (!$lks->surat_rekomendasi_path || !Storage::disk('public')->exists($lks->surat_rekomendasi_path)) {
             abort(404, 'Surat rekomendasi tidak ditemukan');
