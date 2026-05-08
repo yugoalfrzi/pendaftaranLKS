@@ -11,10 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies (Railway, Vercel, etc.)
+        $middleware->trustProxies(at: '*');
+
+        // Alias middleware
         $middleware->alias([
             'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
-            'rolecheck' => \App\Http\Middleware\Rolecheck::class,
+            'admin'      => \App\Http\Middleware\AdminMiddleware::class,
+            'rolecheck'  => \App\Http\Middleware\Rolecheck::class,
+            'guest'      => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
