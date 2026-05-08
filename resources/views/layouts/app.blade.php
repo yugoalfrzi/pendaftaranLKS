@@ -246,7 +246,7 @@
         <div class="sidebar-header">
             <a href="{{ route('dashboard') }}" class="logo">
                 <img src="{{ asset('assets/Apps/vendors/images/silaskar.jpeg') }}" alt="SI LASKAR">
-                <span>E-LKS JABAR</span>
+                <span>SI-LASKAR</span>
             </a>
         </div>
 
