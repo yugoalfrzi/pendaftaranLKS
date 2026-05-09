@@ -45,6 +45,15 @@ class AuthController extends Controller
                 }
                 return back()->withErrors(['email' => $msg])->onlyInput('email');
             }
+
+            // Cek akun dinonaktifkan
+            if (!$user->is_active) {
+                $msg = 'Akun kamu telah dinonaktifkan. Hubungi admin untuk informasi lebih lanjut.';
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => $msg], 403);
+                }
+                return back()->withErrors(['email' => $msg])->onlyInput('email');
+            }
         }
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
@@ -132,6 +141,65 @@ class AuthController extends Controller
     }
 
     // ===== SUPER ADMIN: Approve / Reject user =====
+
+    public function manageAccounts(Request $request)
+    {
+        $search = $request->get('search');
+        $status = $request->get('status', 'all');
+        $role   = $request->get('role', 'all');
+
+        $query = User::where('role', '!=', 'super_admin')
+            ->where('approval_status', 'approved');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('kabupaten_kota', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        if ($role !== 'all') {
+            $query->where('role', $role);
+        }
+
+        $users = $query->latest()->paginate(15)->withQueryString();
+
+        $stats = [
+            'total'    => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->count(),
+            'active'   => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->where('is_active', true)->count(),
+            'inactive' => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->where('is_active', false)->count(),
+        ];
+
+        return view('superadmin.manage-accounts', compact('users', 'stats'));
+    }
+
+    public function toggleActive(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Jangan bisa nonaktifkan super_admin
+        if ($user->role === 'super_admin') {
+            return redirect()->back()->with('error', 'Tidak dapat mengubah status akun Super Admin.');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        // Jika dinonaktifkan, logout semua session user tersebut
+        if (!$user->is_active) {
+            // Hapus semua session user ini dari database
+            \DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
+
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return redirect()->back()->with('success', "Akun {$user->name} berhasil {$status}.");
+    }
 
     public function approveUser(Request $request, $id)
     {

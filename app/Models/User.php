@@ -28,6 +28,13 @@ class User extends Authenticatable
         'avatar',
         'approval_status',
         'rejection_reason',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password'          => 'hashed',
+        'is_active'         => 'boolean',
     ];
 
     /**
@@ -56,6 +63,16 @@ class User extends Authenticatable
     public function lks()
     {
         return $this->hasMany(LKS::class, 'user_id');
+    }
+
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 
     /**

@@ -42,6 +42,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware(['auth', 'superadmin'])->group(function () {
     Route::post('/users/{id}/approve', [AuthController::class, 'approveUser'])->name('users.approve');
     Route::post('/users/{id}/reject', [AuthController::class, 'rejectUser'])->name('users.reject');
+    Route::get('/manage-accounts', [AuthController::class, 'manageAccounts'])->name('users.manage');
+    Route::post('/users/{id}/toggle-active', [AuthController::class, 'toggleActive'])->name('users.toggle-active');
 });
 
 // Protected Routes (Require Authentication)

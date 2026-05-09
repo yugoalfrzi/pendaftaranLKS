@@ -382,6 +382,9 @@
                         <span class="badge bg-warning text-dark">{{ $pendingCount }}</span>
                     @endif
                 </a>
+                <a class="nav-link {{ request()->routeIs('users.manage') ? 'active' : '' }}" href="{{ route('users.manage') }}">
+                    <i class="bi bi-people"></i><span>Kelola Akun</span>
+                </a>
                 <a class="nav-link {{ request()->routeIs('lks.index') ? 'active' : '' }}" href="{{ route('lks.index') }}">
                     <i class="bi bi-list-check"></i><span>Semua Pendaftaran LKS</span>
                 </a>
