@@ -397,8 +397,10 @@
                 </div>
 
                 <!-- Divider -->
-                <div class="d-flex align-items-center my-3">
-                    <hr class="flex-1"><span class="px-2 text-muted small">atau</span><hr class="flex-1">
+                <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:0.5rem; margin:1rem 0;">
+                    <hr style="margin:0; border-color:#e2e8f0;">
+                    <span class="text-muted small">atau</span>
+                    <hr style="margin:0; border-color:#e2e8f0;">
                 </div>
 
                 <!-- Google Register -->
