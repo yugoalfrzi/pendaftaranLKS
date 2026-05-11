@@ -33,6 +33,6 @@ RUN mkdir -p storage/framework/sessions storage/framework/views storage/framewor
 COPY docker-start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["/bin/sh", "/app/start.sh"]
