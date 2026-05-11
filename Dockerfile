@@ -22,18 +22,18 @@ COPY . .
 RUN composer run-script post-autoload-dump || true
 
 # Set permissions
-RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache \
+RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache \
+    storage/logs bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Run migrations and clear cache at build time
-RUN php artisan config:clear \
-    && php artisan route:clear
+# Create startup script
+RUN echo '#!/bin/sh' > /app/start.sh \
+    && echo 'php artisan migrate --force' >> /app/start.sh \
+    && echo 'php artisan config:clear' >> /app/start.sh \
+    && echo 'php artisan route:clear' >> /app/start.sh \
+    && echo 'php -d upload_max_filesize=100M -d post_max_size=105M -d memory_limit=256M -S 0.0.0.0:$PORT -t public public/index.php' >> /app/start.sh \
+    && chmod +x /app/start.sh
 
 EXPOSE 8080
 
-CMD php -d upload_max_filesize=100M \
-        -d post_max_size=105M \
-        -d memory_limit=256M \
-        -S 0.0.0.0:${PORT:-8080} \
-        -t public \
-        public/index.php
+CMD ["/bin/sh", "/app/start.sh"]
