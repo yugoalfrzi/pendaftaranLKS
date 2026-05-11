@@ -31,7 +31,8 @@ RUN echo '#!/bin/sh' > /app/start.sh \
     && echo 'php artisan migrate --force' >> /app/start.sh \
     && echo 'php artisan config:clear' >> /app/start.sh \
     && echo 'php artisan route:clear' >> /app/start.sh \
-    && echo 'php -d upload_max_filesize=100M -d post_max_size=105M -d memory_limit=256M -S 0.0.0.0:$PORT -t public public/index.php' >> /app/start.sh \
+    && echo 'echo "Starting PHP server on port $PORT"' >> /app/start.sh \
+    && echo 'exec php -d upload_max_filesize=100M -d post_max_size=105M -d memory_limit=256M -S 0.0.0.0:${PORT} -t public public/index.php' >> /app/start.sh \
     && chmod +x /app/start.sh
 
 EXPOSE 8080
