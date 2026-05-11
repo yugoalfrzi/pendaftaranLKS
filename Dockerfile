@@ -1,62 +1,39 @@
-FROM php:8.2-fpm
+FROM php:8.3-cli
 
-# Install semua system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    nginx
-
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-    gd \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    zip \
-    xml \
-    dom
+    git curl zip unzip libpng-dev libxml2-dev libzip-dev libonig-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring xml zip gd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www/html
+WORKDIR /app
 
-# Copy semua file project
-COPY . /var/www/html
+# Copy composer files first for layer caching
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Hapus vendor folder yang mungkin corrupt
-RUN rm -rf vendor
+# Copy rest of application
+COPY . .
 
-# Install dependencies
-RUN composer install --ignore-platform-req=ext-gd --ignore-platform-req=ext-zip --no-interaction --optimize-autoloader
+# Run post-install scripts
+RUN composer run-script post-autoload-dump || true
 
-# Generate APP_KEY jika belum ada
-RUN php artisan key:generate --force || true
+# Set permissions
+RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# **INI YANG PENTING: Cache semua konfigurasi**
-RUN php artisan config:clear
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+# Run migrations and clear cache at build time
+RUN php artisan config:clear \
+    && php artisan route:clear
 
-# Set permission
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+EXPOSE 8080
 
-EXPOSE 8000
-
-# **GANTI: Gunakan perintah yang benar untuk membaca env**
-CMD sh -c "php artisan config:clear && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=8000"
+CMD php -d upload_max_filesize=100M \
+        -d post_max_size=105M \
+        -d memory_limit=256M \
+        -S 0.0.0.0:${PORT:-8080} \
+        -t public \
+        public/index.php
