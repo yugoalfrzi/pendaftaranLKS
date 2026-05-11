@@ -24,17 +24,10 @@ RUN composer run-script post-autoload-dump || true
 # Set permissions
 RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache \
     storage/logs bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 777 storage bootstrap/cache
 
-# Create startup script
-RUN echo '#!/bin/sh' > /app/start.sh \
-    && echo 'php artisan migrate --force' >> /app/start.sh \
-    && echo 'php artisan config:clear' >> /app/start.sh \
-    && echo 'php artisan route:clear' >> /app/start.sh \
-    && echo 'echo "Starting PHP server on port $PORT"' >> /app/start.sh \
-    && echo 'exec php -d upload_max_filesize=100M -d post_max_size=105M -d memory_limit=256M -S 0.0.0.0:${PORT} -t public public/index.php' >> /app/start.sh \
-    && chmod +x /app/start.sh
-
-EXPOSE 8080
+# Create startup script — use single quotes to prevent build-time variable expansion
+COPY docker-start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 CMD ["/bin/sh", "/app/start.sh"]
