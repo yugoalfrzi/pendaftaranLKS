@@ -206,13 +206,27 @@ class AuthController extends Controller
         $user = User::findOrFail($id);
         $user->update(['approval_status' => 'approved', 'rejection_reason' => null]);
 
+        $mailer = config('mail.default');
+        $nonInboxMailers = ['log', 'array'];
+
         try {
             $user->notify(new \App\Notifications\UserApprovedNotification());
         } catch (\Exception $e) {
             Log::error('Email approve gagal: ' . $e->getMessage());
+            return redirect()->back()->with(
+                'success',
+                "Akun {$user->name} berhasil disetujui. Email notifikasi gagal dikirim: periksa MAIL_* di server (SMTP/Resend/Postmark, dll.)."
+            );
         }
 
-        return redirect()->back()->with('success', "Akun {$user->name} berhasil disetujui dan notifikasi email telah dikirim.");
+        $msg = "Akun {$user->name} berhasil disetujui.";
+        if (in_array($mailer, $nonInboxMailers, true)) {
+            $msg .= " Email tidak sampai ke Gmail karena MAIL_MAILER={$mailer} (hanya ke log/array). Di Railway, set MAIL_MAILER=smtp (atau resend/postmark) beserta kredensial dan MAIL_FROM_ADDRESS.";
+        } else {
+            $msg .= ' Notifikasi email telah dikirim.';
+        }
+
+        return redirect()->back()->with('success', $msg);
     }
 
     public function rejectUser(Request $request, $id)
@@ -225,12 +239,26 @@ class AuthController extends Controller
             'rejection_reason' => $request->reason,
         ]);
 
+        $mailer = config('mail.default');
+        $nonInboxMailers = ['log', 'array'];
+
         try {
             $user->notify(new \App\Notifications\UserRejectedNotification($request->reason ?? ''));
         } catch (\Exception $e) {
             Log::error('Email reject gagal: ' . $e->getMessage());
+            return redirect()->back()->with(
+                'success',
+                "Akun {$user->name} telah ditolak. Email notifikasi gagal dikirim: periksa konfigurasi mail di server."
+            );
         }
 
-        return redirect()->back()->with('success', "Akun {$user->name} telah ditolak dan notifikasi email telah dikirim.");
+        $msg = "Akun {$user->name} telah ditolak.";
+        if (in_array($mailer, $nonInboxMailers, true)) {
+            $msg .= " Email tidak sampai ke inbox karena MAIL_MAILER={$mailer}. Atur pengirim email nyata di Railway (MAIL_MAILER + kredensial).";
+        } else {
+            $msg .= ' Notifikasi email telah dikirim.';
+        }
+
+        return redirect()->back()->with('success', $msg);
     }
 }
