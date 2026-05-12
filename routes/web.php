@@ -44,6 +44,7 @@ Route::middleware(['auth', 'superadmin'])->group(function () {
     Route::post('/users/{id}/reject', [AuthController::class, 'rejectUser'])->name('users.reject');
     Route::get('/manage-accounts', [AuthController::class, 'manageAccounts'])->name('users.manage');
     Route::post('/users/{id}/toggle-active', [AuthController::class, 'toggleActive'])->name('users.toggle-active');
+    Route::delete('/users/{id}', [AuthController::class, 'deleteUser'])->name('users.delete');
 });
 
 // Protected Routes (Require Authentication)

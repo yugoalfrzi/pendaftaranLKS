@@ -146,13 +146,20 @@ class AuthController extends Controller
     {
         $search = $request->get('search');
         $status = $request->get('status', 'all');
-        $role   = $request->get('role', 'all');
 
-        $query = User::where('role', '!=', 'super_admin')
-            ->where('approval_status', 'approved');
+        // Query untuk user biasa
+        $userQuery = User::where('role', 'user')->where('approval_status', 'approved');
+        // Query untuk admin
+        $adminQuery = User::where('role', 'admin')->where('approval_status', 'approved');
 
+        // Apply search ke keduanya
         if ($search) {
-            $query->where(function ($q) use ($search) {
+            $userQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('kabupaten_kota', 'like', "%{$search}%");
+            });
+            $adminQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('kabupaten_kota', 'like', "%{$search}%");
@@ -160,24 +167,41 @@ class AuthController extends Controller
         }
 
         if ($status === 'active') {
-            $query->where('is_active', true);
+            $userQuery->where('is_active', true);
+            $adminQuery->where('is_active', true);
         } elseif ($status === 'inactive') {
-            $query->where('is_active', false);
+            $userQuery->where('is_active', false);
+            $adminQuery->where('is_active', false);
         }
 
-        if ($role !== 'all') {
-            $query->where('role', $role);
-        }
-
-        $users = $query->latest()->paginate(15)->withQueryString();
+        $users  = $userQuery->latest()->paginate(15, ['*'], 'user_page')->withQueryString();
+        $admins = $adminQuery->latest()->paginate(15, ['*'], 'admin_page')->withQueryString();
 
         $stats = [
-            'total'    => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->count(),
-            'active'   => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->where('is_active', true)->count(),
-            'inactive' => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->where('is_active', false)->count(),
+            'total_user'    => User::where('role', 'user')->where('approval_status', 'approved')->count(),
+            'total_admin'   => User::where('role', 'admin')->where('approval_status', 'approved')->count(),
+            'active'        => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->where('is_active', true)->count(),
+            'inactive'      => User::where('role', '!=', 'super_admin')->where('approval_status', 'approved')->where('is_active', false)->count(),
         ];
 
-        return view('superadmin.manage-accounts', compact('users', 'stats'));
+        return view('superadmin.manage-accounts', compact('users', 'admins', 'stats'));
+    }
+
+    public function deleteUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->role === 'super_admin') {
+            return redirect()->back()->with('error', 'Tidak dapat menghapus akun Super Admin.');
+        }
+
+        // Hapus session user
+        \DB::table('sessions')->where('user_id', $user->id)->delete();
+
+        $name = $user->name;
+        $user->delete();
+
+        return redirect()->back()->with('success', "Akun {$name} berhasil dihapus.");
     }
 
     public function toggleActive(Request $request, $id)
