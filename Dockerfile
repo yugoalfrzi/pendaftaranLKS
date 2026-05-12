@@ -1,6 +1,6 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-# Install system dependencies + gd dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git curl zip unzip \
     libpng-dev libjpeg-dev libfreetype6-dev \
@@ -9,10 +9,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql mbstring xml zip gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+WORKDIR /var/www/html
 
 # Copy composer files first for layer caching
 COPY composer.json composer.lock ./
@@ -27,12 +30,20 @@ RUN composer run-script post-autoload-dump || true
 # Set permissions
 RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache \
     storage/logs bootstrap/cache \
-    && chmod -R 777 storage bootstrap/cache
+    && chmod -R 777 storage bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html
 
-# Create startup script
-COPY docker-start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+# Configure Apache to serve from /public
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-EXPOSE 8080
+# Update Apache port to use $PORT
+COPY docker-start.sh /start.sh
+RUN chmod +x /start.sh
 
-CMD ["/bin/sh", "/app/start.sh"]
+CMD ["/bin/sh", "/start.sh"]
