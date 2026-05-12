@@ -14,5 +14,4 @@ exec php \
     -d post_max_size=105M \
     -d memory_limit=256M \
     -S 0.0.0.0:$APP_PORT \
-    -t /app/public \
     /app/server.php

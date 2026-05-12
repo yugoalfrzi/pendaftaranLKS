@@ -2,18 +2,18 @@
 
 /**
  * Router script for PHP built-in server
- * Handles Laravel routing and static file serving
+ * Place this in project root, run with: php -S 0.0.0.0:PORT -t public server.php
  */
 
 $uri = urldecode(
     parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/'
 );
 
-// Document root is /app/public (set via -t flag)
-// Static files in public/ are served directly by returning false
-if ($uri !== '/' && file_exists(__DIR__ . $uri)) {
+// public/ is the document root (-t public)
+// Static files are served directly by returning false
+if ($uri !== '/' && file_exists(__DIR__ . '/public' . $uri)) {
     return false;
 }
 
-// All other requests go through Laravel
-require_once __DIR__ . '/index.php';
+// All other requests go through Laravel's front controller
+require_once __DIR__ . '/public/index.php';
