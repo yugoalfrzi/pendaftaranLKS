@@ -394,35 +394,3 @@ Route::get('certificates/{filename}', function ($filename) {
 
     return $response;
 })->name('certificates.public')->where('filename', '.+');
-
-// ==================== DEBUG ROUTE ====================
-Route::get('debug-mail', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('config:clear');
-        \Illuminate\Support\Facades\Artisan::call('cache:clear');
-        
-        $config = config('mail.mailers.smtp');
-        // Masking password for security
-        if (isset($config['password'])) {
-            $config['password'] = '********'; 
-        }
-
-        \Illuminate\Support\Facades\Mail::raw('Ini adalah email test dari sistem debug LKS.', function ($message) {
-            $message->to('alfariziprayugo@gmail.com')
-                    ->subject('Test Email Debug LKS');
-        });
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Email test berhasil dikirim!',
-            'smtp_config_used' => $config,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'error_message' => $e->getMessage(),
-            'error_trace' => $e->getTraceAsString(),
-            'smtp_config_used' => $config ?? 'Belum ter-load',
-        ]);
-    }
-});
