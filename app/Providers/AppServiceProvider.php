@@ -27,9 +27,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Custom Mail Transport: Brevo API
         Mail::extend('brevo', function (array $config = []) {
-            $factory = new BrevoTransportFactory();
             $key = $config['key'] ?? env('BREVO_KEY');
-            return $factory->create(new Dsn('brevo+api', $key, 'default'));
+            return \Symfony\Component\Mailer\Transport::fromDsn('brevo+api://' . urlencode($key) . '@default');
         });
     }
 }
