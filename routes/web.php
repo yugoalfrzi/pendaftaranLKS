@@ -33,6 +33,8 @@ Route::middleware('guest')->group(function () {
     // Google OAuth
     Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+    Route::get('/auth/google/complete', [GoogleAuthController::class, 'showCompleteForm'])->name('auth.google.complete');
+    Route::post('/auth/google/complete', [GoogleAuthController::class, 'completeRegistration'])->name('auth.google.complete.post');
 });
 
 // Logout route
