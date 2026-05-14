@@ -28,6 +28,9 @@
                     @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
+                    @if($errors->has('documents'))
+                        <div class="alert alert-danger"><i class="bi bi-exclamation-circle me-1"></i>{{ $errors->first('documents') }}</div>
+                    @endif
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -232,5 +235,43 @@ if (oldJenis) {
     document.getElementById('permohonan_rptka').value = oldJenis;
     document.getElementById('permohonan_rptka').dispatchEvent(new Event('change'));
 }
+
+// Validasi form sebelum submit
+document.getElementById('rptkaForm').addEventListener('submit', function(e) {
+    const jenis = document.getElementById('permohonan_rptka').value;
+    if (!jenis) {
+        e.preventDefault();
+        alert('Pilih jenis permohonan terlebih dahulu.');
+        return false;
+    }
+
+    // Cek dokumen wajib: harus ada is_ada dicentang DAN file diupload
+    const allRows = document.querySelectorAll('#dokumenUtama tr, #dokumenPerpanjangan tr');
+    let missingWajib = [];
+
+    allRows.forEach(function(row) {
+        // Skip header rows
+        if (row.classList.contains('table-warning')) return;
+        const badge = row.querySelector('.badge.bg-danger');
+        if (!badge) return; // bukan wajib
+
+        const checkbox = row.querySelector('.doc-checkbox');
+        const fileInput = row.querySelector('input[type="file"]');
+        const docName = row.querySelector('td:nth-child(2) strong');
+        const name = docName ? docName.textContent.trim() : 'Dokumen wajib';
+
+        if (!checkbox || !checkbox.checked) {
+            missingWajib.push(name + ' (belum dicentang "Ada")');
+        } else if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            missingWajib.push(name + ' (belum diupload file)');
+        }
+    });
+
+    if (missingWajib.length > 0) {
+        e.preventDefault();
+        alert('Dokumen wajib berikut belum dilengkapi:\n\n' + missingWajib.map((n, i) => (i+1) + '. ' + n).join('\n'));
+        return false;
+    }
+});
 </script>
 @endsection

@@ -83,6 +83,32 @@ class RptkaController extends Controller
 
         DB::beginTransaction();
         try {
+            // Validasi: dokumen wajib harus ada is_ada dan file
+            $wajibDocs = MasterDocument::where('wajib', true)
+                ->where(function($q) use ($request) {
+                    $q->where('kategori', 'utama');
+                    if ($request->permohonan_rptka === 'Ulang') {
+                        $q->orWhere('kategori', 'perpanjangan');
+                    }
+                })->get();
+
+            foreach ($wajibDocs as $wajibDoc) {
+                $docData = $request->input('documents.' . $wajibDoc->id);
+                $hasAda  = isset($docData['is_ada']);
+                $hasFile = $request->hasFile('documents.' . $wajibDoc->id . '.file');
+
+                if (!$hasAda) {
+                    return back()->withInput()->withErrors([
+                        'documents' => 'Dokumen wajib "' . $wajibDoc->nama_dokumen . '" harus dicentang Ada.'
+                    ]);
+                }
+                if (!$hasFile) {
+                    return back()->withInput()->withErrors([
+                        'documents' => 'Dokumen wajib "' . $wajibDoc->nama_dokumen . '" harus diupload filenya.'
+                    ]);
+                }
+            }
+
             $rptka = Rptka::create([
                 'user_id'               => auth()->id(),
                 'nama_lks'              => $request->nama_lks,

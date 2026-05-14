@@ -199,14 +199,6 @@
                                 <span class="badge-pill {{ $sc }}">{{ $lks->status_permohonan }}</span>
                             </span>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">Kelengkapan</span>
-                            <span class="info-value">
-                                <span class="badge-pill {{ $lks->pendaftaran_lengkap ? 's-diterima' : 's-menunggu' }}">
-                                    {{ $lks->pendaftaran_lengkap ? 'Lengkap' : 'Tidak Lengkap' }}
-                                </span>
-                            </span>
-                        </div>
                         <div class="info-row"><span class="info-label">Verifikator Admin</span><span class="info-value">{{ $lks->nama_verifikator ?? '-' }}</span></div>
                         @if($lks->user)
                         <div class="info-row"><span class="info-label">Email Pendaftar</span><span class="info-value">{{ $lks->user->email }}</span></div>
@@ -226,10 +218,9 @@
                     <thead>
                         <tr>
                             <th style="width:4%">No</th>
-                            <th style="width:22%">Nama Dokumen</th>
-                            <th style="width:10%">Status</th>
+                            <th style="width:28%">Nama Dokumen</th>
                             <th>File Dokumen</th>
-                            <th style="width:12%">Keterangan</th>
+                            <th style="width:14%">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -240,16 +231,6 @@
                                 <span class="fw-semibold">{{ $checklist->document->nama_dokumen }}</span>
                                 @if($checklist->document->wajib)
                                     <span class="badge-pill s-ditolak ms-1" style="font-size:.65rem">Wajib</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($checklist->kelengkapan == 'Ada')
-                                    <span class="badge-pill s-diterima"><i class="bi bi-check-circle"></i> Lengkap</span>
-                                    @if($checklist->file_count > 1)
-                                        <div class="text-muted mt-1" style="font-size:.72rem">{{ $checklist->file_count }} files</div>
-                                    @endif
-                                @else
-                                    <span class="badge-pill s-ditolak"><i class="bi bi-x-circle"></i> Tidak Lengkap</span>
                                 @endif
                             </td>
                             <td>

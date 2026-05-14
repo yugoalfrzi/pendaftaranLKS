@@ -618,6 +618,9 @@
                             <h6 class="text-primary mb-3">
                                 <i class="bi bi-check2-square"></i> Checklist Kelengkapan Dokumen
                             </h6>
+                            @if($errors->has('documents'))
+                                <div class="alert alert-danger"><i class="bi bi-exclamation-circle me-1"></i>{{ $errors->first('documents') }}</div>
+                            @endif
                             <div class="alert alert-info">
                                 <i class="bi bi-info-circle"></i> 
                                 <strong>Petunjuk:</strong> Klik "Tambah File" untuk menambahkan multiple files. File akan ditambahkan satu per satu.
@@ -821,6 +824,33 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedValues.length === 0) {
                 e.preventDefault();
                 alert('Pilih minimal satu jenis pelayanan');
+                return false;
+            }
+
+            // Validasi dokumen wajib: harus ada minimal 1 file
+            const wajibRows = document.querySelectorAll('tr[data-doc-urutan]');
+            let missingWajib = [];
+            wajibRows.forEach(function(row) {
+                // Cek apakah baris ini visible (tidak di-hide karena kewenangan/perpanjangan)
+                if (row.style.display === 'none') return;
+                // Cek apakah dokumen ini wajib
+                const badge = row.querySelector('.badge.bg-danger');
+                if (!badge) return;
+                // Cek apakah ada file yang dipilih
+                const inputs = row.querySelectorAll('input[type="file"]');
+                let hasFile = false;
+                inputs.forEach(function(inp) {
+                    if (inp.files && inp.files.length > 0) hasFile = true;
+                });
+                if (!hasFile) {
+                    const docName = row.querySelector('td:nth-child(2) strong');
+                    missingWajib.push(docName ? docName.textContent.trim() : 'Dokumen wajib');
+                }
+            });
+
+            if (missingWajib.length > 0) {
+                e.preventDefault();
+                alert('Dokumen wajib berikut belum diupload:\n\n' + missingWajib.map((n, i) => (i+1) + '. ' + n).join('\n'));
                 return false;
             }
             

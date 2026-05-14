@@ -146,6 +146,30 @@ class LKSController extends Controller
 
         DB::beginTransaction();
         try {
+            // Validasi: dokumen wajib harus ada file
+            $wajibDocuments = \App\Models\Document::where('wajib', true)->get();
+            foreach ($wajibDocuments as $wajibDoc) {
+                $found = false;
+                foreach ($request->documents as $docData) {
+                    if (isset($docData['document_id']) && $docData['document_id'] == $wajibDoc->id) {
+                        if (isset($docData['files']) && is_array($docData['files'])) {
+                            foreach ($docData['files'] as $file) {
+                                if ($file && $file->isValid()) {
+                                    $found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+                if (!$found) {
+                    return back()->withInput()->withErrors([
+                        'documents' => 'Dokumen wajib "' . $wajibDoc->nama_dokumen . '" harus diupload.'
+                    ]);
+                }
+            }
+
             // Create LKS dengan kabupaten_kota
             $lks = LKS::create([
                 'user_id' => auth()->id(),
