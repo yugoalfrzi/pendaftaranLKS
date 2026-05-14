@@ -340,7 +340,7 @@
             <div class="nav-section-label">RPTKA</div>
             @if(Auth::user()->hasRole('user'))
                 <a class="nav-link {{ request()->routeIs('rptka.index') || request()->routeIs('rptka.show') ? 'active' : '' }}" href="{{ route('rptka.index') }}">
-                    <i class="bi bi-file-earmark-person"></i><span>Permohonan RPTKA</span>
+                    <i class="bi bi-file-earmark-person"></i><span>Permohonan Rekomendasi RPTKA</span>
                 </a>
             @endif
             @if(Auth::user()->hasRole('admin'))
