@@ -147,20 +147,25 @@ class LKSController extends Controller
         DB::beginTransaction();
         try {
             // Validasi: dokumen wajib harus ada file
+            // documents dikirim dengan index numerik, tiap item punya document_id
             $wajibDocuments = \App\Models\Document::where('wajib', true)->get();
             foreach ($wajibDocuments as $wajibDoc) {
                 $found = false;
-                foreach ($request->documents as $docData) {
-                    if (isset($docData['document_id']) && $docData['document_id'] == $wajibDoc->id) {
-                        if (isset($docData['files']) && is_array($docData['files'])) {
-                            foreach ($docData['files'] as $file) {
-                                if ($file && $file->isValid()) {
-                                    $found = true;
-                                    break;
+                if ($request->has('documents')) {
+                    foreach ($request->documents as $idx => $docData) {
+                        if (isset($docData['document_id']) && $docData['document_id'] == $wajibDoc->id) {
+                            // Cek apakah ada file yang diupload untuk dokumen ini
+                            if ($request->hasFile("documents.{$idx}.files")) {
+                                $files = $request->file("documents.{$idx}.files");
+                                foreach ($files as $file) {
+                                    if ($file && $file->isValid()) {
+                                        $found = true;
+                                        break;
+                                    }
                                 }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
                 if (!$found) {
@@ -199,29 +204,24 @@ class LKSController extends Controller
                 $originalFilenames = [];
                 $fileCount = 0;
 
-                // Handle multiple file uploads
-                if (isset($documentData['files']) && is_array($documentData['files'])) {
-                    foreach ($documentData['files'] as $fileIndex => $file) {
-                        if ($file && $file->isValid()) {
-                            $originalFilename = $file->getClientOriginalName();
-                            $fileName = time() . '_' . $lks->id . '_' . $documentData['document_id'] . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
-                            $filePath = 'documents/' . $fileName;
+                // Handle multiple file uploads — gunakan $request->file() bukan dari array
+                $uploadedFiles = $request->file("documents.{$index}.files") ?? [];
+                if (!is_array($uploadedFiles)) $uploadedFiles = [$uploadedFiles];
 
-                            // Store file
-                            Storage::disk('public')->put($filePath, file_get_contents($file));
+                foreach ($uploadedFiles as $fileIndex => $file) {
+                    if ($file && $file->isValid()) {
+                        $originalFilename = $file->getClientOriginalName();
+                        $fileName = time() . '_' . $lks->id . '_' . $documentData['document_id'] . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
+                        $filePath = 'documents/' . $fileName;
 
-                            $filePaths[] = $filePath;
-                            $originalFilenames[] = $originalFilename;
-                            $fileCount++;
+                        Storage::disk('public')->put($filePath, file_get_contents($file));
 
-                            $kelengkapan = 'Ada';
-                        }
+                        $filePaths[] = $filePath;
+                        $originalFilenames[] = $originalFilename;
+                        $fileCount++;
+                        $kelengkapan = 'Ada';
                     }
                 }
-
-                // kelengkapan = 'Ada' hanya jika ada file yang diupload
-                // Hapus override dari hidden input agar tidak bisa dimanipulasi
-                // $kelengkapan sudah di-set 'Ada' di atas jika ada file valid
 
                 Checklist::create([
                     'lks_id' => $lks->id,
