@@ -146,34 +146,6 @@ class LKSController extends Controller
 
         DB::beginTransaction();
         try {
-            // Validasi: dokumen wajib harus ada file
-            // documents dikirim dengan index numerik, tiap item punya document_id
-            $wajibDocuments = \App\Models\Document::where('wajib', true)->get();
-            foreach ($wajibDocuments as $wajibDoc) {
-                $found = false;
-                if ($request->has('documents')) {
-                    foreach ($request->documents as $idx => $docData) {
-                        if (isset($docData['document_id']) && $docData['document_id'] == $wajibDoc->id) {
-                            // Cek apakah ada file yang diupload untuk dokumen ini
-                            if ($request->hasFile("documents.{$idx}.files")) {
-                                $files = $request->file("documents.{$idx}.files");
-                                foreach ($files as $file) {
-                                    if ($file && $file->isValid()) {
-                                        $found = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-                if (!$found) {
-                    return back()->withInput()->withErrors([
-                        'documents' => 'Dokumen wajib "' . $wajibDoc->nama_dokumen . '" harus diupload.'
-                    ]);
-                }
-            }
 
             // Create LKS dengan kabupaten_kota
             $lks = LKS::create([
@@ -204,14 +176,15 @@ class LKSController extends Controller
                 $originalFilenames = [];
                 $fileCount = 0;
 
-                // Handle multiple file uploads — gunakan $request->file() bukan dari array
-                $uploadedFiles = $request->file("documents.{$index}.files") ?? [];
+                // Akses file dari nested array dengan cara yang benar
+                $allFiles = $request->file('documents') ?? [];
+                $uploadedFiles = isset($allFiles[$index]['files']) ? $allFiles[$index]['files'] : [];
                 if (!is_array($uploadedFiles)) $uploadedFiles = [$uploadedFiles];
 
                 foreach ($uploadedFiles as $fileIndex => $file) {
                     if ($file && $file->isValid()) {
                         $originalFilename = $file->getClientOriginalName();
-                        $fileName = time() . '_' . $lks->id . '_' . $documentData['document_id'] . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
+                        $fileName = time() . '_' . $lks->id . '_' . ($documentData['document_id'] ?? $index) . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
                         $filePath = 'documents/' . $fileName;
 
                         Storage::disk('public')->put($filePath, file_get_contents($file));
