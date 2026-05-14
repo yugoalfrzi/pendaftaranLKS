@@ -41,7 +41,7 @@ class LKSController extends Controller
         $stats = [
             'total'      => LKS::count(),
             'menunggu'   => LKS::where('status_permohonan', 'Menunggu')->count(),
-            'diterima'   => LKS::whereIn('status_permohonan', ['Diterima', 'Diterima untuk proses'])->count(),
+            'diterima'   => LKS::whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])->count(),
             'ditolak'    => LKS::where('status_permohonan', 'Ditolak')->count(),
             'dikembalikan' => LKS::where('status_permohonan', 'Dikembalikan')->count(),
         ];

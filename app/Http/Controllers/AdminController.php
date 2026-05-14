@@ -58,9 +58,9 @@ class AdminController extends Controller
         $stats = [
             'total'           => (clone $baseStats)->count(),
             'menunggu'        => (clone $baseStats)->where('status_permohonan', 'Menunggu')->count(),
-            'diterima_proses' => (clone $baseStats)->where('status_permohonan', 'Diterima untuk proses')->count(),
-            'diterima'        => (clone $baseStats)->where('status_permohonan', 'Diterima')->count(),
-            'terverifikasi'   => (clone $baseStats)->where('status_permohonan', 'Terverifikasi')->count(),
+            'diterima_proses' => (clone $baseStats)->where('status_permohonan', 'Terekomendasi')->count(),
+            'diterima'        => (clone $baseStats)->where('status_permohonan', 'Disetujui')->count(),
+            'terverifikasi'   => (clone $baseStats)->where('status_permohonan', 'Disetujui')->count(),
             'ditolak'         => (clone $baseStats)->where('status_permohonan', 'Ditolak')->count(),
             'dikembalikan'    => (clone $baseStats)->where('status_permohonan', 'Dikembalikan')->count(),
             'with_sertifikat' => (clone $baseStats)->whereNotNull('surat_rekomendasi_path')->count(),
@@ -82,10 +82,10 @@ class AdminController extends Controller
         $lks = LKS::findOrFail($id);
 
         $rules = [
-            'status_permohonan'   => 'required|in:Diterima,Ditolak,Dikembalikan',
+            'status_permohonan'   => 'required|in:Disetujui,Ditolak,Dikembalikan',
             'alasan_penolakan'    => 'required_if:status_permohonan,Ditolak',
             'alasan_dikembalikan' => 'required_if:status_permohonan,Dikembalikan',
-            'tanggal_persyaratan' => 'required_if:status_permohonan,Diterima|nullable|date',
+            'tanggal_persyaratan' => 'required_if:status_permohonan,Disetujui|nullable|date',
             'surat_rekomendasi'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ];
 
@@ -105,15 +105,15 @@ class AdminController extends Controller
             $filename = 'surat_rekomendasi_' . $lks->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $lks->surat_rekomendasi_path = $file->storeAs('surat_rekomendasi', $filename, 'public');
 
-            // Provinsi: saat surat rekomendasi diupload → otomatis "Diterima untuk proses"
-            if ($lks->kewenangan_type === 'provinsi' && $request->status_permohonan === 'Diterima') {
-                $lks->status_permohonan = 'Diterima untuk proses';
+            // Provinsi: saat surat rekomendasi diupload → otomatis "Terekomendasi"
+            if ($lks->kewenangan_type === 'provinsi' && $request->status_permohonan === 'Disetujui') {
+                $lks->status_permohonan = 'Terekomendasi';
                 $lks->nama_verifikator  = auth()->user()?->name ?? 'Unknown';
                 $lks->verified_at       = now();
                 $lks->save();
 
                 return redirect()->route('admin.lks.index')
-                    ->with('success', 'Surat rekomendasi berhasil diupload. Status LKS diubah ke "Diterima untuk proses" dan diteruskan ke Super Admin.');
+                    ->with('success', 'Surat rekomendasi berhasil diupload. Status LKS diubah ke "Terekomendasi" dan diteruskan ke Super Admin.');
             }
         }
 
@@ -132,7 +132,7 @@ class AdminController extends Controller
         $lks->alasan_dikembalikan = $request->alasan_dikembalikan;
         $lks->nama_verifikator    = auth()->user()?->name ?? 'Unknown';
         $lks->verified_at         = now();
-        if ($request->status_permohonan === 'Diterima' && $request->filled('tanggal_persyaratan')) {
+        if ($request->status_permohonan === 'Disetujui' && $request->filled('tanggal_persyaratan')) {
             $lks->tanggal_persyaratan = $request->tanggal_persyaratan;
         }
         $lks->save();

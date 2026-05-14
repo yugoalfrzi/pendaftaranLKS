@@ -127,7 +127,7 @@
                 <label class="form-label small fw-semibold mb-1">Status</label>
                 <select class="form-select form-select-sm" name="status">
                     <option value="">Semua Status</option>
-                    @foreach(['Menunggu','Diterima untuk proses','Diterima','Terverifikasi','Ditolak','Dikembalikan'] as $s)
+                    @foreach(['Menunggu','Terekomendasi','Disetujui','Ditolak','Dikembalikan'] as $s)
                         <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ $s }}</option>
                     @endforeach
                 </select>
@@ -191,9 +191,8 @@
                         @php
                             $sc = match($lksItem->status_permohonan) {
                                 'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                'Diterima untuk proses' => 's-proses',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',

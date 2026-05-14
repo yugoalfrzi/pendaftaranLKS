@@ -147,12 +147,10 @@ class LKS extends Model
         return match($this->status_permohonan) {
             'Menunggu' => 'warning',
             'Menunggu kelengkapan data' => 'warning',
-            'Diterima untuk proses' => 'primary',
-            'Diterima' => 'success',
-            'diterima' => 'success',
+            'Terekomendasi' => 'primary',
+            'Disetujui' => 'success',
             'Dikembalikan' => 'info',
             'Ditolak' => 'danger',
-            'Terverifikasi' => 'success',
             default => 'secondary'
         };
     }
@@ -165,12 +163,10 @@ class LKS extends Model
         return match($this->status_permohonan) {
             'Menunggu' => 'bg-warning',
             'Menunggu kelengkapan data' => 'bg-warning',
-            'Diterima untuk proses' => 'bg-primary',
-            'Diterima' => 'bg-success',
-            'diterima' => 'bg-success',
+            'Terekomendasi' => 'bg-primary',
+            'Disetujui' => 'bg-success',
             'Dikembalikan' => 'bg-info',
             'Ditolak' => 'bg-danger',
-            'Terverifikasi' => 'bg-success',
             default => 'bg-secondary'
         };
     }
@@ -196,9 +192,8 @@ class LKS extends Model
      */
     public function scopeVerified($query)
     {
-        return $query->where('status_permohonan', 'Diterima untuk proses')
-                    ->orWhere('status_permohonan', 'Diterima')
-                    ->orWhere('status_permohonan', 'Terverifikasi');
+        return $query->where('status_permohonan', 'Terekomendasi')
+                    ->orWhere('status_permohonan', 'Disetujui');
     }
 
     /**

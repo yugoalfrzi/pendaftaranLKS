@@ -94,7 +94,7 @@
                 <label class="form-label small fw-semibold mb-1">Status</label>
                 <select class="form-select form-select-sm" name="status">
                     <option value="">Semua Status</option>
-                    @foreach(['Menunggu','Diterima','Ditolak','Dikembalikan','Terverifikasi'] as $s)
+                    @foreach(['Menunggu','Terekomendasi','Ditolak','Dikembalikan','Disetujui'] as $s)
                     <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ $s }}</option>
                     @endforeach
                 </select>

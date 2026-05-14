@@ -102,8 +102,8 @@
                 <select class="form-select form-select-sm" name="status">
                     <option value="">Semua Status</option>
                     <option value="Menunggu" {{ request('status') == 'Menunggu' ? 'selected' : '' }}>Menunggu</option>
-                    <option value="Diterima untuk proses" {{ request('status') == 'Diterima untuk proses' ? 'selected' : '' }}>Diterima untuk Proses</option>
-                    <option value="Diterima" {{ request('status') == 'Diterima' ? 'selected' : '' }}>Diterima</option>
+                    <option value="Terekomendasi" {{ request('status') == 'Terekomendasi' ? 'selected' : '' }}>Terekomendasi</option>
+                    <option value="Disetujui" {{ request('status') == 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                     <option value="Ditolak" {{ request('status') == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                     <option value="Dikembalikan" {{ request('status') == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                 </select>
@@ -167,9 +167,8 @@
                         @php
                             $sc = match($item->status_permohonan) {
                                 'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                'Diterima untuk proses' => 's-proses',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',
@@ -241,9 +240,8 @@
                         @php
                             $sc = match($item->status_permohonan) {
                                 'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                'Diterima untuk proses' => 's-proses',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',

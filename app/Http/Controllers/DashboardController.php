@@ -37,9 +37,9 @@ class DashboardController extends Controller
 
         $totalLKS       = (clone $base)->count();
         $menunggu       = (clone $base)->where('status_permohonan', 'Menunggu')->count();
-        $diterimaProses = (clone $base)->where('status_permohonan', 'Diterima untuk proses')->count();
-        $diterima       = (clone $base)->where('status_permohonan', 'Diterima')->count();
-        $terverifikasi  = (clone $base)->where('status_permohonan', 'Terverifikasi')->count();
+        $diterimaProses = (clone $base)->where('status_permohonan', 'Terekomendasi')->count();
+        $diterima       = (clone $base)->where('status_permohonan', 'Disetujui')->count();
+        $terverifikasi  = (clone $base)->where('status_permohonan', 'Disetujui')->count();
         $ditolak        = (clone $base)->where('status_permohonan', 'Ditolak')->count();
         $dikembalikan   = (clone $base)->where('status_permohonan', 'Dikembalikan')->count();
         $lengkap        = (clone $base)->where('pendaftaran_lengkap', true)->count();
@@ -48,7 +48,7 @@ class DashboardController extends Controller
         if ($kabkota) $rptkaBase->where('kabupaten_kota', $kabkota);
         $totalRptka    = (clone $rptkaBase)->count();
         $rptkaMenunggu = (clone $rptkaBase)->where('status_permohonan', 'Menunggu')->count();
-        $rptkaDiterima = (clone $rptkaBase)->where('status_permohonan', 'Diterima')->count();
+        $rptkaDiterima = (clone $rptkaBase)->where('status_permohonan', 'Terekomendasi')->count();
 
         $monthlyTrend = [];
         for ($i = 5; $i >= 0; $i--) {
@@ -81,7 +81,7 @@ class DashboardController extends Controller
         $myLks        = LKS::where('user_id', $userId)->latest()->get();
         $totalLks     = $myLks->count();
         $menunggu     = $myLks->where('status_permohonan', 'Menunggu')->count();
-        $diterima     = $myLks->whereIn('status_permohonan', ['Diterima', 'Terverifikasi'])->count();
+        $diterima     = $myLks->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])->count();
         $ditolak      = $myLks->where('status_permohonan', 'Ditolak')->count();
         $dikembalikan = $myLks->where('status_permohonan', 'Dikembalikan')->count();
 
@@ -90,7 +90,7 @@ class DashboardController extends Controller
 
         // LKS dengan status terbaru yang berubah — untuk section "Status Terkini"
         $statusTerkini = LKS::where('user_id', $userId)
-            ->whereIn('status_permohonan', ['Diterima untuk proses', 'Diterima', 'Terverifikasi', 'Ditolak', 'Dikembalikan'])
+            ->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui', 'Ditolak', 'Dikembalikan'])
             ->latest('updated_at')
             ->take(5)
             ->get();
@@ -98,12 +98,12 @@ class DashboardController extends Controller
         $myRptka       = Rptka::where('user_id', $userId)->latest()->get();
         $totalRptka    = $myRptka->count();
         $rptkaMenunggu = $myRptka->where('status_permohonan', 'Menunggu')->count();
-        $rptkaDiterima = $myRptka->whereIn('status_permohonan', ['Diterima', 'Terverifikasi'])->count();
+        $rptkaDiterima = $myRptka->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])->count();
 
         // RPTKA yang ditolak/dikembalikan
         $rptkaPerluPerhatian = $myRptka->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])->count();
         $rptkaStatusTerkini  = Rptka::where('user_id', $userId)
-            ->whereIn('status_permohonan', ['Diterima', 'Terverifikasi', 'Ditolak', 'Dikembalikan'])
+            ->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui', 'Ditolak', 'Dikembalikan'])
             ->latest('updated_at')
             ->take(5)
             ->get();
@@ -125,7 +125,7 @@ class DashboardController extends Controller
         $totalLKS   = LKS::count();
         $lengkapLKS = LKS::where('pendaftaran_lengkap', true)->count();
         $menungguLKS = LKS::where('status_permohonan', 'Menunggu')->count();
-        $diterimaLKS = LKS::where('status_permohonan', 'Diterima')->count();
+        $diterimaLKS = LKS::where('status_permohonan', 'Disetujui')->count();
 
         $kewenanganKabkota = KewenanganKabkota::count();
         $kewenanganProvinsi = KewenanganProvinsi::count();

@@ -54,8 +54,8 @@
                     <span class="info-value">
                         @php
                             $sc = match($rptka->status_permohonan) {
-                                'Menunggu' => 's-menunggu', 'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi', 'Ditolak' => 's-ditolak',
+                                'Menunggu' => 's-menunggu', 'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima', 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan', default => 's-menunggu',
                             };
                         @endphp

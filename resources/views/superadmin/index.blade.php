@@ -112,9 +112,9 @@
     <i class="bi bi-info-circle-fill text-primary me-2"></i>
     <strong>Alur Kewenangan Provinsi:</strong>
     User mendaftar LKS (Provinsi)
-    → <span class="badge-pill s-menunggu">Admin</span> upload Surat Rekomendasi
-    → <span class="badge-pill s-proses">Super Admin</span> upload Tanda Pendaftaran
-    <br><small class="text-muted mt-1 d-block">Halaman ini hanya menampilkan LKS kewenangan <strong>Provinsi</strong> yang sudah diverifikasi Admin (status: Diterima untuk proses).</small>
+    → <span class="badge-pill s-menunggu">Admin</span> upload Surat Rekomendasi → Status: <strong>Terekomendasi</strong>
+    → <span class="badge-pill s-proses">Super Admin</span> upload Tanda Pendaftaran → Status: <strong>Disetujui</strong>
+    <br><small class="text-muted mt-1 d-block">Halaman ini hanya menampilkan LKS kewenangan <strong>Provinsi</strong> yang sudah diverifikasi Admin (status: Terekomendasi).</small>
 </div>
 
 {{-- Stat Cards --}}
@@ -207,9 +207,8 @@
                 @php
                     $sc = match($lksItem->status_permohonan) {
                         'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                        'Diterima untuk proses' => 's-proses',
-                        'Diterima' => 's-diterima',
-                        'Terverifikasi' => 's-terverifikasi',
+                        'Terekomendasi' => 's-proses',
+                        'Disetujui' => 's-diterima',
                         'Ditolak' => 's-ditolak',
                         'Dikembalikan' => 's-dikembalikan',
                         default => 's-menunggu',

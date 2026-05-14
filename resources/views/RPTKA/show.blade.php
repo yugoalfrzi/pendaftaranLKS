@@ -144,9 +144,8 @@
             @php
                 $sc = match($rptka->status_permohonan) {
                     'Menunggu' => 's-menunggu',
-                    'Diterima untuk proses' => 's-proses',
-                    'Diterima' => 's-diterima',
-                    'Terverifikasi' => 's-terverifikasi',
+                    'Terekomendasi' => 's-proses',
+                    'Disetujui' => 's-diterima',
                     'Ditolak' => 's-ditolak',
                     'Dikembalikan' => 's-dikembalikan',
                     default => 's-menunggu',

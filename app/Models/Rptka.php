@@ -43,12 +43,12 @@ class Rptka extends Model
     public function getStatusBadgeAttribute()
     {
         return match($this->status_permohonan) {
-            'Menunggu'     => 'bg-warning text-dark',
-            'Diterima'     => 'bg-success',
-            'Ditolak'      => 'bg-danger',
-            'Dikembalikan' => 'bg-info text-dark',
-            'Terverifikasi'=> 'bg-primary',
-            default        => 'bg-secondary',
+            'Menunggu'      => 'bg-warning text-dark',
+            'Terekomendasi' => 'bg-primary',
+            'Disetujui'     => 'bg-success',
+            'Ditolak'       => 'bg-danger',
+            'Dikembalikan'  => 'bg-info text-dark',
+            default         => 'bg-secondary',
         };
     }
 

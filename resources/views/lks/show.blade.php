@@ -152,9 +152,8 @@
             @php
                 $sc = match($lks->status_permohonan) {
                     'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                    'Diterima untuk proses' => 's-proses',
-                    'Diterima' => 's-diterima',
-                    'Terverifikasi' => 's-terverifikasi',
+                    'Terekomendasi' => 's-proses',
+                    'Disetujui' => 's-diterima',
                     'Ditolak' => 's-ditolak',
                     'Dikembalikan' => 's-dikembalikan',
                     default => 's-menunggu',

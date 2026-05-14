@@ -48,8 +48,8 @@ class RptkaController extends Controller
         $stats = [
             'total'        => (clone $baseQuery)->count(),
             'menunggu'     => (clone $baseQuery)->where('status_permohonan', 'Menunggu')->count(),
-            'diterima'     => (clone $baseQuery)->where('status_permohonan', 'Diterima')->count(),
-            'terverifikasi'=> (clone $baseQuery)->where('status_permohonan', 'Terverifikasi')->count(),
+            'diterima'     => (clone $baseQuery)->where('status_permohonan', 'Terekomendasi')->count(),
+            'terverifikasi'=> (clone $baseQuery)->where('status_permohonan', 'Disetujui')->count(),
             'ditolak'      => (clone $baseQuery)->where('status_permohonan', 'Ditolak')->count(),
         ];
 
@@ -304,10 +304,10 @@ class RptkaController extends Controller
         $stats = [
             'total'        => (clone $baseStats)->count(),
             'menunggu'     => (clone $baseStats)->where('status_permohonan', 'Menunggu')->count(),
-            'diterima'     => (clone $baseStats)->where('status_permohonan', 'Diterima')->count(),
+            'diterima'     => (clone $baseStats)->where('status_permohonan', 'Terekomendasi')->count(),
             'ditolak'      => (clone $baseStats)->where('status_permohonan', 'Ditolak')->count(),
             'dikembalikan' => (clone $baseStats)->where('status_permohonan', 'Dikembalikan')->count(),
-            'terverifikasi'=> (clone $baseStats)->where('status_permohonan', 'Terverifikasi')->count(),
+            'terverifikasi'=> (clone $baseStats)->where('status_permohonan', 'Disetujui')->count(),
         ];
 
         return view('admin.rptka.index', compact('rptkas', 'stats'));
@@ -324,7 +324,7 @@ class RptkaController extends Controller
         $rptka = Rptka::findOrFail($id);
 
         $request->validate([
-            'status_permohonan'       => 'required|in:Diterima,Ditolak,Dikembalikan',
+            'status_permohonan'       => 'required|in:Terekomendasi,Ditolak,Dikembalikan',
             'alasan_penolakan'        => 'required_if:status_permohonan,Ditolak',
             'alasan_dikembalikan'     => 'required_if:status_permohonan,Dikembalikan',
             'surat_rekomendasi_rptka' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -374,9 +374,9 @@ class RptkaController extends Controller
 
     public function superAdminIndex(Request $request)
     {
-        // Hanya tampilkan yang sudah ada surat rekomendasi dari admin (status Diterima)
+        // Hanya tampilkan yang sudah ada surat rekomendasi dari admin (status Terekomendasi)
         $query = Rptka::with('user')
-            ->where('status_permohonan', 'Diterima')
+            ->where('status_permohonan', 'Terekomendasi')
             ->whereNotNull('surat_rekomendasi_rptka_path');
 
         if ($request->filled('search')) {
@@ -398,10 +398,10 @@ class RptkaController extends Controller
         $rptkas = $query->latest()->paginate(15);
 
         $stats = [
-            'total'         => Rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_path')->count(),
-            'belum_verval'  => Rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_path')->whereNull('surat_rekomendasi_rptka_final_path')->count(),
-            'sudah_verval'  => Rptka::where('status_permohonan', 'Diterima')->whereNotNull('surat_rekomendasi_rptka_final_path')->count(),
-            'terverifikasi' => Rptka::where('status_permohonan', 'Terverifikasi')->count(),
+            'total'         => Rptka::where('status_permohonan', 'Terekomendasi')->whereNotNull('surat_rekomendasi_rptka_path')->count(),
+            'belum_verval'  => Rptka::where('status_permohonan', 'Terekomendasi')->whereNotNull('surat_rekomendasi_rptka_path')->whereNull('surat_rekomendasi_rptka_final_path')->count(),
+            'sudah_verval'  => Rptka::where('status_permohonan', 'Terekomendasi')->whereNotNull('surat_rekomendasi_rptka_final_path')->count(),
+            'terverifikasi' => Rptka::where('status_permohonan', 'Disetujui')->count(),
         ];
 
         return view('superadmin.rptka.index', compact('rptkas', 'stats'));
@@ -411,7 +411,7 @@ class RptkaController extends Controller
     {
         $rptka = Rptka::with(['documentStatuses.masterDocument', 'user'])->findOrFail($id);
 
-        if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Diterima') {
+        if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Terekomendasi') {
             return redirect()->route('superadmin.rptka.index')
                 ->with('error', 'RPTKA ini belum memiliki surat rekomendasi dari admin.');
         }
@@ -423,7 +423,7 @@ class RptkaController extends Controller
     {
         $rptka = Rptka::findOrFail($id);
 
-        if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Diterima') {
+        if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Terekomendasi') {
             return redirect()->route('superadmin.rptka.index')
                 ->with('error', 'RPTKA ini belum memiliki surat rekomendasi dari admin.');
         }
@@ -443,7 +443,7 @@ class RptkaController extends Controller
 
         $rptka->surat_rekomendasi_rptka_final_path  = $path;
         $rptka->nama_verifikator_superadmin         = $request->nama_verifikator_superadmin;
-        $rptka->status_permohonan                   = 'Terverifikasi';
+        $rptka->status_permohonan                   = 'Disetujui';
         $rptka->save();
 
         return redirect()->route('superadmin.rptka.index')

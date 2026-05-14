@@ -80,9 +80,8 @@
                                 @php
                                     $sc = match($lks->status_permohonan) {
                                         'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                        'Diterima untuk proses' => 's-proses',
-                                        'Diterima' => 's-diterima',
-                                        'Terverifikasi' => 's-terverifikasi',
+                                        'Terekomendasi' => 's-proses',
+                                        'Disetujui' => 's-diterima',
                                         'Ditolak' => 's-ditolak',
                                         'Dikembalikan' => 's-dikembalikan',
                                         default => 's-menunggu',
@@ -162,7 +161,7 @@
                         <label for="status_permohonan" class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm @error('status_permohonan') is-invalid @enderror" id="status_permohonan" name="status_permohonan" required>
                             <option value="">Pilih Status</option>
-                            <option value="Diterima" {{ old('status_permohonan') == 'Diterima' ? 'selected' : '' }}>Diterima</option>
+                            <option value="Disetujui" {{ old('status_permohonan') == 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                             <option value="Ditolak" {{ old('status_permohonan') == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                             <option value="Dikembalikan" {{ old('status_permohonan') == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                         </select>
@@ -269,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alasanDikembalikanDiv.style.display = 'none';
         alasanPenolakan.required = false;
         alasanDikembalikan.required = false;
-        if (status === 'Diterima') {
+        if (status === 'Disetujui') {
             uploadDiv.style.display = 'block';
         } else if (status === 'Ditolak') {
             alasanPenolakanDiv.style.display = 'block';

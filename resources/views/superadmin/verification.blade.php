@@ -188,9 +188,8 @@
                                 @php
                                     $sc = match($lks->status_permohonan) {
                                         'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                        'Diterima untuk proses' => 's-proses',
-                                        'Diterima' => 's-diterima',
-                                        'Terverifikasi' => 's-terverifikasi',
+                                        'Terekomendasi' => 's-proses',
+                                        'Disetujui' => 's-diterima',
                                         'Ditolak' => 's-ditolak',
                                         'Dikembalikan' => 's-dikembalikan',
                                         default => 's-menunggu',
@@ -274,8 +273,8 @@
                         <label for="status_permohonan" class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm @error('status_permohonan') is-invalid @enderror" id="status_permohonan" name="status_permohonan" required>
                             <option value="">Pilih Status</option>
-                            <option value="Diterima untuk proses" {{ old('status_permohonan', $lks->status_permohonan) == 'Diterima untuk proses' ? 'selected' : '' }}>
-                                Upload Tanda Pendaftaran (Otomatis → Diterima)
+                            <option value="Terekomendasi" {{ old('status_permohonan', $lks->status_permohonan) == 'Terekomendasi' ? 'selected' : '' }}>
+                                Upload Tanda Pendaftaran (Otomatis → Disetujui)
                             </option>
                             <option value="Ditolak" {{ old('status_permohonan', $lks->status_permohonan) == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                             <option value="Dikembalikan" {{ old('status_permohonan', $lks->status_permohonan) == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
@@ -371,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alasanPenolakan.required = false;
         alasanDikembalikan.required = false;
         sertifikatInput.required = false;
-        if (status === 'Diterima untuk proses') {
+        if (status === 'Terekomendasi') {
             sertifikatDiv.style.display = 'block';
             if (!{{ $lks->sertifikat_path ? 'true' : 'false' }}) sertifikatInput.required = true;
         } else if (status === 'Ditolak') {
