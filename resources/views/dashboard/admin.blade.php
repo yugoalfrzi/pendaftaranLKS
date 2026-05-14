@@ -258,9 +258,8 @@
                         @php
                             $sc = match($lks->status_permohonan) {
                                 'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                'Diterima untuk proses' => 's-proses',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',
@@ -316,8 +315,8 @@
                         @php
                             $sc = match($rptka->status_permohonan) {
                                 'Menunggu' => 's-menunggu',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',
@@ -349,8 +348,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusData = @json($statusData);
     const statusColors = {
         'Menunggu': '#fbbf24', 'Menunggu kelengkapan data': '#fcd34d',
-        'Diterima untuk proses': '#60a5fa', 'Diterima': '#34d399',
-        'Terverifikasi': '#818cf8', 'Ditolak': '#f87171', 'Dikembalikan': '#38bdf8',
+        'Terekomendasi': '#60a5fa', 'Disetujui': '#34d399',
+        'Ditolak': '#f87171', 'Dikembalikan': '#38bdf8',
     };
     new Chart(document.getElementById('statusChart'), {
         type: 'doughnut',

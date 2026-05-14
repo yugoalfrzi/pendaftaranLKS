@@ -113,8 +113,8 @@
                                     name="status_permohonan" 
                                     required>
                                 <option value="Menunggu" {{ old('status_permohonan', $lks->status_permohonan) == 'Menunggu' ? 'selected' : '' }}>Menunggu</option>
-                                <option value="Diterima untuk proses" {{ old('status_permohonan', $lks->status_permohonan) == 'Diterima untuk proses' ? 'selected' : '' }}>Diterima untuk proses</option>
-                                <option value="Diterima" {{ old('status_permohonan', $lks->status_permohonan) == 'Diterima' ? 'selected' : '' }}>Diterima</option>
+                                <option value="Terekomendasi" {{ old('status_permohonan', $lks->status_permohonan) == 'Terekomendasi' ? 'selected' : '' }}>Terekomendasi</option>
+                                <option value="Disetujui" {{ old('status_permohonan', $lks->status_permohonan) == 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                                 <option value="Ditolak" {{ old('status_permohonan', $lks->status_permohonan) == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                                 <option value="Dikembalikan" {{ old('status_permohonan', $lks->status_permohonan) == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                             </select>

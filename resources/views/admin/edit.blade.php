@@ -203,8 +203,8 @@
                         <label for="status_permohonan" class="form-label">Status Verifikasi <span class="text-danger">*</span></label>
                         <select class="form-select @error('status_permohonan') is-invalid @enderror" id="status_permohonan" name="status_permohonan" required>
                             <option value="">Pilih Status</option>
-                            <option value="Diterima untuk proses" {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Diterima untuk proses' ? 'selected' : '' }}>Diterima untuk proses</option>
-                            <option value="Diterima" {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Diterima' ? 'selected' : '' }}>Diterima</option>
+                            <option value="Terekomendasi" {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Terekomendasi' ? 'selected' : '' }}>Terekomendasi</option>
+                            <option value="Disetujui" {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                             <option value="Ditolak" {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                             <option value="Dikembalikan" {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                         </select>
@@ -213,8 +213,8 @@
                         @enderror
                     </div>
 
-                    <!-- Field Upload Tanda Pendaftaran - Muncul hanya ketika status "Diterima untuk proses" dipilih -->
-                    <div class="mb-3" id="sertifikat_upload_div" style="display: {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Diterima untuk proses' ? 'block' : 'none' }};">
+                    <!-- Field Upload Tanda Pendaftaran - Muncul hanya ketika status "Terekomendasi" dipilih -->
+                    <div class="mb-3" id="sertifikat_upload_div" style="display: {{ (old('status_permohonan') ?? $lks->status_permohonan) == 'Terekomendasi' ? 'block' : 'none' }};">
                         <label for="sertifikat" class="form-label">
                             Upload Tanda Pendaftaran (PDF) 
                             @if(!$lks->sertifikat_path)
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sertifikatInput.required = false;
         
         // Show relevant fields based on status
-        if (status === 'Diterima untuk proses') {
+        if (status === 'Terekomendasi') {
             sertifikatUploadDiv.style.display = 'block';
             // Hanya wajib jika belum ada sertifikat
             if (!{{ $lks->sertifikat_path ? 'true' : 'false' }}) {

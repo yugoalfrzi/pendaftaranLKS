@@ -77,7 +77,7 @@
     <div class="col-6 col-md-2">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Diterima</div><div class="stat-value">{{ $stats['diterima'] + $stats['terverifikasi'] }}</div></div>
+                <div><div class="stat-label">Terekomendasi/Disetujui</div><div class="stat-value">{{ $stats['diterima'] + $stats['terverifikasi'] }}</div></div>
                 <div class="stat-icon-sm"><i class="bi bi-check-circle"></i></div>
             </div>
         </div>

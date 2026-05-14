@@ -264,7 +264,7 @@
 
                     <div class="p-2 rounded-3 mb-3" style="background:#fffbeb; border:1px solid #fde68a; font-size:.8rem; color:#92400e;">
                         <i class="bi bi-info-circle me-1"></i>
-                        Setelah verval, status berubah menjadi <strong>Terverifikasi</strong> dan surat final dapat didownload pemohon.
+                        Setelah verval, status berubah menjadi <strong>Disetujui</strong> dan surat final dapat didownload pemohon.
                     </div>
 
                     <div class="d-flex flex-column gap-2">

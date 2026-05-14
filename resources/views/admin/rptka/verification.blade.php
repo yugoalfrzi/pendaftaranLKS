@@ -128,7 +128,7 @@
                         <label class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm @error('status_permohonan') is-invalid @enderror" name="status_permohonan" id="status" required>
                             <option value="">Pilih Status</option>
-                            <option value="Diterima">Diterima</option>
+                            <option value="Terekomendasi">Terekomendasi</option>
                             <option value="Ditolak">Ditolak</option>
                             <option value="Dikembalikan">Dikembalikan</option>
                         </select>
@@ -178,7 +178,7 @@
 <script>
 document.getElementById('status').addEventListener('change', function() {
     const val = this.value;
-    document.getElementById('suratDiv').style.display = val === 'Diterima' ? 'block' : 'none';
+    document.getElementById('suratDiv').style.display = val === 'Terekomendasi' ? 'block' : 'none';
     document.getElementById('tolakDiv').style.display = val === 'Ditolak' ? 'block' : 'none';
     document.getElementById('kembaliDiv').style.display = val === 'Dikembalikan' ? 'block' : 'none';
 });

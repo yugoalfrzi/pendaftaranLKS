@@ -238,12 +238,11 @@
         @foreach($statusTerkini as $lks)
         @php
             $sc = match($lks->status_permohonan) {
-                'Diterima untuk proses' => ['class' => 's-proses', 'icon' => 'bi-hourglass-split', 'bg' => '#eff6ff'],
-                'Diterima'              => ['class' => 's-diterima', 'icon' => 'bi-check-circle-fill', 'bg' => '#f0fdf4'],
-                'Terverifikasi'         => ['class' => 's-terverifikasi', 'icon' => 'bi-patch-check-fill', 'bg' => '#eef2ff'],
-                'Ditolak'               => ['class' => 's-ditolak', 'icon' => 'bi-x-circle-fill', 'bg' => '#fff1f2'],
-                'Dikembalikan'          => ['class' => 's-dikembalikan', 'icon' => 'bi-arrow-counterclockwise', 'bg' => '#f0f9ff'],
-                default                 => ['class' => 's-menunggu', 'icon' => 'bi-clock', 'bg' => '#fffbeb'],
+                'Terekomendasi' => ['class' => 's-proses',       'icon' => 'bi-hourglass-split',    'bg' => '#eff6ff'],
+                'Disetujui'     => ['class' => 's-diterima',     'icon' => 'bi-check-circle-fill',  'bg' => '#f0fdf4'],
+                'Ditolak'       => ['class' => 's-ditolak',      'icon' => 'bi-x-circle-fill',      'bg' => '#fff1f2'],
+                'Dikembalikan'  => ['class' => 's-dikembalikan', 'icon' => 'bi-arrow-counterclockwise', 'bg' => '#f0f9ff'],
+                default         => ['class' => 's-menunggu',     'icon' => 'bi-clock',              'bg' => '#fffbeb'],
             };
         @endphp
         <div class="d-flex align-items-center justify-content-between p-3 rounded-3 gap-3"
@@ -289,11 +288,11 @@
         @foreach($rptkaStatusTerkini as $rptka)
         @php
             $sr = match($rptka->status_permohonan) {
-                'Diterima'    => ['class' => 's-diterima',     'icon' => 'bi-check-circle-fill',    'bg' => '#f0fdf4'],
-                'Terverifikasi' => ['class' => 's-terverifikasi', 'icon' => 'bi-patch-check-fill',  'bg' => '#eef2ff'],
-                'Ditolak'     => ['class' => 's-ditolak',      'icon' => 'bi-x-circle-fill',        'bg' => '#fff1f2'],
-                'Dikembalikan'=> ['class' => 's-dikembalikan', 'icon' => 'bi-arrow-counterclockwise','bg' => '#f0f9ff'],
-                default       => ['class' => 's-menunggu',     'icon' => 'bi-clock',                'bg' => '#fffbeb'],
+                'Terekomendasi' => ['class' => 's-proses',       'icon' => 'bi-hourglass-split',       'bg' => '#eff6ff'],
+                'Disetujui'     => ['class' => 's-diterima',     'icon' => 'bi-check-circle-fill',     'bg' => '#f0fdf4'],
+                'Ditolak'       => ['class' => 's-ditolak',      'icon' => 'bi-x-circle-fill',         'bg' => '#fff1f2'],
+                'Dikembalikan'  => ['class' => 's-dikembalikan', 'icon' => 'bi-arrow-counterclockwise','bg' => '#f0f9ff'],
+                default         => ['class' => 's-menunggu',     'icon' => 'bi-clock',                 'bg' => '#fffbeb'],
             };
         @endphp
         <div class="d-flex align-items-center justify-content-between p-3 rounded-3 gap-3"
@@ -360,9 +359,8 @@
                         @php
                             $sc = match($lksItem->status_permohonan) {
                                 'Menunggu','Menunggu kelengkapan data' => 's-menunggu',
-                                'Diterima untuk proses' => 's-proses',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',
@@ -437,8 +435,8 @@
                         @php
                             $sc = match($rptka->status_permohonan) {
                                 'Menunggu' => 's-menunggu',
-                                'Diterima' => 's-diterima',
-                                'Terverifikasi' => 's-terverifikasi',
+                                'Terekomendasi' => 's-proses',
+                                'Disetujui' => 's-diterima',
                                 'Ditolak' => 's-ditolak',
                                 'Dikembalikan' => 's-dikembalikan',
                                 default => 's-menunggu',

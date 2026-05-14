@@ -50,7 +50,7 @@
     <div class="col-6 col-md-2">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Diterima</div><div class="stat-value">{{ $stats['diterima'] }}</div></div>
+                <div><div class="stat-label">Terekomendasi</div><div class="stat-value">{{ $stats['diterima'] }}</div></div>
                 <div class="stat-icon-sm"><i class="bi bi-check-circle"></i></div>
             </div>
         </div>
@@ -74,7 +74,7 @@
     <div class="col-6 col-md-2">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Terverifikasi</div><div class="stat-value">{{ $stats['terverifikasi'] }}</div></div>
+                <div><div class="stat-label">Disetujui</div><div class="stat-value">{{ $stats['terverifikasi'] }}</div></div>
                 <div class="stat-icon-sm"><i class="bi bi-patch-check"></i></div>
             </div>
         </div>
@@ -129,8 +129,8 @@
                 @php
                     $sc = match($item->status_permohonan) {
                         'Menunggu' => 's-menunggu',
-                        'Diterima' => 's-diterima',
-                        'Terverifikasi' => 's-terverifikasi',
+                        'Terekomendasi' => 's-proses',
+                        'Disetujui' => 's-diterima',
                         'Ditolak' => 's-ditolak',
                         'Dikembalikan' => 's-dikembalikan',
                         default => 's-menunggu',
