@@ -266,6 +266,11 @@ class LKSController extends Controller
      */
     public function edit($id)
     {
+        // Hanya user yang boleh mengedit
+        if (!auth()->user()->hasRole('user')) {
+            abort(403, 'Hanya user yang dapat mengedit pendaftaran LKS.');
+        }
+
         $lks = LKS::with('checklists.document')->findOrFail($id);
 
         // User tidak bisa mengedit pendaftaran yang ditolak — harus daftar ulang dari awal
@@ -284,6 +289,11 @@ class LKSController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Hanya user yang boleh mengupdate
+        if (!auth()->user()->hasRole('user')) {
+            abort(403, 'Hanya user yang dapat mengedit pendaftaran LKS.');
+        }
+
         return DB::transaction(function () use ($request, $id) {
             $lks = LKS::findOrFail($id);
 

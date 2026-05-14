@@ -86,9 +86,8 @@
                             <thead class="table-light">
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th width="30%">Nama Dokumen</th>
-                                    <th width="8%">Ada</th>
-                                    <th width="30%">Upload File</th>
+                                    <th width="35%">Nama Dokumen</th>
+                                    <th width="33%">Upload File</th>
                                     <th width="27%">Keterangan</th>
                                 </tr>
                             </thead>
@@ -104,7 +103,7 @@
                                     @php $status = $statusMap->get($doc->id) @endphp
                                     @if($doc->kategori == 'perpanjangan' && $loop->first || ($doc->kategori == 'perpanjangan' && $docs[$loop->index - 1]->kategori != 'perpanjangan'))
                                     <tr class="table-warning">
-                                        <td colspan="5" class="fw-bold text-center">
+                                        <td colspan="4" class="fw-bold text-center">
                                             <i class="bi bi-arrow-repeat"></i> Dokumen Tambahan Perpanjangan
                                         </td>
                                     </tr>
@@ -114,15 +113,6 @@
                                     <td>
                                         <strong>{{ $doc->nama_dokumen }}</strong>
                                         @if($doc->wajib)<span class="badge bg-danger ms-1">Wajib</span>@endif
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="form-check d-flex justify-content-center">
-                                            <input class="form-check-input doc-checkbox" type="checkbox"
-                                                   name="documents[{{ $doc->id }}][is_ada]" value="1"
-                                                   id="doc_{{ $doc->id }}"
-                                                   {{ old("documents.{$doc->id}.is_ada", $status?->is_ada) ? 'checked' : '' }}
-                                                   onchange="updateProgress()">
-                                        </div>
                                     </td>
                                     <td>
                                         @if($status?->file_path)
@@ -168,7 +158,7 @@
                         <div class="progress-bar bg-success" id="progressBar" style="width:{{ $pct }}%"></div>
                     </div>
                     <small class="text-muted">
-                        <span id="progressText">{{ $rptka->documentStatuses->where('is_ada', true)->count() }}</span>
+                        <span id="progressText">{{ $rptka->documentStatuses->where('file_path', '!=', null)->count() }}</span>
                         dari <span id="progressTotal">{{ $rptka->documentStatuses->count() }}</span> dokumen dilengkapi
                     </small>
                 </div>
@@ -186,12 +176,14 @@
 
 <script>
 function updateProgress() {
-    const checkboxes = document.querySelectorAll('.doc-checkbox');
-    const checked = document.querySelectorAll('.doc-checkbox:checked').length;
-    const total = checkboxes.length;
-    const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    const filled = Array.from(fileInputs).filter(f => f.files && f.files.length > 0).length;
+    const existing = {{ $rptka->documentStatuses->whereNotNull('file_path')->count() }};
+    const total = fileInputs.length;
+    // Hitung file yang sudah ada + yang baru diupload
+    const pct = total > 0 ? Math.round((existing / total) * 100) : 0;
     document.getElementById('progressBar').style.width = pct + '%';
-    document.getElementById('progressText').textContent = checked;
+    document.getElementById('progressText').textContent = existing + filled;
     document.getElementById('progressTotal').textContent = total;
 }
 </script>

@@ -172,7 +172,7 @@
                 <i class="bi bi-clipboard-check me-1"></i> Verifikasi
             </a>
         @endif
-        @if(auth()->user()->hasRole(['user','admin']))
+        @if(auth()->user()->hasRole('user'))
             <a href="{{ route('lks.edit', $lks->id) }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
                 <i class="bi bi-pencil me-1"></i> Edit
             </a>

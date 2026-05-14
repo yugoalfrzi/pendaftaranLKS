@@ -203,7 +203,9 @@
                     <td>
                         <div class="d-flex gap-1">
                             <a href="{{ route('lks.show', $lksItem->id) }}" class="btn btn-sm btn-outline-info rounded-pill px-2" title="Detail"><i class="bi bi-eye"></i></a>
+                            @if(auth()->user()->role === 'user')
                             <a href="{{ route('lks.edit', $lksItem->id) }}" class="btn btn-sm btn-outline-warning rounded-pill px-2" title="Edit"><i class="bi bi-pencil"></i></a>
+                            @endif
                             <form action="{{ route('lks.destroy', $lksItem->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data ini?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2"><i class="bi bi-trash"></i></button>

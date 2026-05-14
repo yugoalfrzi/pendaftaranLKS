@@ -83,7 +83,7 @@ class RptkaController extends Controller
 
         DB::beginTransaction();
         try {
-            // Validasi: dokumen wajib harus ada is_ada dan file
+            // Validasi: dokumen wajib harus ada file
             $wajibDocs = MasterDocument::where('wajib', true)
                 ->where(function($q) use ($request) {
                     $q->where('kategori', 'utama');
@@ -93,15 +93,8 @@ class RptkaController extends Controller
                 })->get();
 
             foreach ($wajibDocs as $wajibDoc) {
-                $docData = $request->input('documents.' . $wajibDoc->id);
-                $hasAda  = isset($docData['is_ada']);
                 $hasFile = $request->hasFile('documents.' . $wajibDoc->id . '.file');
 
-                if (!$hasAda) {
-                    return back()->withInput()->withErrors([
-                        'documents' => 'Dokumen wajib "' . $wajibDoc->nama_dokumen . '" harus dicentang Ada.'
-                    ]);
-                }
                 if (!$hasFile) {
                     return back()->withInput()->withErrors([
                         'documents' => 'Dokumen wajib "' . $wajibDoc->nama_dokumen . '" harus diupload filenya.'
@@ -133,7 +126,7 @@ class RptkaController extends Controller
                     RptkaDocumentStatus::updateOrCreate(
                         ['rptka_id' => $rptka->id, 'master_document_id' => $docId],
                         [
-                            'is_ada'     => isset($docData['is_ada']) ? true : false,
+                            'is_ada'     => $filePath ? true : false,
                             'keterangan' => $docData['keterangan'] ?? null,
                             'file_path'  => $filePath,
                         ]
@@ -223,7 +216,7 @@ class RptkaController extends Controller
                     RptkaDocumentStatus::updateOrCreate(
                         ['rptka_id' => $rptka->id, 'master_document_id' => $docId],
                         [
-                            'is_ada'     => isset($docData['is_ada']) ? true : false,
+                            'is_ada'     => $filePath ? true : false,
                             'keterangan' => $docData['keterangan'] ?? null,
                             'file_path'  => $filePath,
                         ]

@@ -90,16 +90,15 @@
                             <thead class="table-light">
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th width="35%">Nama Dokumen</th>
-                                    <th width="10%">Ada</th>
-                                    <th width="30%">Upload File</th>
+                                    <th width="40%">Nama Dokumen</th>
+                                    <th width="35%">Upload File</th>
                                     <th width="20%">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody id="dokumenUtama"></tbody>
                             <tbody id="dokumenPerpanjangan" style="display:none;">
                                 <tr class="table-warning">
-                                    <td colspan="5" class="fw-bold text-center">
+                                    <td colspan="4" class="fw-bold text-center">
                                         <i class="bi bi-arrow-repeat"></i> Dokumen Tambahan Perpanjangan
                                     </td>
                                 </tr>
@@ -118,9 +117,8 @@
                     <ul class="list-unstyled small text-muted mb-0">
                         <li class="mb-2"><i class="bi bi-1-circle text-primary"></i> Isi informasi permohonan terlebih dahulu</li>
                         <li class="mb-2"><i class="bi bi-2-circle text-primary"></i> Pilih jenis permohonan untuk menampilkan daftar dokumen</li>
-                        <li class="mb-2"><i class="bi bi-3-circle text-primary"></i> Centang "Ada" jika dokumen tersedia</li>
-                        <li class="mb-2"><i class="bi bi-4-circle text-primary"></i> Upload file dokumen (PDF/JPG/PNG/DOC, maks 5MB)</li>
-                        <li><i class="bi bi-5-circle text-primary"></i> Klik Simpan untuk mendaftarkan permohonan</li>
+                        <li class="mb-2"><i class="bi bi-3-circle text-primary"></i> Upload file dokumen (PDF/JPG/PNG/DOC, maks 5MB)</li>
+                        <li><i class="bi bi-4-circle text-primary"></i> Klik Simpan untuk mendaftarkan permohonan</li>
                     </ul>
                 </div>
             </div>
@@ -163,17 +161,11 @@ function buildRow(doc, index) {
             ${doc.wajib ? '<span class="badge bg-danger ms-1">Wajib</span>' : ''}
             ${doc.deskripsi ? `<br><small class="text-muted">${doc.deskripsi}</small>` : ''}
         </td>
-        <td class="text-center">
-            <div class="form-check d-flex justify-content-center">
-                <input class="form-check-input doc-checkbox" type="checkbox"
-                       name="documents[${doc.id}][is_ada]" value="1"
-                       id="doc_${doc.id}" onchange="updateProgress()">
-            </div>
-        </td>
         <td>
-            <input type="file" class="form-control form-control-sm"
+            <input type="file" class="form-control form-control-sm doc-file"
                    name="documents[${doc.id}][file]"
-                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                   onchange="updateProgress()">
         </td>
         <td>
             <input type="text" class="form-control form-control-sm"
@@ -184,12 +176,12 @@ function buildRow(doc, index) {
 }
 
 function updateProgress() {
-    const checkboxes = document.querySelectorAll('.doc-checkbox');
-    const checked = document.querySelectorAll('.doc-checkbox:checked').length;
-    const total = checkboxes.length;
-    const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+    const fileInputs = document.querySelectorAll('.doc-file');
+    const filled = Array.from(fileInputs).filter(f => f.files && f.files.length > 0).length;
+    const total = fileInputs.length;
+    const pct = total > 0 ? Math.round((filled / total) * 100) : 0;
     document.getElementById('progressBar').style.width = pct + '%';
-    document.getElementById('progressText').textContent = checked;
+    document.getElementById('progressText').textContent = filled;
     document.getElementById('progressTotal').textContent = total;
 }
 
@@ -218,7 +210,7 @@ document.getElementById('permohonan_rptka').addEventListener('change', function 
     } else {
         tbodyPerp.style.display = 'none';
         tbodyPerp.innerHTML = `<tr class="table-warning">
-            <td colspan="5" class="fw-bold text-center">
+            <td colspan="4" class="fw-bold text-center">
                 <i class="bi bi-arrow-repeat"></i> Dokumen Tambahan Perpanjangan
             </td>
         </tr>`;
@@ -245,7 +237,7 @@ document.getElementById('rptkaForm').addEventListener('submit', function(e) {
         return false;
     }
 
-    // Cek dokumen wajib: harus ada is_ada dicentang DAN file diupload
+    // Cek dokumen wajib: harus ada file diupload
     const allRows = document.querySelectorAll('#dokumenUtama tr, #dokumenPerpanjangan tr');
     let missingWajib = [];
 
@@ -255,14 +247,11 @@ document.getElementById('rptkaForm').addEventListener('submit', function(e) {
         const badge = row.querySelector('.badge.bg-danger');
         if (!badge) return; // bukan wajib
 
-        const checkbox = row.querySelector('.doc-checkbox');
         const fileInput = row.querySelector('input[type="file"]');
         const docName = row.querySelector('td:nth-child(2) strong');
         const name = docName ? docName.textContent.trim() : 'Dokumen wajib';
 
-        if (!checkbox || !checkbox.checked) {
-            missingWajib.push(name + ' (belum dicentang "Ada")');
-        } else if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
             missingWajib.push(name + ' (belum diupload file)');
         }
     });

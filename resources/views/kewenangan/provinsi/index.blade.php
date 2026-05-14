@@ -6,34 +6,39 @@
 <style>
     /* Gaya modern khas SIPINJAM - versi biru (Provinsi) */
     .stat-card {
-        background: #ffffff;
         border-radius: 1.25rem;
-        border: 1px solid rgba(203, 213, 225, 0.4);
+        border: none;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         height: 100%;
     }
     .stat-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 20px -12px rgba(0,0,0,0.1);
-        border-color: #cbd5e1;
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
     }
     .stat-icon {
-        width: 48px;
-        height: 48px;
-        background: #e0e7ff;
-        border-radius: 1rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 0.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #0d6efd;
-        font-size: 1.4rem;
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+        font-size: 1.2rem;
+        flex-shrink: 0;
     }
     .stat-value {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #fff;
         line-height: 1.2;
+    }
+    .stat-label {
+        color: rgba(255,255,255,0.85);
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
     }
     .filter-card {
         background: #ffffff;
@@ -170,12 +175,12 @@
 @endauth
 
 <!-- Statistik Utama -->
-<div class="row g-4 mb-5">
+<div class="row g-3 mb-5">
     <div class="col-md-2 col-sm-4 col-6">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Total LKS</div>
+                    <div class="stat-label">Total LKS</div>
                     <div class="stat-value">{{ number_format($statistics['total']['total_lks'] ?? 0) }}</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-list-ul"></i></div>
@@ -183,10 +188,10 @@
         </div>
     </div>
     <div class="col-md-2 col-sm-4 col-6">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Pusat</div>
+                    <div class="stat-label">Pusat</div>
                     <div class="stat-value">{{ $kewenangan->where('status', 'pusat')->count() }}</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-building"></i></div>
@@ -194,10 +199,10 @@
         </div>
     </div>
     <div class="col-md-2 col-sm-4 col-6">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Cabang</div>
+                    <div class="stat-label">Cabang</div>
                     <div class="stat-value">{{ $kewenangan->where('status', 'cabang')->count() }}</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-diagram-3"></i></div>
@@ -205,10 +210,10 @@
         </div>
     </div>
     <div class="col-md-2 col-sm-4 col-6">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Total Binaan</div>
+                    <div class="stat-label">Total Binaan</div>
                     <div class="stat-value">{{ number_format($statistics['total']['seluruh_binaan'] ?? 0, 0, ',', '.') }}</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-people"></i></div>
@@ -216,10 +221,10 @@
         </div>
     </div>
     <div class="col-md-2 col-sm-4 col-6">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#dc2626,#b91c1c);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Dalam Panti</div>
+                    <div class="stat-label">Dalam Panti</div>
                     <div class="stat-value">{{ number_format($statistics['total']['dalam_panti'] ?? 0, 0, ',', '.') }}</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-house-door"></i></div>
@@ -227,10 +232,10 @@
         </div>
     </div>
     <div class="col-md-2 col-sm-4 col-6">
-        <div class="stat-card p-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Luar Panti</div>
+                    <div class="stat-label">Luar Panti</div>
                     <div class="stat-value">{{ number_format($statistics['total']['luar_panti'] ?? 0, 0, ',', '.') }}</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-house-up"></i></div>

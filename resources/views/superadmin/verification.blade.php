@@ -316,11 +316,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="verifikator" class="form-label small fw-semibold">ID Verifikator</label>
-                        <input type="text" class="form-control form-control-sm bg-light" id="verifikator" name="verifikator" value="{{ auth()->user()->id }}" readonly>
-                    </div>
-
-                    <div class="mb-3">
                         <label for="nama_verifikator" class="form-label small fw-semibold">Nama Verifikator</label>
                         <input type="text" class="form-control form-control-sm bg-light" id="nama_verifikator" name="nama_verifikator" value="{{ auth()->user()->name }}" readonly>
                         <div class="form-text small">Otomatis diisi sesuai akun yang login</div>
