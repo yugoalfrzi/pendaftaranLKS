@@ -168,6 +168,19 @@
                 </h5>
             </div>
             <div class="card-body">
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <strong><i class="bi bi-exclamation-triangle me-1"></i>Terdapat kesalahan:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
                 <form method="POST" action="{{ route('lks.store') }}" enctype="multipart/form-data">
                     @csrf
                     

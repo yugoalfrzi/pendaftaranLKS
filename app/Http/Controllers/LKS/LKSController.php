@@ -138,8 +138,8 @@ class LKSController extends Controller
             'tanggal_masuk_dokumen' => 'required|date',
             'tanggal_persyaratan' => 'nullable|date',
             'kewenangan_type' => 'required|in:kabkota,provinsi',
-            'documents' => 'required|array',
-            'documents.*.document_id' => 'required|exists:documents,id',
+            'documents' => 'nullable|array',
+            'documents.*.document_id' => 'nullable|exists:documents,id',
             'documents.*.keterangan' => 'nullable|string',
             'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:20480',
         ]);
