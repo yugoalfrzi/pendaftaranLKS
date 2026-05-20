@@ -5,7 +5,6 @@
 
 @section('content')
 <style>
-    /* Gaya modern khas SIPINJAM */
     .hero-gradient {
         background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         border-radius: 1.5rem;
