@@ -6,6 +6,9 @@ APP_PORT=${PORT:-8080}
 echo "=== Starting pendaftaranLKS on port $APP_PORT ==="
 
 php artisan migrate --force
+php artisan db:seed --class=UserSeeder --force
+php artisan db:seed --class=DocumentSeeder --force
+php artisan db:seed --class=MasterDocumentSeeder --force
 php artisan config:clear
 php artisan route:clear
 
