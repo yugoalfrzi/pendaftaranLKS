@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\KewenanganKemensos;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Concerns\ExcelExportTrait;
 use Illuminate\Support\Facades\DB;
 
 class KewenanganKemensosController extends Controller
 {
+    use ExcelExportTrait;
     public function index(Request $request)
     {
         // User tidak bisa lihat daftar kemensos, redirect ke form input
@@ -485,7 +487,7 @@ class KewenanganKemensosController extends Controller
     }
 
     /**
-     * Export CSV untuk kewenangan kemensos
+     * Export Excel — tabel rapih dengan header berwarna
      */
     public function exportExcel(Request $request)
     {
@@ -501,85 +503,74 @@ class KewenanganKemensosController extends Controller
         }
 
         $kewenangan = $query->get();
-        $filename   = 'kewenangan_kemensos_' . date('Y_m_d_His') . '.csv';
 
-        $headers = [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Pragma'              => 'no-cache',
-            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires'             => '0',
+        $headers_col = [
+            'No', 'Nama Lembaga', 'Status', 'Kabupaten/Kota', 'Nama LKS', 'Alamat LKS', 'Ketua LKS',
+            'Total Binaan', 'Dalam Panti', 'Luar Panti',
+            'Anak Balita Terlantar', 'Anak Terlantar', 'Anak Berhadapan Hukum', 'Anak Jalanan',
+            'Anak Disabilitas', 'Anak Korban Kekerasan', 'Anak Perlindungan Khusus',
+            'Lansia', 'Disabilitas Fisik', 'Disabilitas Intelektual', 'Disabilitas Mental', 'Disabilitas Sensorik',
+            'Tuna Susila', 'Gelandangan', 'Pengemis', 'Pemulung', 'Kelompok Minoritas', 'BWBLP',
+            'ODHA', 'Penyalahgunaan Napza', 'Korban Trafficking', 'Korban Tindak Kekerasan', 'PMBS',
+            'Korban Bencana Alam', 'Korban Bencana Sosial', 'Perempuan Rawan Sosial Ekonomi',
+            'Fakir Miskin', 'Keluarga Bermasalah Sosial Psikologis', 'Komunitas Adat Terpencil',
+            'Telepon', 'Email', 'Tanggal Input',
         ];
 
-        $callback = function () use ($kewenangan) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        $rows = [];
+        $i = 1;
+        foreach ($kewenangan as $item) {
+            $rows[] = [
+                $i++, $item->Nama_Lembaga_Yayasan, $this->getStatusLabel($item->status),
+                $item->kabupaten_kota, $item->nama_lks, $item->alamat_lks, $item->nama_ketua_lks,
+                $item->jumlah_seluruh_binaan, $item->jumlah_dalam_panti, $item->jumlah_luar_panti,
+                $item->anak_balita_terlantar_DP + $item->anak_balita_terlantar_LP,
+                $item->anak_terlantar_DP + $item->anak_terlantar_LP,
+                $item->anak_yangberhadapan_dengan_hukum_DP + $item->anak_yangberhadapan_dengan_hukum_LP,
+                $item->anak_jalanan_DP + $item->anak_jalanan_LP,
+                $item->anak_dengan_kedisabilitas_DP + $item->anak_dengan_kedisabilitas_LP,
+                $item->anak_yangmenjadi_tidak_kekerasan_DP + $item->anak_yangmenjadi_tidak_kekerasan_LP,
+                $item->anak_yang_memerlukan_perlindungan_khusus_DP + $item->anak_yang_memerlukan_perlindungan_khusus_LP,
+                $item->lanjut_usia_terlantar_DP + $item->lanjut_usia_terlantar_LP,
+                $item->disabilitas_fisik_DP + $item->disabilitas_fisik_LP,
+                $item->disabilitas_intelektual_DP + $item->disabilitas_intelektual_LP,
+                $item->disabilitas_mental_DP + $item->disabilitas_mental_LP,
+                $item->disabilitas_sensorik_DP + $item->disabilitas_sensorik_LP,
+                $item->tuna_susila_DP + $item->tuna_susila_LP,
+                $item->gelandangan_DP + $item->gelandangan_LP,
+                $item->pengemis_DP + $item->pengemis_LP,
+                $item->pemulung_DP + $item->pemulung_LP,
+                $item->kelompok_minoritas_DP + $item->kelompok_minoritas_LP,
+                $item->BWBLP_DP + $item->BWBLP_LP,
+                $item->orang_dengan_hiv_aids_DP + $item->orang_dengan_hiv_aids_LP,
+                $item->penyalahgunaan_Napza_DP + $item->penyalahgunaan_Napza_LP,
+                $item->korban_Trafficking_DP + $item->korban_Trafficking_LP,
+                $item->korban_tindak_kekerasan_DP + $item->korban_tindak_kekerasan_LP,
+                $item->PMBS_DP + $item->PMBS_LP,
+                $item->korban_bencana_alam_DP + $item->korban_bencana_alam_LP,
+                $item->korban_bencana_sosial_DP + $item->korban_bencana_sosial_LP,
+                $item->perempuan_rawan_sosial_ekonomi_DP + $item->perempuan_rawan_sosial_ekonomi_LP,
+                $item->fakir_miskin_DP + $item->fakir_miskin_LP,
+                $item->keluarga_bermasalah_sosial_psikologis_DP + $item->keluarga_bermasalah_sosial_psikologis_LP,
+                $item->komunitas_adat_terpencil_DP + $item->komunitas_adat_terpencil_LP,
+                $item->nomor_tlp, $item->email,
+                $item->created_at ? $item->created_at->format('d-m-Y H:i') : '',
+            ];
+        }
 
-            fputcsv($file, [
-                'No', 'Nama Lembaga', 'Status', 'Kabupaten/Kota', 'Nama LKS', 'Alamat LKS', 'Ketua LKS',
-                'Total Binaan', 'Dalam Panti', 'Luar Panti',
-                'Anak Balita Terlantar', 'Anak Terlantar', 'Anak Berhadapan Hukum', 'Anak Jalanan',
-                'Anak Disabilitas', 'Anak Korban Kekerasan', 'Anak Perlindungan Khusus',
-                'Lansia', 'Disabilitas Fisik', 'Disabilitas Intelektual', 'Disabilitas Mental', 'Disabilitas Sensorik',
-                'Tuna Susila', 'Gelandangan', 'Pengemis', 'Pemulung', 'Kelompok Minoritas', 'BWBLP',
-                'ODHA', 'Penyalahgunaan Napza', 'Korban Trafficking', 'Korban Tindak Kekerasan', 'PMBS',
-                'Korban Bencana Alam', 'Korban Bencana Sosial', 'Perempuan Rawan Sosial Ekonomi',
-                'Fakir Miskin', 'Keluarga Bermasalah Sosial Psikologis', 'Komunitas Adat Terpencil',
-                'Telepon', 'Email', 'Tanggal Input',
-            ]);
+        $xml = $this->buildExcelXml(
+            'DATA KEWENANGAN KEMENTERIAN SOSIAL',
+            'DINAS SOSIAL PROVINSI JAWA BARAT',
+            $headers_col,
+            $rows
+        );
 
-            $i = 1;
-            foreach ($kewenangan as $item) {
-                fputcsv($file, [
-                    $i++,
-                    $item->Nama_Lembaga_Yayasan,
-                    $this->getStatusLabel($item->status),
-                    $item->kabupaten_kota,
-                    $item->nama_lks,
-                    $item->alamat_lks,
-                    $item->nama_ketua_lks,
-                    $item->jumlah_seluruh_binaan,
-                    $item->jumlah_dalam_panti,
-                    $item->jumlah_luar_panti,
-                    $item->anak_balita_terlantar_DP + $item->anak_balita_terlantar_LP,
-                    $item->anak_terlantar_DP + $item->anak_terlantar_LP,
-                    $item->anak_yangberhadapan_dengan_hukum_DP + $item->anak_yangberhadapan_dengan_hukum_LP,
-                    $item->anak_jalanan_DP + $item->anak_jalanan_LP,
-                    $item->anak_dengan_kedisabilitas_DP + $item->anak_dengan_kedisabilitas_LP,
-                    $item->anak_yangmenjadi_tidak_kekerasan_DP + $item->anak_yangmenjadi_tidak_kekerasan_LP,
-                    $item->anak_yang_memerlukan_perlindungan_khusus_DP + $item->anak_yang_memerlukan_perlindungan_khusus_LP,
-                    $item->lanjut_usia_terlantar_DP + $item->lanjut_usia_terlantar_LP,
-                    $item->disabilitas_fisik_DP + $item->disabilitas_fisik_LP,
-                    $item->disabilitas_intelektual_DP + $item->disabilitas_intelektual_LP,
-                    $item->disabilitas_mental_DP + $item->disabilitas_mental_LP,
-                    $item->disabilitas_sensorik_DP + $item->disabilitas_sensorik_LP,
-                    $item->tuna_susila_DP + $item->tuna_susila_LP,
-                    $item->gelandangan_DP + $item->gelandangan_LP,
-                    $item->pengemis_DP + $item->pengemis_LP,
-                    $item->pemulung_DP + $item->pemulung_LP,
-                    $item->kelompok_minoritas_DP + $item->kelompok_minoritas_LP,
-                    $item->BWBLP_DP + $item->BWBLP_LP,
-                    $item->orang_dengan_hiv_aids_DP + $item->orang_dengan_hiv_aids_LP,
-                    $item->penyalahgunaan_Napza_DP + $item->penyalahgunaan_Napza_LP,
-                    $item->korban_Trafficking_DP + $item->korban_Trafficking_LP,
-                    $item->korban_tindak_kekerasan_DP + $item->korban_tindak_kekerasan_LP,
-                    $item->PMBS_DP + $item->PMBS_LP,
-                    $item->korban_bencana_alam_DP + $item->korban_bencana_alam_LP,
-                    $item->korban_bencana_sosial_DP + $item->korban_bencana_sosial_LP,
-                    $item->perempuan_rawan_sosial_ekonomi_DP + $item->perempuan_rawan_sosial_ekonomi_LP,
-                    $item->fakir_miskin_DP + $item->fakir_miskin_LP,
-                    $item->keluarga_bermasalah_sosial_psikologis_DP + $item->keluarga_bermasalah_sosial_psikologis_LP,
-                    $item->komunitas_adat_terpencil_DP + $item->komunitas_adat_terpencil_LP,
-                    $item->nomor_tlp,
-                    $item->email,
-                    $item->created_at ? $item->created_at->format('d-m-Y H:i') : '',
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return response($xml, 200, [
+            'Content-Type'        => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="kewenangan_kemensos_' . date('Y_m_d_His') . '.xls"',
+            'Pragma'              => 'no-cache',
+            'Expires'             => '0',
+        ]);
     }
 
     /**
