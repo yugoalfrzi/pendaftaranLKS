@@ -485,204 +485,101 @@ class KewenanganKemensosController extends Controller
     }
 
     /**
-     * Export Excel untuk kewenangan kemensos
+     * Export CSV untuk kewenangan kemensos
      */
     public function exportExcel(Request $request)
     {
         $search = $request->get('search');
-        $query = KewenanganKemensos::query();
-        
+        $query  = KewenanganKemensos::query();
+
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('Nama_Lembaga_Yayasan', 'like', "%{$search}%")
                   ->orWhere('nama_lks', 'like', "%{$search}%")
                   ->orWhere('kabupaten_kota', 'like', "%{$search}%");
             });
         }
-        
-        $kewenangan = $query->get();
 
-        $html = $this->generateExcelTable($kewenangan);
-        
-        $filename = 'kewenangan_kemensos_' . date('Y_m_d_His') . '.xls';
-        
+        $kewenangan = $query->get();
+        $filename   = 'kewenangan_kemensos_' . date('Y_m_d_His') . '.csv';
+
         $headers = [
-            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0'
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
         ];
 
-        return response($html, 200, $headers);
-    }
+        $callback = function () use ($kewenangan) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-    /**
-     * Generate HTML table untuk Excel kewenangan kemensos
-     */
-    private function generateExcelTable($kewenangan)
-    {
-        $totalBinaan = $kewenangan->sum('jumlah_seluruh_binaan');
-        $totalDalamPanti = $kewenangan->sum('jumlah_dalam_panti');
-        $totalLuarPanti = $kewenangan->sum('jumlah_luar_panti');
+            fputcsv($file, [
+                'No', 'Nama Lembaga', 'Status', 'Kabupaten/Kota', 'Nama LKS', 'Alamat LKS', 'Ketua LKS',
+                'Total Binaan', 'Dalam Panti', 'Luar Panti',
+                'Anak Balita Terlantar', 'Anak Terlantar', 'Anak Berhadapan Hukum', 'Anak Jalanan',
+                'Anak Disabilitas', 'Anak Korban Kekerasan', 'Anak Perlindungan Khusus',
+                'Lansia', 'Disabilitas Fisik', 'Disabilitas Intelektual', 'Disabilitas Mental', 'Disabilitas Sensorik',
+                'Tuna Susila', 'Gelandangan', 'Pengemis', 'Pemulung', 'Kelompok Minoritas', 'BWBLP',
+                'ODHA', 'Penyalahgunaan Napza', 'Korban Trafficking', 'Korban Tindak Kekerasan', 'PMBS',
+                'Korban Bencana Alam', 'Korban Bencana Sosial', 'Perempuan Rawan Sosial Ekonomi',
+                'Fakir Miskin', 'Keluarga Bermasalah Sosial Psikologis', 'Komunitas Adat Terpencil',
+                'Telepon', 'Email', 'Tanggal Input',
+            ]);
 
-        $html = '<!DOCTYPE html>
-        <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            <title>Data Kewenangan Kementerian Sosial</title>
-            <style>
-                body { font-family: "Times New Roman"; margin: 20px; }
-                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
-                .header h2 { color: #2E86C1; margin-bottom: 5px; }
-                .header h3 { color: #555; margin-bottom: 10px; }
-                .summary { background-color: #E8F8F5; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #2E86C1; }
-                table { border-collapse: collapse; width: 100%; font-size: 10px; margin-top: 10px; }
-                th { background-color: #2E86C1; color: #FFFFFF; font-weight: bold; padding: 10px 8px; text-align: center; border: 1px solid #1B4F72; }
-                td { padding: 8px; border: 1px solid #DDD; text-align: left; vertical-align: top; }
-                tr:nth-child(even) { background-color: #f8f9fa; }
-                tr:hover { background-color: #e9ecef; }
-                .number { text-align: right; }
-                .center { text-align: center; }
-                .footer { margin-top: 30px; text-align: center; font-size: 9px; color: #666; border-top: 1px solid #DDD; padding-top: 10px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h2>DATA KEWENANGAN KEMENTERIAN SOSIAL</h2>
-                <h3>DINAS SOSIAL PROVINSI JAWA BARAT</h3>
-                <p>Tanggal Export: ' . date('d-m-Y H:i') . ' | Total Data: ' . number_format($kewenangan->count()) . ' records</p>
-            </div>
+            $i = 1;
+            foreach ($kewenangan as $item) {
+                fputcsv($file, [
+                    $i++,
+                    $item->Nama_Lembaga_Yayasan,
+                    $this->getStatusLabel($item->status),
+                    $item->kabupaten_kota,
+                    $item->nama_lks,
+                    $item->alamat_lks,
+                    $item->nama_ketua_lks,
+                    $item->jumlah_seluruh_binaan,
+                    $item->jumlah_dalam_panti,
+                    $item->jumlah_luar_panti,
+                    $item->anak_balita_terlantar_DP + $item->anak_balita_terlantar_LP,
+                    $item->anak_terlantar_DP + $item->anak_terlantar_LP,
+                    $item->anak_yangberhadapan_dengan_hukum_DP + $item->anak_yangberhadapan_dengan_hukum_LP,
+                    $item->anak_jalanan_DP + $item->anak_jalanan_LP,
+                    $item->anak_dengan_kedisabilitas_DP + $item->anak_dengan_kedisabilitas_LP,
+                    $item->anak_yangmenjadi_tidak_kekerasan_DP + $item->anak_yangmenjadi_tidak_kekerasan_LP,
+                    $item->anak_yang_memerlukan_perlindungan_khusus_DP + $item->anak_yang_memerlukan_perlindungan_khusus_LP,
+                    $item->lanjut_usia_terlantar_DP + $item->lanjut_usia_terlantar_LP,
+                    $item->disabilitas_fisik_DP + $item->disabilitas_fisik_LP,
+                    $item->disabilitas_intelektual_DP + $item->disabilitas_intelektual_LP,
+                    $item->disabilitas_mental_DP + $item->disabilitas_mental_LP,
+                    $item->disabilitas_sensorik_DP + $item->disabilitas_sensorik_LP,
+                    $item->tuna_susila_DP + $item->tuna_susila_LP,
+                    $item->gelandangan_DP + $item->gelandangan_LP,
+                    $item->pengemis_DP + $item->pengemis_LP,
+                    $item->pemulung_DP + $item->pemulung_LP,
+                    $item->kelompok_minoritas_DP + $item->kelompok_minoritas_LP,
+                    $item->BWBLP_DP + $item->BWBLP_LP,
+                    $item->orang_dengan_hiv_aids_DP + $item->orang_dengan_hiv_aids_LP,
+                    $item->penyalahgunaan_Napza_DP + $item->penyalahgunaan_Napza_LP,
+                    $item->korban_Trafficking_DP + $item->korban_Trafficking_LP,
+                    $item->korban_tindak_kekerasan_DP + $item->korban_tindak_kekerasan_LP,
+                    $item->PMBS_DP + $item->PMBS_LP,
+                    $item->korban_bencana_alam_DP + $item->korban_bencana_alam_LP,
+                    $item->korban_bencana_sosial_DP + $item->korban_bencana_sosial_LP,
+                    $item->perempuan_rawan_sosial_ekonomi_DP + $item->perempuan_rawan_sosial_ekonomi_LP,
+                    $item->fakir_miskin_DP + $item->fakir_miskin_LP,
+                    $item->keluarga_bermasalah_sosial_psikologis_DP + $item->keluarga_bermasalah_sosial_psikologis_LP,
+                    $item->komunitas_adat_terpencil_DP + $item->komunitas_adat_terpencil_LP,
+                    $item->nomor_tlp,
+                    $item->email,
+                    $item->created_at ? $item->created_at->format('d-m-Y H:i') : '',
+                ]);
+            }
 
-            <div class="summary">
-                <strong>RINGKASAN DATA:</strong><br>
-                Total Seluruh Binaan: ' . number_format($totalBinaan) . ' | 
-                Total Dalam Panti: ' . number_format($totalDalamPanti) . ' | 
-                Total Luar Panti: ' . number_format($totalLuarPanti) . ' |
-                Jumlah LKS: ' . number_format($kewenangan->count()) . '
-            </div>
+            fclose($file);
+        };
 
-            <table>
-                <thead>
-                    <tr>
-                        <th width="3%">No</th>
-                        <th width="12%">Nama Lembaga</th>
-                        <th width="8%">Status</th>
-                        <th width="10%">Kabupaten/Kota</th>
-                        <th width="12%">Nama LKS</th>
-                        <th width="15%">Alamat LKS</th>
-                        <th width="10%">Ketua LKS</th>
-                        <th width="5%">Total Binaan</th>
-                        <th width="5%">Dalam Panti</th>
-                        <th width="5%">Luar Panti</th>
-                        <th width="8%">Anak Balita Terlantar</th>
-                        <th width="8%">Anak Terlantar</th>
-                        <th width="8%">Anak Berhadapan Hukum</th>
-                        <th width="8%">Anak Jalanan</th>
-                        <th width="8%">Anak dengan Kedisabilitasan</th>
-                        <th width="8%">Anak Korban Kekerasan</th>
-                        <th width="8%">Anak Perlindungan Khusus</th>
-                        <th width="8%">Lansia Terlantar</th>
-                        <th width="8%">Disabilitas Fisik</th>
-                        <th width="8%">Disabilitas Intelektual</th>
-                        <th width="8%">Disabilitas Mental</th>
-                        <th width="8%">Disabilitas Sensorik</th>
-                        <th width="8%">Tuna Susila</th>
-                        <th width="8%">Gelandangan</th>
-                        <th width="8%">Pengemis</th>
-                        <th width="8%">Pemulung</th>
-                        <th width="8%">Kelompok Minoritas</th>
-                        <th width="8%">BWBLP</th>
-                        <th width="8%">ODHA</th>
-                        <th width="8%">Penyalahgunaan Napza</th>
-                        <th width="8%">Korban Trafficking</th>
-                        <th width="8%">Korban Kekerasan</th>
-                        <th width="8%">PMBS</th>
-                        <th width="8%">Korban Bencana Alam</th>
-                        <th width="8%">Korban Bencana Sosial</th>
-                        <th width="8%">Perempuan Rawan Sosial Ekonomi</th>
-                        <th width="8%">Fakir Miskin</th>
-                        <th width="8%">Keluarga Bermasalah Sosial Psikologis</th>
-                        <th width="8%">Komunitas Adat Terpencil</th>
-                        <th width="8%">Telepon</th>
-                        <th width="10%">Email</th>
-                        <th width="7%">Tanggal Input</th>
-                    </tr>
-                </thead>
-                <tbody>';
-
-        $i = 1;
-        foreach ($kewenangan as $item) {
-            $html .= '<tr>
-                <td class="center">' . $i++ . '</td>
-                <td>' . $this->escapeExcel($item->Nama_Lembaga_Yayasan) . '</td>
-                <td class="center">' . $this->getStatusLabel($item->status) . '</td>
-                <td>' . $this->escapeExcel($item->kabupaten_kota) . '</td>
-                <td>' . $this->escapeExcel($item->nama_lks) . '</td>
-                <td>' . $this->escapeExcel($item->alamat_lks) . '</td>
-                <td>' . $this->escapeExcel($item->nama_ketua_lks) . '</td>
-                <td class="number">' . number_format($item->jumlah_seluruh_binaan) . '</td>
-                <td class="number">' . number_format($item->jumlah_dalam_panti) . '</td>
-                <td class="number">' . number_format($item->jumlah_luar_panti) . '</td>
-                <td class="number">' . number_format($item->anak_balita_terlantar_DP + $item->anak_balita_terlantar_LP) . '</td>
-                <td class="number">' . number_format($item->anak_terlantar_DP + $item->anak_terlantar_LP) . '</td>
-                <td class="number">' . number_format($item->anak_yangberhadapan_dengan_hukum_DP + $item->anak_yangberhadapan_dengan_hukum_LP) . '</td>
-                <td class="number">' . number_format($item->anak_jalanan_DP + $item->anak_jalanan_LP) . '</td>
-                <td class="number">' . number_format($item->anak_dengan_kedisabilitas_DP + $item->anak_dengan_kedisabilitas_LP) . '</td>
-                <td class="number">' . number_format($item->anak_yangmenjadi_tidak_kekerasan_DP + $item->anak_yangmenjadi_tidak_kekerasan_LP) . '</td>
-                <td class="number">' . number_format($item->anak_yang_memerlukan_perlindungan_khusus_DP + $item->anak_yang_memerlukan_perlindungan_khusus_LP) . '</td>
-                <td class="number">' . number_format($item->lanjut_usia_terlantar_DP + $item->lanjut_usia_terlantar_LP) . '</td>
-                <td class="number">' . number_format($item->disabilitas_fisik_DP + $item->disabilitas_fisik_LP) . '</td>
-                <td class="number">' . number_format($item->disabilitas_intelektual_DP + $item->disabilitas_intelektual_LP) . '</td>
-                <td class="number">' . number_format($item->disabilitas_mental_DP + $item->disabilitas_mental_LP) . '</td>
-                <td class="number">' . number_format($item->disabilitas_sensorik_DP + $item->disabilitas_sensorik_LP) . '</td>
-                <td class="number">' . number_format($item->tuna_susila_DP + $item->tuna_susila_LP) . '</td>
-                <td class="number">' . number_format($item->gelandangan_DP + $item->gelandangan_LP) . '</td>
-                <td class="number">' . number_format($item->pengemis_DP + $item->pengemis_LP) . '</td>
-                <td class="number">' . number_format($item->pemulung_DP + $item->pemulung_LP) . '</td>
-                <td class="number">' . number_format($item->kelompok_minoritas_DP + $item->kelompok_minoritas_LP) . '</td>
-                <td class="number">' . number_format($item->BWBLP_DP + $item->BWBLP_LP) . '</td>
-                <td class="number">' . number_format($item->orang_dengan_hiv_aids_DP + $item->orang_dengan_hiv_aids_LP) . '</td>
-                <td class="number">' . number_format($item->penyalahgunaan_Napza_DP + $item->penyalahgunaan_Napza_LP) . '</td>
-                <td class="number">' . number_format($item->korban_Trafficking_DP + $item->korban_Trafficking_LP) . '</td>
-                <td class="number">' . number_format($item->korban_tindak_kekerasan_DP + $item->korban_tindak_kekerasan_LP) . '</td>
-                <td class="number">' . number_format($item->PMBS_DP + $item->PMBS_LP) . '</td>
-                <td class="number">' . number_format($item->korban_bencana_alam_DP + $item->korban_bencana_alam_LP) . '</td>
-                <td class="number">' . number_format($item->korban_bencana_sosial_DP + $item->korban_bencana_sosial_LP) . '</td>
-                <td class="number">' . number_format($item->perempuan_rawan_sosial_ekonomi_DP + $item->perempuan_rawan_sosial_ekonomi_LP) . '</td>
-                <td class="number">' . number_format($item->fakir_miskin_DP + $item->fakir_miskin_LP) . '</td>
-                <td class="number">' . number_format($item->keluarga_bermasalah_sosial_psikologis_DP + $item->keluarga_bermasalah_sosial_psikologis_LP) . '</td>
-                <td class="number">' . number_format($item->komunitas_adat_terpencil_DP + $item->komunitas_adat_terpencil_LP) . '</td>
-                <td>' . $this->escapeExcel($item->nomor_tlp) . '</td>
-                <td>' . $this->escapeExcel($item->email) . '</td>
-                <td class="center">' . ($item->created_at ? $item->created_at->format('d-m-Y H:i') : '') . '</td>
-            </tr>';
-        }
-
-        $html .= '</tbody>
-            </table>
-            
-            <div class="footer">
-                <p>Generated by: Sistem Pendaftaran LKS - Dinas Sosial Provinsi Jawa Barat</p>
-                <p>Export Date: ' . date('d-m-Y H:i:s') . ' | Total Records: ' . number_format($kewenangan->count()) . '</p>
-            </div>
-        </body>
-        </html>';
-
-        return $html;
-    }
-
-    /**
-     * Escape karakter untuk Excel
-     */
-    private function escapeExcel($value)
-    {
-        if (is_null($value)) return '';
-        
-        $value = str_replace(['"', "'", "\\"], '', $value);
-        $value = trim($value);
-        
-        return $value;
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
