@@ -8,36 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Helper: update email lama ke baru, lalu updateOrCreate dengan email baru.
-     */
-    private function upsertUser(string $emailBaru, string $emailLama, array $data): void
-    {
-        // Jika email lama masih ada, update ke email baru dulu
-        User::where('email', $emailLama)->update(['email' => $emailBaru]);
-
-        // Kemudian updateOrCreate dengan email baru
-        User::updateOrCreate(['email' => $emailBaru], $data);
-    }
-
     public function run(): void
     {
-        // ── SUPER ADMIN ──────────────────────────────────────────────
-        $this->upsertUser(
-            'diskominfojabar@app.com',
-            'diskominfojabar@diskominfo.com',
-            [
-                'name'            => 'Diskominfo Jawa Barat',
-                'password'        => Hash::make('@diskominfo1'),
-                'role'            => 'super_admin',
-                'approval_status' => 'approved',
-                'is_active'       => true,
-            ]
-        );
-
-        $this->upsertUser(
-            'dinsosprovinsijabar@app.com',
-            'dinsosprovinsijabar@dinsos.com',
+        
+        // Super Admin - Dinsos Provinsi Jawa Barat
+        User::updateOrCreate(
+            ['email' => 'dinsosprovinsijabar@app.com'],
             [
                 'name'            => 'Dinsos Provinsi Jawa Barat',
                 'password'        => Hash::make('@dinsosprovinsi1'),
@@ -47,54 +23,355 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // ── ADMIN KABUPATEN (18) ──────────────────────────────────────
-        $adminKabupaten = [
-            ['email_baru' => 'dinsoskabBogor@app.com',         'email_lama' => 'dinsoskabBogor@dinsos.com',         'name' => 'Dinsos Kabupaten Bogor',         'password' => '@dinsoskabBogor01',         'kabupaten_kota' => 'Kabupaten Bogor'],
-            ['email_baru' => 'dinsoskabSukabumi@app.com',      'email_lama' => 'dinsoskabSukabumi@dinsos.com',      'name' => 'Dinsos Kabupaten Sukabumi',      'password' => '@dinsoskabSukabumi02',      'kabupaten_kota' => 'Kabupaten Sukabumi'],
-            ['email_baru' => 'dinsoskabCianjur@app.com',       'email_lama' => 'dinsoskabCianjur@dinsos.com',       'name' => 'Dinsos Kabupaten Cianjur',       'password' => '@dinsoskabCianjur03',       'kabupaten_kota' => 'Kabupaten Cianjur'],
-            ['email_baru' => 'dinsoskabBandung@app.com',       'email_lama' => 'dinsoskabBandung@dinsos.com',       'name' => 'Dinsos Kabupaten Bandung',       'password' => '@dinsoskabBandung04',       'kabupaten_kota' => 'Kabupaten Bandung'],
-            ['email_baru' => 'dinsoskabGarut@app.com',         'email_lama' => 'dinsoskabGarut@dinsos.com',         'name' => 'Dinsos Kabupaten Garut',         'password' => '@dinsoskabGarut05',         'kabupaten_kota' => 'Kabupaten Garut'],
-            ['email_baru' => 'dinsoskabTasikmalaya@app.com',   'email_lama' => 'dinsoskabTasikmalaya@dinsos.com',   'name' => 'Dinsos Kabupaten Tasikmalaya',   'password' => '@dinsoskabTasikmalaya06',   'kabupaten_kota' => 'Kabupaten Tasikmalaya'],
-            ['email_baru' => 'dinsoskabCiamis@app.com',        'email_lama' => 'dinsoskabCiamis@dinsos.com',        'name' => 'Dinsos Kabupaten Ciamis',        'password' => '@dinsoskabCiamis07',        'kabupaten_kota' => 'Kabupaten Ciamis'],
-            ['email_baru' => 'dinsoskabKuningan@app.com',      'email_lama' => 'dinsoskabKuningan@dinsos.com',      'name' => 'Dinsos Kabupaten Kuningan',      'password' => '@dinsoskabKuningan08',      'kabupaten_kota' => 'Kabupaten Kuningan'],
-            ['email_baru' => 'dinsoskabCirebon@app.com',       'email_lama' => 'dinsoskabCirebon@dinsos.com',       'name' => 'Dinsos Kabupaten Cirebon',       'password' => '@dinsoskabCirebon09',       'kabupaten_kota' => 'Kabupaten Cirebon'],
-            ['email_baru' => 'dinsoskabMajalengka@app.com',    'email_lama' => 'dinsoskabMajalengka@dinsos.com',    'name' => 'Dinsos Kabupaten Majalengka',    'password' => '@dinsoskabMajalengka10',    'kabupaten_kota' => 'Kabupaten Majalengka'],
-            ['email_baru' => 'dinsoskabSumedang@app.com',      'email_lama' => 'dinsoskabSumedang@dinsos.com',      'name' => 'Dinsos Kabupaten Sumedang',      'password' => '@dinsoskabSumedang11',      'kabupaten_kota' => 'Kabupaten Sumedang'],
-            ['email_baru' => 'dinsoskabIndramayu@app.com',     'email_lama' => 'dinsoskabIndramayu@dinsos.com',     'name' => 'Dinsos Kabupaten Indramayu',     'password' => '@dinsoskabIndramayu12',     'kabupaten_kota' => 'Kabupaten Indramayu'],
-            ['email_baru' => 'dinsoskabSubang@app.com',        'email_lama' => 'dinsoskabSubang@dinsos.com',        'name' => 'Dinsos Kabupaten Subang',        'password' => '@dinsoskabSubang13',        'kabupaten_kota' => 'Kabupaten Subang'],
-            ['email_baru' => 'dinsoskabPurwakarta@app.com',    'email_lama' => 'dinsoskabPurwakarta@dinsos.com',    'name' => 'Dinsos Kabupaten Purwakarta',    'password' => '@dinsoskabPurwakarta14',    'kabupaten_kota' => 'Kabupaten Purwakarta'],
-            ['email_baru' => 'dinsoskabKarawang@app.com',      'email_lama' => 'dinsoskabKarawang@dinsos.com',      'name' => 'Dinsos Kabupaten Karawang',      'password' => '@dinsoskabKarawang15',      'kabupaten_kota' => 'Kabupaten Karawang'],
-            ['email_baru' => 'dinsoskabBekasi@app.com',        'email_lama' => 'dinsoskabBekasi@dinsos.com',        'name' => 'Dinsos Kabupaten Bekasi',        'password' => '@dinsoskabBekasi16',        'kabupaten_kota' => 'Kabupaten Bekasi'],
-            ['email_baru' => 'dinsoskabBandungBarat@app.com',  'email_lama' => 'dinsoskabBandungBarat@dinsos.com',  'name' => 'Dinsos Kabupaten Bandung Barat', 'password' => '@dinsoskabBandungBarat17',  'kabupaten_kota' => 'Kabupaten Bandung Barat'],
-            ['email_baru' => 'dinsoskabPangandaran@app.com',   'email_lama' => 'dinsoskabPangandaran@dinsos.com',   'name' => 'Dinsos Kabupaten Pangandaran',   'password' => '@dinsoskabPangandaran18',   'kabupaten_kota' => 'Kabupaten Pangandaran'],
-        ];
+        // Admin - Dinsos Kabupaten Bogor
+        User::updateOrCreate(
+            ['email' => 'dinsoskabBogor@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Bogor',
+                'password'        => Hash::make('@dinsoskabBogor01'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Bogor',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
 
-        // ── ADMIN KOTA (9) ────────────────────────────────────────────
-        $adminKota = [
-            ['email_baru' => 'dinsoskotaBogor@app.com',        'email_lama' => 'dinsoskotaBogor@dinsos.com',        'name' => 'Dinsos Kota Bogor',        'password' => '@dinsoskotaBogor19',        'kabupaten_kota' => 'Kota Bogor'],
-            ['email_baru' => 'dinsoskotaSukabumi@app.com',     'email_lama' => 'dinsoskotaSukabumi@dinsos.com',     'name' => 'Dinsos Kota Sukabumi',     'password' => '@dinsoskotaSukabumi20',     'kabupaten_kota' => 'Kota Sukabumi'],
-            ['email_baru' => 'dinsoskotaBandung@app.com',      'email_lama' => 'dinsoskotaBandung@dinsos.com',      'name' => 'Dinsos Kota Bandung',      'password' => '@dinsoskotaBandung21',      'kabupaten_kota' => 'Kota Bandung'],
-            ['email_baru' => 'dinsoskotaCirebon@app.com',      'email_lama' => 'dinsoskotaCirebon@dinsos.com',      'name' => 'Dinsos Kota Cirebon',      'password' => '@dinsoskotaCirebon22',      'kabupaten_kota' => 'Kota Cirebon'],
-            ['email_baru' => 'dinsoskotaBekasi@app.com',       'email_lama' => 'dinsoskotaBekasi@dinsos.com',       'name' => 'Dinsos Kota Bekasi',       'password' => '@dinsoskotaBekasi23',       'kabupaten_kota' => 'Kota Bekasi'],
-            ['email_baru' => 'dinsoskotaDepok@app.com',        'email_lama' => 'dinsoskotaDepok@dinsos.com',        'name' => 'Dinsos Kota Depok',        'password' => '@dinsoskotaDepok24',        'kabupaten_kota' => 'Kota Depok'],
-            ['email_baru' => 'dinsoskotaCimahi@app.com',       'email_lama' => 'dinsoskotaCimahi@dinsos.com',       'name' => 'Dinsos Kota Cimahi',       'password' => '@dinsoskotaCimahi25',       'kabupaten_kota' => 'Kota Cimahi'],
-            ['email_baru' => 'dinsoskotaTasikmalaya@app.com',  'email_lama' => 'dinsoskotaTasikmalaya@dinsos.com',  'name' => 'Dinsos Kota Tasikmalaya',  'password' => '@dinsoskotaTasikmalaya26',  'kabupaten_kota' => 'Kota Tasikmalaya'],
-            ['email_baru' => 'dinsoskotaBanjar@app.com',       'email_lama' => 'dinsoskotaBanjar@dinsos.com',       'name' => 'Dinsos Kota Banjar',       'password' => '@dinsoskotaBanjar27',       'kabupaten_kota' => 'Kota Banjar'],
-        ];
+        // Admin - Dinsos Kabupaten Sukabumi
+        User::updateOrCreate(
+            ['email' => 'dinsoskabSukabumi@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Sukabumi',
+                'password'        => Hash::make('@dinsoskabSukabumi02'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Sukabumi',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
 
-        foreach (array_merge($adminKabupaten, $adminKota) as $admin) {
-            $this->upsertUser(
-                $admin['email_baru'],
-                $admin['email_lama'],
-                [
-                    'name'            => $admin['name'],
-                    'password'        => Hash::make($admin['password']),
-                    'role'            => 'admin',
-                    'kabupaten_kota'  => $admin['kabupaten_kota'],
-                    'approval_status' => 'approved',
-                    'is_active'       => true,
-                ]
-            );
-        }
+        // Admin - Dinsos Kabupaten Cianjur
+        User::updateOrCreate(
+            ['email' => 'dinsoskabCianjur@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Cianjur',
+                'password'        => Hash::make('@dinsoskabCianjur03'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Cianjur',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Bandung
+        User::updateOrCreate(
+            ['email' => 'dinsoskabBandung@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Bandung',
+                'password'        => Hash::make('@dinsoskabBandung04'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Bandung',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Garut
+        User::updateOrCreate(
+            ['email' => 'dinsoskabGarut@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Garut',
+                'password'        => Hash::make('@dinsoskabGarut05'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Garut',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Tasikmalaya
+        User::updateOrCreate(
+            ['email' => 'dinsoskabTasikmalaya@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Tasikmalaya',
+                'password'        => Hash::make('@dinsoskabTasikmalaya06'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Tasikmalaya',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Ciamis
+        User::updateOrCreate(
+            ['email' => 'dinsoskabCiamis@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Ciamis',
+                'password'        => Hash::make('@dinsoskabCiamis07'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Ciamis',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Kuningan
+        User::updateOrCreate(
+            ['email' => 'dinsoskabKuningan@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Kuningan',
+                'password'        => Hash::make('@dinsoskabKuningan08'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Kuningan',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Cirebon
+        User::updateOrCreate(
+            ['email' => 'dinsoskabCirebon@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Cirebon',
+                'password'        => Hash::make('@dinsoskabCirebon09'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Cirebon',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Majalengka
+        User::updateOrCreate(
+            ['email' => 'dinsoskabMajalengka@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Majalengka',
+                'password'        => Hash::make('@dinsoskabMajalengka10'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Majalengka',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Sumedang
+        User::updateOrCreate(
+            ['email' => 'dinsoskabSumedang@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Sumedang',
+                'password'        => Hash::make('@dinsoskabSumedang11'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Sumedang',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Indramayu
+        User::updateOrCreate(
+            ['email' => 'dinsoskabIndramayu@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Indramayu',
+                'password'        => Hash::make('@dinsoskabIndramayu12'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Indramayu',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Subang
+        User::updateOrCreate(
+            ['email' => 'dinsoskabSubang@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Subang',
+                'password'        => Hash::make('@dinsoskabSubang13'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Subang',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Purwakarta
+        User::updateOrCreate(
+            ['email' => 'dinsoskabPurwakarta@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Purwakarta',
+                'password'        => Hash::make('@dinsoskabPurwakarta14'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Purwakarta',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Karawang
+        User::updateOrCreate(
+            ['email' => 'dinsoskabKarawang@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Karawang',
+                'password'        => Hash::make('@dinsoskabKarawang15'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Karawang',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Bekasi
+        User::updateOrCreate(
+            ['email' => 'dinsoskabBekasi@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Bekasi',
+                'password'        => Hash::make('@dinsoskabBekasi16'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Bekasi',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Bandung Barat
+        User::updateOrCreate(
+            ['email' => 'dinsoskabBandungBarat@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Bandung Barat',
+                'password'        => Hash::make('@dinsoskabBandungBarat17'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Bandung Barat',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kabupaten Pangandaran
+        User::updateOrCreate(
+            ['email' => 'dinsoskabPangandaran@app.com'],
+            [
+                'name'            => 'Dinsos Kabupaten Pangandaran',
+                'password'        => Hash::make('@dinsoskabPangandaran18'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kabupaten Pangandaran',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Bogor
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaBogor@app.com'],
+            [
+                'name'            => 'Dinsos Kota Bogor',
+                'password'        => Hash::make('@dinsoskotaBogor19'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Bogor',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Sukabumi
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaSukabumi@app.com'],
+            [
+                'name'            => 'Dinsos Kota Sukabumi',
+                'password'        => Hash::make('@dinsoskotaSukabumi20'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Sukabumi',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Bandung
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaBandung@app.com'],
+            [
+                'name'            => 'Dinsos Kota Bandung',
+                'password'        => Hash::make('@dinsoskotaBandung21'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Bandung',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Cirebon
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaCirebon@app.com'],
+            [
+                'name'            => 'Dinsos Kota Cirebon',
+                'password'        => Hash::make('@dinsoskotaCirebon22'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Cirebon',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Bekasi
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaBekasi@app.com'],
+            [
+                'name'            => 'Dinsos Kota Bekasi',
+                'password'        => Hash::make('@dinsoskotaBekasi23'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Bekasi',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Depok
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaDepok@app.com'],
+            [
+                'name'            => 'Dinsos Kota Depok',
+                'password'        => Hash::make('@dinsoskotaDepok24'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Depok',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Cimahi
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaCimahi@app.com'],
+            [
+                'name'            => 'Dinsos Kota Cimahi',
+                'password'        => Hash::make('@dinsoskotaCimahi25'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Cimahi',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Tasikmalaya
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaTasikmalaya@app.com'],
+            [
+                'name'            => 'Dinsos Kota Tasikmalaya',
+                'password'        => Hash::make('@dinsoskotaTasikmalaya26'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Tasikmalaya',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
+
+        // Admin - Dinsos Kota Banjar
+        User::updateOrCreate(
+            ['email' => 'dinsoskotaBanjar@app.com'],
+            [
+                'name'            => 'Dinsos Kota Banjar',
+                'password'        => Hash::make('@dinsoskotaBanjar27'),
+                'role'            => 'admin',
+                'kabupaten_kota'  => 'Kota Banjar',
+                'approval_status' => 'approved',
+                'is_active'       => true,
+            ]
+        );
     }
 }
