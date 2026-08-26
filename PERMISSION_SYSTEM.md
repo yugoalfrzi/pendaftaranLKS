@@ -44,7 +44,7 @@
 - ❌ Admin Panel
 - ❌ Create/Edit/Delete data apapun
 
-## Perbedaan Super Admin Panel vs Admin Panel
+## Perbedaan Super Admin Panel dan Admin Panel
 
 ### Super Admin Panel (`/superadmin`)
 - **Akses:** Hanya Super Admin
@@ -169,17 +169,3 @@ Untuk menyembunyikan tombol berdasarkan role di view:
     </a>
 @endif
 ```
-
-## Summary
-
-| Fitur | Super Admin | Admin | User |
-|-------|-------------|-------|------|
-| Dashboard | ✅ | ✅ | ✅ View |
-| Super Admin Panel | ✅ | ❌ | ❌ |
-| Admin Panel | ✅ | ❌ | ❌ |
-| LKS CRUD | ✅ | ✅ | View Only |
-| Dokumen | ✅ | ✅ | ❌ |
-| Kewenangan CRUD | ✅ | ✅ | View Only |
-| Kewenangan Export | ✅ | ✅ | ❌ |
-| Hibah | ✅ | ✅ | ❌ |
-| Registrasi LKS | ❌ | ❌ | ❌ |
