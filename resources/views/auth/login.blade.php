@@ -347,7 +347,7 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control" id="email" name="email"
-                                   placeholder="nama@contoh.com" value="{{ old('email') }}" required autofocus>
+                                   placeholder="Masukkan email" value="{{ old('email') }}" required autofocus>
                         </div>
                     </div>
 
