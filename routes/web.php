@@ -184,6 +184,9 @@ Route::middleware('auth')->group(function () {
     // LKS Terdaftar (sudah memiliki tanda pendaftaran)
     Route::get('/lks-terdaftar', [LKSController::class, 'terdaftar'])->name('lks.terdaftar');
 
+    // LKS yang perlu tindakan (ditolak/dikembalikan)
+    Route::get('/lks-perlu-tindakan', [LKSController::class, 'perluTindakan'])->name('lks.perlu-tindakan');
+
     // Tanda pendaftaran & dokumen LKS — dapat diakses semua role terautentikasi
     Route::get('/lks/{id}/preview-sertifikat-kabkota', [AdminController::class, 'previewSertifikatKabkotaPublic'])->name('lks.preview-sertifikat-kabkota');
     Route::get('/lks/{id}/download-sertifikat-kabkota', [AdminController::class, 'downloadSertifikatKabkotaPublic'])->name('lks.download-sertifikat-kabkota');

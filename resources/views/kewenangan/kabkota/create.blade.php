@@ -883,7 +883,7 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between mb-4 action-buttons">
-                                    <button type="button" class="btn btn-select-all" id="selectAllJenisPelayanan">
+                                    <button type="button" class="btn btn-outline-success btn-select-all" id="selectAllJenisPelayanan">
                                         <i class="bi bi-check-all"></i> Pilih Semua
                                     </button>
                                     <button type="button" class="btn btn-outline-danger btn-action" id="clearAllJenisPelayanan">
@@ -922,7 +922,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah Seluruh Binaan <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="jumlah_seluruh_binaan" value="{{ old('jumlah_seluruh_binaan', 0) }}" min="0" required>
+                                    <input type="number" id="jumlah_seluruh_binaan" class="form-control" name="jumlah_seluruh_binaan" value="{{ old('jumlah_seluruh_binaan', 0) }}" min="0" required>
                                     @error('jumlah_seluruh_binaan')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
                                     @enderror
@@ -931,7 +931,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah Dalam Panti <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="jumlah_dalam_panti" value="{{ old('jumlah_dalam_panti', 0) }}" min="0" required>
+                                    <input type="number" id="jumlah_dalam_panti" class="form-control" name="jumlah_dalam_panti" value="{{ old('jumlah_dalam_panti', 0) }}" min="0" required>
                                     @error('jumlah_dalam_panti')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
                                     @enderror
@@ -940,7 +940,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah Luar Panti <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="jumlah_luar_panti" value="{{ old('jumlah_luar_panti', 0) }}" min="0" required>
+                                    <input type="number" id="jumlah_luar_panti" class="form-control" name="jumlah_luar_panti" value="{{ old('jumlah_luar_panti', 0) }}" min="0" required>
                                     @error('jumlah_luar_panti')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
                                     @enderror
@@ -1126,69 +1126,124 @@ document.querySelectorAll('.form-section h6').forEach(header => {
 
 // ========== JENIS PELAYANAN PPKS FUNCTIONALITY ==========
 document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.jenis-pelayanan-checkbox');
+    const container = document.getElementById('jenisPelayananList');
     const hiddenInput = document.getElementById('jenis_pelayanan_PPKS');
     const selectAllBtn = document.getElementById('selectAllJenisPelayanan');
     const clearAllBtn = document.getElementById('clearAllJenisPelayanan');
     const searchInput = document.getElementById('searchJenisPelayanan');
+    const selectedContainer = document.getElementById('selectedJenisPelayanan');
 
-    // Function utama untuk update data
-    function updateSelectedData() {
-        const selectedValues = [];
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedValues.push(checkbox.value);
-            }
-        });
-        
-        // PASTIKAN: Update hidden input dengan data yang dipilih
-        hiddenInput.value = selectedValues.join(',');
+    function getAllCheckboxes() {
+        return Array.from(container.querySelectorAll('.jenis-pelayanan-checkbox'));
     }
 
-    // Event untuk setiap checkbox
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedData);
+    function updateSelectedData() {
+        const selectedValues = getAllCheckboxes().filter(c => c.checked).map(c => c.value);
+        hiddenInput.value = selectedValues.join(',');
+        renderSelectedTags(selectedValues);
+    }
+
+    function renderSelectedTags(values) {
+        selectedContainer.innerHTML = '';
+        if (!values || values.length === 0) {
+            selectedContainer.innerHTML = '<div class="text-muted">Belum ada pilihan. Silakan pilih dari daftar di atas.</div>';
+            return;
+        }
+
+        values.forEach(v => {
+            const item = document.createElement('div');
+            item.className = 'selected-item';
+            item.innerHTML = `${v}<button type="button" class="remove-btn" data-value="${v}"><i class="bi bi-x"></i></button>`;
+            selectedContainer.appendChild(item);
+        });
+    }
+
+    // Handle clicks on remove buttons (event delegation)
+    selectedContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('.remove-btn');
+        if (!btn) return;
+        const val = btn.getAttribute('data-value');
+        const checkbox = getAllCheckboxes().find(c => c.value === val);
+        if (checkbox) {
+            checkbox.checked = false;
+            updateSelectedData();
+            // focus back to search for quick workflow
+            searchInput.focus();
+        }
     });
 
-    // Select All
+    // Wire checkbox change events
+    getAllCheckboxes().forEach(checkbox => checkbox.addEventListener('change', updateSelectedData));
+
+    // Select visible (filtered) checkboxes only — useful when user searches
     selectAllBtn.addEventListener('click', function() {
-        checkboxes.forEach(checkbox => checkbox.checked = true);
+        getAllCheckboxes().forEach(cb => {
+            const wrapper = cb.closest('.checkbox-item');
+            if (wrapper && wrapper.style.display !== 'none') cb.checked = true;
+        });
         updateSelectedData();
     });
 
-    // Clear All  
+    // Clear all selections
     clearAllBtn.addEventListener('click', function() {
-        checkboxes.forEach(checkbox => checkbox.checked = false);
+        getAllCheckboxes().forEach(cb => cb.checked = false);
         updateSelectedData();
+        searchInput.value = '';
+        // show all after clear
+        getAllCheckboxes().forEach(cb => cb.closest('.checkbox-item').style.display = 'block');
     });
 
-    // Search
+    // Search/filter list
     searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        checkboxes.forEach(checkbox => {
-            const label = checkbox.closest('.checkbox-item');
-            if (checkbox.value.toLowerCase().includes(searchTerm)) {
-                label.style.display = 'block';
-            } else {
-                label.style.display = 'none';
-            }
+        const term = this.value.trim().toLowerCase();
+        getAllCheckboxes().forEach(cb => {
+            const wrapper = cb.closest('.checkbox-item');
+            if (!wrapper) return;
+            const matches = cb.value.toLowerCase().includes(term);
+            wrapper.style.display = matches ? 'block' : 'none';
         });
     });
 
-    // PASTIKAN: Update data sebelum form submit
+    // Prevent Enter in search from submitting the form
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') e.preventDefault();
+    });
+
+    // Form submit validation
     const form = document.querySelector('form');
-    form.addEventListener('submit', function() {
-        updateSelectedData(); // Update terakhir sebelum kirim data
-        
-        // Validasi client-side
+    form.addEventListener('submit', function(e) {
+        updateSelectedData();
         if (hiddenInput.value === '') {
+            e.preventDefault();
             alert('Pilih minimal satu jenis pelayanan PPKS');
+            searchInput.focus();
             return false;
         }
     });
 
-    // Inisialisasi pertama
+    // Initialize render from server-selected values (if any checkboxes pre-checked)
     updateSelectedData();
+
+    // ========== JUMLAH WARGA BINAAN AUTO-CALC ==========
+    (function wireJumlahBinaan(){
+        const total = document.getElementById('jumlah_seluruh_binaan');
+        const dalam = document.getElementById('jumlah_dalam_panti');
+        const luar = document.getElementById('jumlah_luar_panti');
+        if (!total || !dalam || !luar) return;
+
+        function recalc() {
+            const a = parseInt(dalam.value, 10) || 0;
+            const b = parseInt(luar.value, 10) || 0;
+            total.value = a + b;
+        }
+
+        dalam.addEventListener('input', recalc);
+        luar.addEventListener('input', recalc);
+
+        // initialize
+        recalc();
+    })();
+
 });
 </script>
 @endpush

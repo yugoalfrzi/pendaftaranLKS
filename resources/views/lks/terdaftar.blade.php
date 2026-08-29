@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'LKS Terdaftar')
-@section('page-title', 'LKS Terdaftar')
+@section('title', 'LKS Terdaftar / Teregistrasi')
+@section('page-title', 'LKS Terdaftar / Teregistrasi')
 
 @section('content')
 <style>
@@ -108,8 +108,14 @@
 </style>
 
 {{-- Header --}}
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
-    <h4 class="fw-semibold mb-0"><i class="bi bi-patch-check me-2 text-primary"></i>LKS Terdaftar</h4>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <h4 class="fw-semibold mb-0"><i class="bi bi-patch-check me-2 text-primary"></i>LKS Terdaftar / Teregistrasi</h4>
+</div>
+
+<div class="alert alert-light border border-primary-subtle bg-primary-subtle text-primary mb-4" role="alert">
+    <i class="bi bi-info-circle me-2"></i>
+    Daftar ini hanya menampilkan LKS yang sudah diterima dan memiliki sertifikat/nomor pendaftaran resmi.
+    <strong>Bukan daftar proses pendaftaran.</strong>
 </div>
 
 {{-- Notifikasi LKS Ditolak/Dikembalikan (hanya untuk user) --}}
@@ -219,14 +225,14 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tab-kabkota" data-bs-toggle="tab"
                         data-bs-target="#pane-kabkota" type="button" role="tab">
-                    <i class="bi bi-building me-1"></i> Kewenangan Kab/Kota
+                    <i class="bi bi-building me-1"></i> LKS Terdaftar Kab/Kota
                     <span class="badge-pill s-proses ms-1">{{ $lksKabkota->total() }}</span>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-provinsi" data-bs-toggle="tab"
                         data-bs-target="#pane-provinsi" type="button" role="tab">
-                    <i class="bi bi-map me-1"></i> Kewenangan Provinsi
+                    <i class="bi bi-map me-1"></i> LKS Terdaftar Provinsi
                     <span class="badge-pill s-terverifikasi ms-1">{{ $lksProvinsi->total() }}</span>
                 </button>
             </li>

@@ -223,16 +223,20 @@
     </div>
 </div>
 
-{{-- Status Terkini Verifikasi --}}
+{{-- Tracking Status Pendaftaran LKS --}}
 @if($statusTerkini->count() > 0)
 <div class="card-modern mb-4">
     <div class="card-header-custom d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-bell me-2 text-primary"></i>Update Status LKS</span>
+        <span><i class="bi bi-bell me-2 text-primary"></i>Tracking Status Pendaftaran LKS</span>
         @if($perluPerhatian > 0)
             <span class="badge bg-danger rounded-pill" style="font-size:.72rem">
                 {{ $perluPerhatian }} perlu tindakan
             </span>
         @endif
+    </div>
+    <div class="card-body border-bottom bg-light-subtle px-3 py-2 small text-muted">
+        <i class="bi bi-database me-2"></i>
+        Status aktif disimpan di tabel utama LKS, dan halaman dashboard ini menampilkan tracking-nya untuk user.
     </div>
     <div class="card-body p-3 d-flex flex-column gap-2">
         @foreach($statusTerkini as $lks)

@@ -56,10 +56,12 @@ class LKSController extends Controller
         $isUser = auth()->user()->hasRole('user');
 
         $baseKabkota = LKS::where('kewenangan_type', 'kabkota')
+            ->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])
             ->whereNotNull('sertifikat_kabkota_path')
             ->where('sertifikat_kabkota_path', '!=', '');
 
         $baseProvinsi = LKS::where('kewenangan_type', 'provinsi')
+            ->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])
             ->whereNotNull('sertifikat_path')
             ->where('sertifikat_path', '!=', '');
 
@@ -86,8 +88,14 @@ class LKSController extends Controller
         $lksProvinsi = (clone $baseProvinsi)->latest()->paginate(15, ['*'], 'provinsi_page');
 
         // Stats juga difilter per user jika role user
-        $statsKabkota = LKS::where('kewenangan_type', 'kabkota')->whereNotNull('sertifikat_kabkota_path')->where('sertifikat_kabkota_path', '!=', '');
-        $statsProvinsi = LKS::where('kewenangan_type', 'provinsi')->whereNotNull('sertifikat_path')->where('sertifikat_path', '!=', '');
+        $statsKabkota = LKS::where('kewenangan_type', 'kabkota')
+            ->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])
+            ->whereNotNull('sertifikat_kabkota_path')
+            ->where('sertifikat_kabkota_path', '!=', '');
+        $statsProvinsi = LKS::where('kewenangan_type', 'provinsi')
+            ->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])
+            ->whereNotNull('sertifikat_path')
+            ->where('sertifikat_path', '!=', '');
         if ($isUser) {
             $statsKabkota->where('user_id', $userId);
             $statsProvinsi->where('user_id', $userId);
@@ -107,6 +115,39 @@ class LKSController extends Controller
         }
 
         return view('lks.terdaftar', compact('lksKabkota', 'lksProvinsi', 'stats', 'lksPerluPerhatian'));
+    }
+
+    public function perluTindakan(Request $request)
+    {
+        $search = $request->search;
+        $isUser = auth()->user()->hasRole('user');
+        $userId = auth()->id();
+
+        $query = LKS::with('user')
+            ->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])
+            ->latest('updated_at');
+
+        if ($isUser) {
+            $query->where('user_id', $userId);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lks', 'like', "%$search%")
+                  ->orWhere('kabupaten_kota', 'like', "%$search%")
+                  ->orWhere('lokasi_lks', 'like', "%$search%");
+            });
+        }
+
+        $lks = $query->paginate(15);
+
+        $stats = [
+            'total' => $lks->total(),
+            'ditolak' => (clone $query)->where('status_permohonan', 'Ditolak')->count(),
+            'dikembalikan' => (clone $query)->where('status_permohonan', 'Dikembalikan')->count(),
+        ];
+
+        return view('lks.perlu-tindakan', compact('lks', 'stats'));
     }
 
     /**

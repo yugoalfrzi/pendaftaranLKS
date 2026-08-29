@@ -107,13 +107,18 @@ class SuperAdminController extends Controller
     {
         $lks = LKS::findOrFail($id);
 
+        $request->merge([
+            'verifikator' => $request->input('verifikator', auth()->id()),
+            'nama_verifikator' => $request->input('nama_verifikator', auth()->user()?->name),
+        ]);
+
         $request->validate([
             'status_permohonan'   => 'required|in:Terekomendasi,Ditolak,Dikembalikan',
             'alasan_penolakan'    => 'required_if:status_permohonan,Ditolak',
             'alasan_dikembalikan' => 'required_if:status_permohonan,Dikembalikan',
             'sertifikat'          => 'nullable|file|mimes:pdf|max:5120',
-            'verifikator'         => 'required',
-            'nama_verifikator'    => 'required',
+            'verifikator'         => 'required|exists:users,id',
+            'nama_verifikator'    => 'required|string|max:255',
         ]);
 
         // Handle tanda pendaftaran upload (dari super admin)

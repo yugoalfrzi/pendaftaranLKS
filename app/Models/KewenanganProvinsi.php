@@ -109,6 +109,7 @@ class KewenanganProvinsi extends Model
         'nomor_tlp',
         'email',
         'link_tanda_daftar'
+        ,'tanda_pendaftaran_cabang_entries'
     ];
 
     protected $casts = [
@@ -179,5 +180,6 @@ class KewenanganProvinsi extends Model
         'keluarga_bermasalah_sosial_psikologis_LP' => 'integer',
         'komunitas_adat_terpencil_DP' => 'integer',
         'komunitas_adat_terpencil_LP' => 'integer',
+        'tanda_pendaftaran_cabang_entries' => 'array',
     ];
 }

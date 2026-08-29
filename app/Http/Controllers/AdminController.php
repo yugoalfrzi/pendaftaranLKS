@@ -15,34 +15,28 @@ class AdminController extends Controller
         $status = $request->status;
         $adminKabkota = auth()->user()->kabupaten_kota;
 
-        // Query Kab/Kota — hanya tampilkan LKS dari kabupaten/kota admin yang login
-        $queryKabkota = LKS::with('user')->where('kewenangan_type', 'kabkota');
+        // Query Kab/Kota — hanya tampilkan LKS yang masih menunggu proses admin
+        $queryKabkota = LKS::with('user')
+            ->where('kewenangan_type', 'kabkota')
+            ->whereNotIn('status_permohonan', ['Terekomendasi', 'Disetujui', 'Ditolak', 'Dikembalikan']);
         if ($adminKabkota) {
             $queryKabkota->where(function($q) use ($adminKabkota) {
                 $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
             });
         }
-        // Sembunyikan data yang sudah diverifikasi lebih dari 24 jam
-        $queryKabkota->where(function($q) {
-            $q->whereNull('verified_at')
-              ->orWhere('verified_at', '>=', now()->subHours(24));
-        });
         if ($status) $queryKabkota->where('status_permohonan', $status);
         if ($search) $queryKabkota->where(fn($q) => $q->where('nama_lks', 'like', "%$search%")->orWhere('alamat_lks', 'like', "%$search%"));
         $lksKabkota = $queryKabkota->latest()->paginate(15, ['*'], 'kabkota_page');
 
-        // Query Provinsi — hanya tampilkan LKS dari kabupaten/kota admin yang login
-        $queryProvinsi = LKS::with('user')->where('kewenangan_type', 'provinsi');
+        // Query Provinsi — hanya tampilkan data yang belum masuk daftar terdaftar atau perlu tindakan
+        $queryProvinsi = LKS::with('user')
+            ->where('kewenangan_type', 'provinsi')
+            ->whereNotIn('status_permohonan', ['Terekomendasi', 'Disetujui', 'Ditolak', 'Dikembalikan']);
         if ($adminKabkota) {
             $queryProvinsi->where(function($q) use ($adminKabkota) {
                 $q->where('kabupaten_kota', $adminKabkota)->orWhereNull('kabupaten_kota');
             });
         }
-        // Sembunyikan data yang sudah diverifikasi lebih dari 24 jam
-        $queryProvinsi->where(function($q) {
-            $q->whereNull('verified_at')
-              ->orWhere('verified_at', '>=', now()->subHours(24));
-        });
         if ($status) $queryProvinsi->where('status_permohonan', $status);
         if ($search) $queryProvinsi->where(fn($q) => $q->where('nama_lks', 'like', "%$search%")->orWhere('alamat_lks', 'like', "%$search%"));
         $lksProvinsi = $queryProvinsi->latest()->paginate(15, ['*'], 'provinsi_page');

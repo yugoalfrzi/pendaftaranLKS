@@ -790,38 +790,44 @@
                         </div>
                     </div>
 
-                    <!-- Tanda Pendaftaran Cabang -->
+                    <!-- Tanda Pendaftaran Cabang (multiple) -->
                     <div class="form-section">
                         <h6><i class="bi bi-file-earmark-check"></i> TANDA PENDAFTARAN CABANG</h6>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Provinsi <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="tanda_pendaftaran_cabang_nama_provinsi" value="{{ old('tanda_pendaftaran_cabang_nama_provinsi') }}" required placeholder="Masukkan nama provinsi">
-                                    @error('tanda_pendaftaran_cabang_nama_provinsi')
-                                        <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
-                                    @enderror
+
+                        <div id="branchEntriesContainer">
+                            <div class="branch-entry row" data-index="0">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nama Provinsi <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="tanda_pendaftaran_cabang[0][nama_provinsi]" value="{{ old('tanda_pendaftaran_cabang_nama_provinsi', old('tanda_pendaftaran_cabang.0.nama_provinsi', '')) }}" required placeholder="Masukkan nama provinsi">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Nomor <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="tanda_pendaftaran_cabang_nomor" value="{{ old('tanda_pendaftaran_cabang_nomor') }}" required placeholder="Masukkan nomor tanda daftar">
-                                    @error('tanda_pendaftaran_cabang_nomor')
-                                        <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
-                                    @enderror
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nomor <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="tanda_pendaftaran_cabang[0][nomor]" value="{{ old('tanda_pendaftaran_cabang_nomor', old('tanda_pendaftaran_cabang.0.nomor', '')) }}" required placeholder="Masukkan nomor tanda daftar">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Tanggal <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="tanda_pendaftaran_cabang_tanggal" value="{{ old('tanda_pendaftaran_cabang_tanggal') }}" required>
-                                    @error('tanda_pendaftaran_cabang_tanggal')
-                                        <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
-                                    @enderror
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="tanda_pendaftaran_cabang[0][tanggal]" value="{{ old('tanda_pendaftaran_cabang_tanggal', old('tanda_pendaftaran_cabang.0.tanggal', '')) }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 d-flex align-items-center">
+                                    <button type="button" class="btn btn-outline-danger mt-1 remove-branch" style="display:none;" title="Hapus cabang"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mt-2">
+                            <button type="button" id="addBranchBtn" class="btn btn-outline-primary"><i class="bi bi-plus-lg"></i> Tambah Cabang</button>
+                        </div>
+
+                        <!-- Hidden legacy single fields for backward compatibility; will be synced on submit -->
+                        <input type="hidden" name="tanda_pendaftaran_cabang_nama_provinsi" id="tanda_pendaftaran_cabang_nama_provinsi_hidden" value="{{ old('tanda_pendaftaran_cabang_nama_provinsi') }}">
+                        <input type="hidden" name="tanda_pendaftaran_cabang_nomor" id="tanda_pendaftaran_cabang_nomor_hidden" value="{{ old('tanda_pendaftaran_cabang_nomor') }}">
+                        <input type="hidden" name="tanda_pendaftaran_cabang_tanggal" id="tanda_pendaftaran_cabang_tanggal_hidden" value="{{ old('tanda_pendaftaran_cabang_tanggal') }}">
                     </div>
 
                     <!-- Rekomendasi Dinsos -->
@@ -830,7 +836,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Nomor <span class="text-danger">*</span></label>
+                                    <label class="form-label">Nomor Rekomendasi <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="rekom_dinsos_nomor" value="{{ old('rekom_dinsos_nomor') }}" required placeholder="Masukkan nomor rekomendasi">
                                     @error('rekom_dinsos_nomor')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
@@ -839,7 +845,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                                    <label class="form-label">Tanggal Rekomendasi <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" name="rekom_dinsos_tanggal" value="{{ old('rekom_dinsos_tanggal') }}" required>
                                     @error('rekom_dinsos_tanggal')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
@@ -855,7 +861,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Nomor <span class="text-danger">*</span></label>
+                                    <label class="form-label">Nomor Tanda Pendaftaran <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="tanda_pendaftaran_provinsi_nomor" value="{{ old('tanda_pendaftaran_provinsi_nomor') }}" required placeholder="Masukkan nomor tanda daftar provinsi">
                                     @error('tanda_pendaftaran_provinsi_nomor')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
@@ -864,7 +870,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                                    <label class="form-label">Tanggal Tanda Pendaftaran <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" name="tanda_pendaftaran_provinsi_tanggal" value="{{ old('tanda_pendaftaran_provinsi_tanggal') }}" required>
                                     @error('tanda_pendaftaran_provinsi_tanggal')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
@@ -930,7 +936,7 @@
                             </div>
             
                                 <div class="d-flex justify-content-between mb-3 action-buttons">
-                                    <button type="button" class="btn btn-select-all" id="selectAllJenisPelayanan">
+                                    <button type="button" class="btn btn-outline-success btn-select-all" id="selectAllJenisPelayanan">
                                         <i class="bi bi-check-all"></i> Pilih Semua
                                     </button>
                                     <button type="button" class="btn btn-outline-danger btn-action" id="clearAllJenisPelayanan">
@@ -969,7 +975,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah Seluruh Binaan <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="jumlah_seluruh_binaan" value="{{ old('jumlah_seluruh_binaan', 0) }}" min="0" required>
+                                    <input type="number" id="jumlah_seluruh_binaan" class="form-control" name="jumlah_seluruh_binaan" value="{{ old('jumlah_seluruh_binaan', 0) }}" min="0" required>
                                     @error('jumlah_seluruh_binaan')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
                                     @enderror
@@ -978,7 +984,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah Dalam Panti <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="jumlah_dalam_panti" value="{{ old('jumlah_dalam_panti', 0) }}" min="0" required>
+                                    <input type="number" id="jumlah_dalam_panti" class="form-control" name="jumlah_dalam_panti" value="{{ old('jumlah_dalam_panti', 0) }}" min="0" required>
                                     @error('jumlah_dalam_panti')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
                                     @enderror
@@ -987,7 +993,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah Luar Panti <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="jumlah_luar_panti" value="{{ old('jumlah_luar_panti', 0) }}" min="0" required>
+                                    <input type="number" id="jumlah_luar_panti" class="form-control" name="jumlah_luar_panti" value="{{ old('jumlah_luar_panti', 0) }}" min="0" required>
                                     @error('jumlah_luar_panti')
                                         <div class="text-danger mt-1"><small><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</small></div>
                                     @enderror
@@ -1173,69 +1179,207 @@ document.querySelectorAll('.form-section h6').forEach(header => {
 
 // ========== JENIS PELAYANAN PPKS FUNCTIONALITY ==========
 document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.jenis-pelayanan-checkbox');
+    const container = document.getElementById('jenisPelayananList');
     const hiddenInput = document.getElementById('jenis_pelayanan_PPKS');
     const selectAllBtn = document.getElementById('selectAllJenisPelayanan');
     const clearAllBtn = document.getElementById('clearAllJenisPelayanan');
     const searchInput = document.getElementById('searchJenisPelayanan');
+    const selectedContainer = document.getElementById('selectedJenisPelayanan');
 
-    // Function utama untuk update data
-    function updateSelectedData() {
-        const selectedValues = [];
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedValues.push(checkbox.value);
-            }
-        });
-        
-        // PASTIKAN: Update hidden input dengan data yang dipilih
-        hiddenInput.value = selectedValues.join(',');
+    function getAllCheckboxes() {
+        return Array.from(container.querySelectorAll('.jenis-pelayanan-checkbox'));
     }
 
-    // Event untuk setiap checkbox
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedData);
+    function updateSelectedData() {
+        const selectedValues = getAllCheckboxes().filter(c => c.checked).map(c => c.value);
+        hiddenInput.value = selectedValues.join(',');
+        renderSelectedTags(selectedValues);
+    }
+
+    function renderSelectedTags(values) {
+        selectedContainer.innerHTML = '';
+        if (!values || values.length === 0) {
+            selectedContainer.innerHTML = '<div class="text-muted">Belum ada pilihan. Silakan pilih dari daftar di atas.</div>';
+            return;
+        }
+
+        values.forEach(v => {
+            const item = document.createElement('div');
+            item.className = 'selected-item';
+            item.innerHTML = `${v}<button type="button" class="remove-btn" data-value="${v}"><i class="bi bi-x"></i></button>`;
+            selectedContainer.appendChild(item);
+        });
+    }
+
+    // Handle clicks on remove buttons (event delegation)
+    selectedContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('.remove-btn');
+        if (!btn) return;
+        const val = btn.getAttribute('data-value');
+        const checkbox = getAllCheckboxes().find(c => c.value === val);
+        if (checkbox) {
+            checkbox.checked = false;
+            updateSelectedData();
+            // focus back to search for quick workflow
+            searchInput.focus();
+        }
     });
 
-    // Select All
+    // Wire checkbox change events
+    getAllCheckboxes().forEach(checkbox => checkbox.addEventListener('change', updateSelectedData));
+
+    // Select visible (filtered) checkboxes only — useful when user searches
     selectAllBtn.addEventListener('click', function() {
-        checkboxes.forEach(checkbox => checkbox.checked = true);
+        getAllCheckboxes().forEach(cb => {
+            const wrapper = cb.closest('.checkbox-item');
+            if (wrapper && wrapper.style.display !== 'none') cb.checked = true;
+        });
         updateSelectedData();
     });
 
-    // Clear All  
+    // Clear all selections
     clearAllBtn.addEventListener('click', function() {
-        checkboxes.forEach(checkbox => checkbox.checked = false);
+        getAllCheckboxes().forEach(cb => cb.checked = false);
         updateSelectedData();
+        searchInput.value = '';
+        // show all after clear
+        getAllCheckboxes().forEach(cb => cb.closest('.checkbox-item').style.display = 'block');
     });
 
-    // Search
+    // Search/filter list
     searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        checkboxes.forEach(checkbox => {
-            const label = checkbox.closest('.checkbox-item');
-            if (checkbox.value.toLowerCase().includes(searchTerm)) {
-                label.style.display = 'block';
-            } else {
-                label.style.display = 'none';
-            }
+        const term = this.value.trim().toLowerCase();
+        getAllCheckboxes().forEach(cb => {
+            const wrapper = cb.closest('.checkbox-item');
+            if (!wrapper) return;
+            const matches = cb.value.toLowerCase().includes(term);
+            wrapper.style.display = matches ? 'block' : 'none';
         });
     });
 
-    // PASTIKAN: Update data sebelum form submit
+    // Prevent Enter in search from submitting the form
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') e.preventDefault();
+    });
+
+    // Form submit validation
     const form = document.querySelector('form');
-    form.addEventListener('submit', function() {
-        updateSelectedData(); // Update terakhir sebelum kirim data
-        
-        // Validasi client-side
+    form.addEventListener('submit', function(e) {
+        updateSelectedData();
         if (hiddenInput.value === '') {
+            e.preventDefault();
             alert('Pilih minimal satu jenis pelayanan PPKS');
+            searchInput.focus();
             return false;
         }
     });
 
-    // Inisialisasi pertama
+    // Initialize render from server-selected values (if any checkboxes pre-checked)
     updateSelectedData();
+
+    // ========== JUMLAH WARGA BINAAN AUTO-CALC ==========
+    (function wireJumlahBinaan(){
+        const total = document.getElementById('jumlah_seluruh_binaan');
+        const dalam = document.getElementById('jumlah_dalam_panti');
+        const luar = document.getElementById('jumlah_luar_panti');
+        if (!total || !dalam || !luar) return;
+
+        function recalc() {
+            const a = parseInt(dalam.value, 10) || 0;
+            const b = parseInt(luar.value, 10) || 0;
+            total.value = a + b;
+        }
+
+        dalam.addEventListener('input', recalc);
+        luar.addEventListener('input', recalc);
+
+        // initialize
+        recalc();
+    })();
+
+});
+
+// ========== TANDA PENDAFTARAN CABANG DYNAMIC REPEATER ==========
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('branchEntriesContainer');
+    const addBtn = document.getElementById('addBranchBtn');
+    const form = document.getElementById('mainForm');
+
+    function indexOfNext() {
+        return container.querySelectorAll('.branch-entry').length;
+    }
+
+    function createEntry(index, data = {}) {
+        const row = document.createElement('div');
+        row.className = 'branch-entry row';
+        row.setAttribute('data-index', index);
+        row.innerHTML = `
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">Nama Provinsi <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="tanda_pendaftaran_cabang[${index}][nama_provinsi]" value="${data.nama || ''}" required placeholder="Masukkan nama provinsi">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">Nomor <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="tanda_pendaftaran_cabang[${index}][nomor]" value="${data.nomor || ''}" required placeholder="Masukkan nomor tanda daftar">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" name="tanda_pendaftaran_cabang[${index}][tanggal]" value="${data.tanggal || ''}" required>
+                </div>
+            </div>
+            <div class="col-md-1 d-flex align-items-center">
+                <button type="button" class="btn btn-outline-danger mt-1 remove-branch" title="Hapus cabang"><i class="bi bi-trash"></i></button>
+            </div>
+        `;
+
+        // remove handler
+        row.querySelector('.remove-branch').addEventListener('click', function() {
+            // prevent removing the last entry
+            if (container.querySelectorAll('.branch-entry').length <= 1) return;
+            row.remove();
+        });
+
+        return row;
+    }
+
+    // make existing first entry's remove button hidden if only one
+    function refreshRemovals() {
+        const entries = container.querySelectorAll('.branch-entry');
+        entries.forEach((e, i) => {
+            const btn = e.querySelector('.remove-branch');
+            if (!btn) return;
+            btn.style.display = entries.length > 1 ? 'block' : 'none';
+        });
+    }
+
+    addBtn.addEventListener('click', function() {
+        const idx = indexOfNext();
+        const entry = createEntry(idx, {});
+        container.appendChild(entry);
+        refreshRemovals();
+    });
+
+    // on form submit, sync first branch into legacy single fields for backward compatibility
+    form.addEventListener('submit', function() {
+        const first = container.querySelector('.branch-entry');
+        if (!first) return;
+        const nama = first.querySelector('input[name$="[nama_provinsi]"]').value || '';
+        const nomor = first.querySelector('input[name$="[nomor]"]').value || '';
+        const tanggal = first.querySelector('input[name$="[tanggal]"]').value || '';
+        const hNama = document.getElementById('tanda_pendaftaran_cabang_nama_provinsi_hidden');
+        const hNomor = document.getElementById('tanda_pendaftaran_cabang_nomor_hidden');
+        const hTanggal = document.getElementById('tanda_pendaftaran_cabang_tanggal_hidden');
+        if (hNama) hNama.value = nama;
+        if (hNomor) hNomor.value = nomor;
+        if (hTanggal) hTanggal.value = tanggal;
+    });
+
+    refreshRemovals();
 });
 </script>
 @endpush

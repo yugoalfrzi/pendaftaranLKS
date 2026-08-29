@@ -541,9 +541,20 @@
                             <div class="col-md-6">
                                 <div class="info-item mb-3">
                                     <div class="info-label">Tanda Pendaftaran Cabang</div>
-                                    <div class="info-value">{{ $kewenangan->tanda_pendaftaran_cabang_nama_kab_kota ?? '-' }}</div>
-                                    <div class="info-value small">No: {{ $kewenangan->tanda_pendaftaran_cabang_nomor ?? '-' }}</div>
-                                    <div class="info-value small">Tanggal: {{ $kewenangan->tanda_pendaftaran_cabang_tanggal ? $kewenangan->tanda_pendaftaran_cabang_tanggal->format('d F Y') : '-' }}</div>
+                                    @if(!empty($kewenangan->tanda_pendaftaran_cabang_entries) && is_array($kewenangan->tanda_pendaftaran_cabang_entries))
+                                        @foreach($kewenangan->tanda_pendaftaran_cabang_entries as $entry)
+                                            <div class="info-value">{{ $entry['nama_kab_kota'] ?? ($entry['nama_provinsi'] ?? '-') }}</div>
+                                            <div class="info-value small">No: {{ $entry['nomor'] ?? '-' }}</div>
+                                            <div class="info-value small">Tanggal: {{ !empty($entry['tanggal']) ? \Carbon\Carbon::parse($entry['tanggal'])->format('d F Y') : '-' }}</div>
+                                            @if(!$loop->last)
+                                                <hr/>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <div class="info-value">{{ $kewenangan->tanda_pendaftaran_cabang_nama_kab_kota ?? '-' }}</div>
+                                        <div class="info-value small">No: {{ $kewenangan->tanda_pendaftaran_cabang_nomor ?? '-' }}</div>
+                                        <div class="info-value small">Tanggal: {{ $kewenangan->tanda_pendaftaran_cabang_tanggal ? $kewenangan->tanda_pendaftaran_cabang_tanggal->format('d F Y') : '-' }}</div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

@@ -268,6 +268,7 @@
             <div class="card-body p-3">
                 <form action="{{ route('superadmin.verification.process', $lks->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" name="verifikator" value="{{ auth()->id() }}">
 
                     <div class="mb-3">
                         <label for="status_permohonan" class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>

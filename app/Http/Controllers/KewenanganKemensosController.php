@@ -156,7 +156,14 @@ class KewenanganKemensosController extends Controller
             'link_tanda_daftar' => 'nullable|string|max:255',
         ]);
 
-        KewenanganKemensos::create($validated);
+        $kewenangan = KewenanganKemensos::create($validated);
+
+        // Save branch entries if provided (array from repeater)
+        if ($request->has('tanda_pendaftaran_cabang') && is_array($request->input('tanda_pendaftaran_cabang'))) {
+            $entries = array_values($request->input('tanda_pendaftaran_cabang'));
+            $kewenangan->tanda_pendaftaran_cabang_entries = $entries;
+            $kewenangan->save();
+        }
 
         // User tidak bisa akses index kemensos, arahkan ke create
         if (auth()->user()->hasRole('user')) {
@@ -287,6 +294,13 @@ class KewenanganKemensosController extends Controller
         ]);
 
         $kewenangan->update($validated);
+
+        // Update branch entries if provided
+        if ($request->has('tanda_pendaftaran_cabang') && is_array($request->input('tanda_pendaftaran_cabang'))) {
+            $entries = array_values($request->input('tanda_pendaftaran_cabang'));
+            $kewenangan->tanda_pendaftaran_cabang_entries = $entries;
+            $kewenangan->save();
+        }
 
         return redirect()->route('kewenangan-kemensos.show', $kewenangan)
                          ->with('success', 'Data Kewenangan Kemensos berhasil diperbarui.');

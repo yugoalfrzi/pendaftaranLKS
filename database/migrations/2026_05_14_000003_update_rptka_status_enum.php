@@ -7,6 +7,18 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            DB::table('rptka')
+                ->where('status_permohonan', 'Diterima')
+                ->update(['status_permohonan' => 'Terekomendasi']);
+
+            DB::table('rptka')
+                ->where('status_permohonan', 'Terverifikasi')
+                ->update(['status_permohonan' => 'Disetujui']);
+
+            return;
+        }
+
         // Step 1: Expand enum to include both old and new values
         DB::statement("ALTER TABLE rptka MODIFY COLUMN status_permohonan ENUM('Menunggu','Diterima','Ditolak','Dikembalikan','Terverifikasi','Terekomendasi','Disetujui') NOT NULL DEFAULT 'Menunggu'");
 
@@ -20,6 +32,18 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            DB::table('rptka')
+                ->where('status_permohonan', 'Terekomendasi')
+                ->update(['status_permohonan' => 'Diterima']);
+
+            DB::table('rptka')
+                ->where('status_permohonan', 'Disetujui')
+                ->update(['status_permohonan' => 'Terverifikasi']);
+
+            return;
+        }
+
         // Step 1: Expand enum
         DB::statement("ALTER TABLE rptka MODIFY COLUMN status_permohonan ENUM('Menunggu','Terekomendasi','Disetujui','Ditolak','Dikembalikan','Diterima','Terverifikasi') NOT NULL DEFAULT 'Menunggu'");
 

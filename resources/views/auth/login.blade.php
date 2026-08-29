@@ -11,8 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- web icon -->
-    <link rel="icon" href="{{ asset('assets/Apps/vendors/images/silaskar.jpeg') }}" type="image/jpeg">
+    <!-- web icon (use same as main layout) -->
+    <link rel="icon" href="{{ asset('assets/Apps/vendors/images/silaskar-icon.png') }}" type="image/png">
 
     <style>
         * {
@@ -304,12 +304,12 @@
         <div class="login-card">
             <div class="login-form-container">
                 <!-- Logo -->
-                <div class="logo-container">
+                 <div class="logo-container">
                     <img src="{{ asset('assets/Apps/vendors/images/logo jawa barat.png') }}"
-                         alt="Logo Jawa Barat" class="logo-img">
+                        alt="Logo Jawa Barat" class="logo-img">
                     <img src="{{ asset('assets/Apps/vendors/images/silaskar.jpeg') }}"
-                         alt="Logo SI LASKAR" class="logo-img">
-                </div>
+                        alt="Logo SI LASKAR" class="logo-img">
+                 </div>
 
                 <h2>Selamat Datang</h2>
                 <p class="subtitle">Silakan masuk ke akun Anda</p>

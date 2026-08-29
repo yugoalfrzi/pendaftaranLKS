@@ -378,24 +378,70 @@
             {{-- LAYANAN LKS --}}
             <div class="nav-section-label">Layanan LKS</div>
 
+            @php
+                $userNeedsAttention = auth()->user()->hasRole('user') ? \App\Models\LKS::where('user_id', auth()->id())->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])->count() : 0;
+            @endphp
+
             @if(Auth::user()->hasRole('user'))
                 <a class="nav-link {{ request()->routeIs('lks.create') ? 'active' : '' }}" href="{{ route('lks.create') }}">
                     <i class="bi bi-plus-circle"></i><span>Pendaftaran LKS</span>
                 </a>
-            @endif
 
-            <a class="nav-link {{ request()->routeIs('lks.terdaftar') ? 'active' : '' }}" href="{{ route('lks.terdaftar') }}">
-                <i class="bi bi-patch-check"></i>
-                @if(auth()->user()->hasRole('user'))
-                    <span>Download Tanda Daftar</span>
-                    @php $perluPerhatianCount = \App\Models\LKS::where('user_id', auth()->id())->whereIn('status_permohonan', ['Ditolak', 'Dikembalikan'])->count(); @endphp
-                    @if($perluPerhatianCount > 0)
-                        <span class="badge bg-danger">{{ $perluPerhatianCount }}</span>
+                @php $lksUserActive = request()->routeIs('lks.terdaftar') || request()->routeIs('lks.show') || request()->routeIs('lks.edit'); @endphp
+                <button class="nav-link dd-toggle {{ $lksUserActive ? 'dd-open active' : '' }}" data-target="lksUserSubmenu">
+                    <i class="bi bi-patch-check"></i><span>LKS Saya</span>
+                    @if($userNeedsAttention > 0)
+                        <span class="badge bg-danger">{{ $userNeedsAttention }}</span>
                     @endif
-                @else
-                    <span>LKS Terdaftar</span>
-                @endif
-            </a>
+                    <i class="bi bi-chevron-down dd-arrow"></i>
+                </button>
+                <div class="submenu {{ $lksUserActive ? 'open' : '' }}" id="lksUserSubmenu">
+                    <a class="nav-link {{ request()->routeIs('lks.terdaftar') ? 'active' : '' }}" href="{{ route('lks.terdaftar') }}">
+                        <i class="bi bi-patch-check"></i><span>Daftar LKS Saya</span>
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('lks.perlu-tindakan') ? 'active' : '' }}" href="{{ route('lks.perlu-tindakan') }}">
+                        <i class="bi bi-exclamation-triangle"></i><span>Perlu Tindakan</span>
+                    </a>
+                </div>
+            @elseif(Auth::user()->hasRole('admin'))
+                {{-- ADMINISTRASI ADMIN (dropdown) --}}
+                @php $lksAdminActive = request()->routeIs('lks.terdaftar') || request()->routeIs('admin.lks.*') || request()->routeIs('admin.verification'); @endphp
+                <button class="nav-link dd-toggle {{ $lksAdminActive ? 'dd-open active' : '' }}" data-target="lksAdminSubmenu">
+                    <i class="bi bi-patch-check"></i><span>ADMIN PANEL</span>
+                    <i class="bi bi-chevron-down dd-arrow"></i>
+                </button>
+                <div class="submenu {{ $lksAdminActive ? 'open' : '' }}" id="lksAdminSubmenu">
+                    <a class="nav-link {{ request()->routeIs('admin.lks.index') ? 'active' : '' }}" href="{{ route('admin.lks.index') }}">
+                        <i class="bi bi-list-check"></i><span>Verifikasi LKS</span>
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('lks.perlu-tindakan') ? 'active' : '' }}" href="{{ route('lks.perlu-tindakan') }}">
+                        <i class="bi bi-exclamation-triangle"></i><span>Perlu Tindakan</span>
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('lks.terdaftar') ? 'active' : '' }}" href="{{ route('lks.terdaftar') }}">
+                        <i class="bi bi-patch-check"></i><span>LKS Teregistrasi</span>
+                    </a>
+                </div>
+            @else
+                @php $lksSuperAdminActive = request()->routeIs('lks.terdaftar') || request()->routeIs('lks.index') || request()->routeIs('superadmin.index') || request()->routeIs('superadmin.verification'); @endphp
+                <button class="nav-link dd-toggle {{ $lksSuperAdminActive ? 'dd-open active' : '' }}" data-target="lksSuperAdminSubmenu">
+                    <i class="bi bi-patch-check"></i><span>Kelola LKS</span>
+                    <i class="bi bi-chevron-down dd-arrow"></i>
+                </button>
+                <div class="submenu {{ $lksSuperAdminActive ? 'open' : '' }}" id="lksSuperAdminSubmenu">
+                    <a class="nav-link {{ request()->routeIs('superadmin.index') || request()->routeIs('superadmin.verification') ? 'active' : '' }}" href="{{ route('superadmin.index') }}">
+                        <i class="bi bi-check-circle"></i><span>Verifikasi LKS</span>
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('lks.perlu-tindakan') ? 'active' : '' }}" href="{{ route('lks.perlu-tindakan') }}">
+                        <i class="bi bi-exclamation-triangle"></i><span>Perlu Tindakan</span>
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('lks.index') ? 'active' : '' }}" href="{{ route('lks.index') }}">
+                        <i class="bi bi-list-check"></i><span>Semua Pendaftaran LKS</span>
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('lks.terdaftar') ? 'active' : '' }}" href="{{ route('lks.terdaftar') }}">
+                        <i class="bi bi-patch-check"></i><span>LKS Teregistrasi</span>
+                    </a>
+                </div>
+            @endif
 
             {{-- DATA LKS JABAR (dropdown) --}}
             @php $dataLksActive = request()->routeIs('kewenangan-*'); @endphp
@@ -455,19 +501,8 @@
                 </a>
             @endif
 
-            {{-- ADMINISTRASI --}}
-            @if(Auth::user()->role === 'admin')
-                <div class="nav-section-label">Administrasi</div>
-                <a class="nav-link {{ request()->routeIs('admin.lks.*') ? 'active' : '' }}" href="{{ route('admin.lks.index') }}">
-                    <i class="bi bi-gear-wide-connected"></i><span>Admin Panel</span>
-                </a>
-            @endif
-
             @if(Auth::user()->role === 'super_admin')
                 <div class="nav-section-label">Administrasi</div>
-                <a class="nav-link {{ request()->routeIs('superadmin.index') ? 'active' : '' }}" href="{{ route('superadmin.index') }}">
-                    <i class="bi bi-shield-check"></i><span>Super Admin Panel</span>
-                </a>
                 @php $pendingCount = \App\Models\User::where('approval_status','pending')->where('role','user')->count(); @endphp
                 <a class="nav-link {{ request()->routeIs('superadmin.pending-users') ? 'active' : '' }}" href="{{ route('superadmin.pending-users') }}">
                     <i class="bi bi-person-check"></i><span>Persetujuan Akun</span>
@@ -477,9 +512,6 @@
                 </a>
                 <a class="nav-link {{ request()->routeIs('users.manage') ? 'active' : '' }}" href="{{ route('users.manage') }}">
                     <i class="bi bi-people"></i><span>Kelola Akun</span>
-                </a>
-                <a class="nav-link {{ request()->routeIs('lks.index') ? 'active' : '' }}" href="{{ route('lks.index') }}">
-                    <i class="bi bi-list-check"></i><span>Semua Pendaftaran LKS</span>
                 </a>
             @endif
 
