@@ -317,7 +317,7 @@
             <div class="px-3 pt-3 pb-1">
                 <p class="text-muted small mb-0">
                     <i class="bi bi-info-circle me-1"></i>
-                    LKS kewenangan Provinsi yang telah mendapatkan <strong>Tanda pendaftaran<strong> dari {{ auth()->user()->name }}.
+                    LKS kewenangan Provinsi yang telah mendapatkan <strong>Tanda pendaftaran</strong> dari {{ auth()->user()->name }}.
                 </p>
             </div>
 
