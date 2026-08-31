@@ -107,6 +107,11 @@ class SuperAdminController extends Controller
     {
         $lks = LKS::findOrFail($id);
 
+        // Race condition guard: pastikan superadmin memproses versi yang sama
+        if ($request->filled('updated_at') && $lks->updated_at && $request->input('updated_at') !== $lks->updated_at->format('Y-m-d H:i:s')) {
+            return redirect()->back()->with('error', 'Data LKS telah berubah sejak halaman dibuka. Silakan refresh dan coba lagi.');
+        }
+
         $request->merge([
             'verifikator' => $request->input('verifikator', auth()->id()),
             'nama_verifikator' => $request->input('nama_verifikator', auth()->user()?->name),

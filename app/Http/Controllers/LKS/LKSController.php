@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\LKS;
 use App\Models\Document;
 use App\Models\Checklist;
+use App\Models\User;
+use App\Notifications\LKSResubmitted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Schema;
 
 class LKSController extends Controller
 {
@@ -287,11 +291,8 @@ class LKSController extends Controller
 
         $lks = LKS::with('checklists.document')->findOrFail($id);
 
-        // User tidak bisa mengedit pendaftaran yang ditolak — harus daftar ulang dari awal
-        if (auth()->user()->hasRole('user') && $lks->status_permohonan === 'Ditolak') {
-            return redirect()->route('lks.index')
-                ->with('error', 'Pendaftaran yang ditolak tidak dapat diedit. Silakan buat pendaftaran baru.');
-        }
+        // Izinkan pengguna mengedit meskipun sebelumnya berstatus 'Ditolak' atau 'Dikembalikan'
+        // Pengguna dapat memperbarui data dan mengirimkannya kembali untuk diverifikasi ulang.
 
         $documents = Document::all();
 
@@ -310,12 +311,6 @@ class LKSController extends Controller
 
         return DB::transaction(function () use ($request, $id) {
             $lks = LKS::findOrFail($id);
-
-            // User tidak bisa mengupdate pendaftaran yang ditolak — harus daftar ulang dari awal
-            if (auth()->user()->hasRole('user') && $lks->status_permohonan === 'Ditolak') {
-                return redirect()->route('lks.index')
-                    ->with('error', 'Pendaftaran yang ditolak tidak dapat diedit. Silakan buat pendaftaran baru.');
-            }
 
             // Validasi data utama LKS
             $validated = $request->validate([
@@ -338,6 +333,22 @@ class LKSController extends Controller
                 'documents.*.files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:20480',
             ]);
 
+            // Jika sebelumnya ditolak atau dikembalikan, dan diedit oleh pengguna, reset status ke 'Menunggu'
+            if (
+                in_array($lks->status_permohonan, ['Dikembalikan', 'Ditolak']) &&
+                auth()->user()->hasRole('user')
+            ) {
+                $validated['status_permohonan'] = 'Menunggu';
+                $validated['alasan_penolakan']    = null;
+                $validated['alasan_dikembalikan'] = null;
+                $validated['verifikator_id']      = null;
+                $validated['nama_verifikator']    = null;
+                $validated['verified_at']         = null;
+            }
+
+            // Simpan status sebelumnya untuk pengalihan setelah update
+            $previousStatus = $lks->status_permohonan;
+
             // Update data LKS termasuk kabupaten_kota
             $validated['kabupaten_kota'] = $request->lokasi_lks;
 
@@ -352,6 +363,28 @@ class LKSController extends Controller
             }
 
             $lks->update($validated);
+
+            // Jika ini adalah resubmit dari pengguna yang sebelumnya Ditolak/Dikembalikan,
+            // pastikan metadata verifikator benar-benar dibersihkan dan status tersimpan.
+            if (in_array($previousStatus, ['Dikembalikan', 'Ditolak']) && auth()->user()->hasRole('user')) {
+                $lks->verifikator_id = null;
+                $lks->nama_verifikator = null;
+                $lks->verified_at = null;
+                $lks->alasan_penolakan = null;
+                $lks->alasan_dikembalikan = null;
+                $lks->status_permohonan = 'Menunggu';
+                $lks->save();
+
+                // Kirim notifikasi in-app kepada admin dan superadmin bahwa LKS disubmit ulang
+                $admins = User::whereIn('role', ['admin', 'superadmin'])->where('is_active', true)->get();
+                if ($admins->isNotEmpty() && Schema::hasTable('notifications')) {
+                    try {
+                        Notification::send($admins, new LKSResubmitted($lks, auth()->user(), $previousStatus));
+                    } catch (\Throwable $e) {
+                        // jika tabel notifications belum ada atau error lainnya, jangan blokir alur resubmit
+                    }
+                }
+            }
 
             // Proses checklist documents dengan multiple files
             if ($request->has('documents')) {
@@ -428,12 +461,16 @@ class LKSController extends Controller
             // Update status pendaftaran_lengkap
             $lks->update(['pendaftaran_lengkap' => $lks->isComplete()]);
 
-            $successMsg = in_array($lks->getOriginal('status_permohonan') ?? $lks->status_permohonan, ['Dikembalikan', 'Ditolak']) && auth()->user()->hasRole('user')
+            $successMsg = in_array($previousStatus, ['Dikembalikan', 'Ditolak']) && auth()->user()->hasRole('user')
                 ? 'Data LKS berhasil diperbarui dan dikirim kembali ke admin untuk verifikasi.'
                 : 'Data LKS berhasil diperbarui!';
 
-            return redirect()->route('lks.show', $lks->id)
-                ->with('success', $successMsg);
+            // Jika user baru saja mengirim ulang (resubmit), redirect ke daftar LKS milik user
+            if (in_array($previousStatus, ['Dikembalikan', 'Ditolak']) && auth()->user()->hasRole('user')) {
+                return redirect()->route('lks.terdaftar')->with('success', $successMsg);
+            }
+
+            return redirect()->route('lks.show', $lks->id)->with('success', $successMsg);
 
         });
     }

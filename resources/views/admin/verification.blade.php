@@ -210,7 +210,8 @@
                                     @foreach($checklist->getFilesInfo() as $fileIndex => $file)
                                     <div class="doc-file-item">
                                         @php $fileUrl = $file['url'] ?? null; @endphp
-                                        <a href="{{ $fileUrl ?? route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" target="_blank" class="text-decoration-none text-primary d-flex align-items-center gap-1">
+                                        {{-- mengguunakan route internal untuk menyajikan berkas --}}
+                                        <a href="{{ route('lks.files.show', ['lks' => $lks->id, 'document' => $checklist->id, 'file' => $file['index']]) }}" target="_blank" class="text-decoration-none text-primary d-flex align-items-center gap-1">
                                             <i class="bi bi-file-earmark-pdf text-danger"></i>
                                             <span>{{ $file['name'] }}</span>
                                         </a>
@@ -242,6 +243,7 @@
             <div class="card-body p-3">
                 <form action="{{ route('admin.verification.store', $lks->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" name="updated_at" value="{{ $lks->updated_at ? $lks->updated_at->format('Y-m-d H:i:s') : '' }}">
 
                     <div class="mb-3">
                         <label for="status_permohonan" class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>

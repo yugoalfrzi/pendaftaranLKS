@@ -75,6 +75,11 @@ class AdminController extends Controller
     {
         $lks = LKS::findOrFail($id);
 
+        // Race condition guard: pastikan admin memproses versi yang sama
+        if ($request->filled('updated_at') && $lks->updated_at && $request->input('updated_at') !== $lks->updated_at->format('Y-m-d H:i:s')) {
+            return redirect()->back()->with('error', 'Data LKS telah berubah sejak halaman dibuka. Silakan refresh dan coba lagi.');
+        }
+
         $rules = [
             'status_permohonan'   => 'required|in:Disetujui,Ditolak,Dikembalikan',
             'alasan_penolakan'    => 'required_if:status_permohonan,Ditolak',

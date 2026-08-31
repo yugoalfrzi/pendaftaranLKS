@@ -269,14 +269,15 @@
                 <form action="{{ route('superadmin.verification.process', $lks->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="verifikator" value="{{ auth()->id() }}">
+                    <input type="hidden" name="updated_at" value="{{ $lks->updated_at ? $lks->updated_at->format('Y-m-d H:i:s') : '' }}">
 
                     <div class="mb-3">
                         <label for="status_permohonan" class="form-label small fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm @error('status_permohonan') is-invalid @enderror" id="status_permohonan" name="status_permohonan" required>
                             <option value="">Pilih Status</option>
-                            <option value="Terekomendasi" {{ old('status_permohonan', $lks->status_permohonan) == 'Terekomendasi' ? 'selected' : '' }}>
-                                Upload Tanda Pendaftaran (Otomatis → Disetujui)
-                            </option>
+                            <option value="Disetujui" {{ old('status_permohonan', $lks->status_permohonan) == 'Disetujui' ? 'selected' : '' }}>
+                                    Disetujui (Upload Tanda Pendaftaran)
+                                </option>
                             <option value="Ditolak" {{ old('status_permohonan', $lks->status_permohonan) == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                             <option value="Dikembalikan" {{ old('status_permohonan', $lks->status_permohonan) == 'Dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                         </select>
@@ -366,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alasanPenolakan.required = false;
         alasanDikembalikan.required = false;
         sertifikatInput.required = false;
-        if (status === 'Terekomendasi') {
+        if (status === 'Disetujui') {
             sertifikatDiv.style.display = 'block';
             if (!{{ $lks->sertifikat_path ? 'true' : 'false' }}) sertifikatInput.required = true;
         } else if (status === 'Ditolak') {
