@@ -102,7 +102,7 @@
     <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Total Proposal</div><div class="stat-value">{{ $totalProposal }}</div></div>
+                <div><div class="stat-label">Total LKS</div><div class="stat-value">{{ $totalProposal }}</div></div>
                 <div class="stat-icon-sm"><i class="bi bi-file-text"></i></div>
             </div>
         </div>

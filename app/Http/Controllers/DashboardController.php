@@ -179,11 +179,18 @@ class DashboardController extends Controller
 
         $latestLks = LKS::latest()->first();
 
+        // RPTKA stats
+        $totalRptka   = Rptka::count();
+        $rptkaLengkap = Rptka::whereNotNull('tanggal_persyaratan_lengkap')->count();
+        $rptkaMenunggu = Rptka::where('status_permohonan', 'Menunggu')->count();
+        $rptkaDiterima = Rptka::whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])->count();
+
         return view('dashboard.dashboard', compact(
             'totalLKS', 'lengkapLKS', 'menungguLKS', 'diterimaLKS',
             'kabupatenData', 'monthlyTrend', 'statusData', 'recentLKS',
             'kewenanganChartData', 'kewenanganKabkota', 'kewenanganProvinsi',
-            'kewenanganKemensos', 'totalLKSJabar', 'latestLks'
+            'kewenanganKemensos', 'totalLKSJabar', 'latestLks',
+            'totalRptka', 'rptkaMenunggu', 'rptkaLengkap', 'rptkaDiterima'
         ));
     }
 

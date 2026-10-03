@@ -128,8 +128,16 @@
     <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Total Permohonan</div><div class="stat-value">{{ $stats['total'] }}</div></div>
+                <div><div class="stat-label">Total Usulan Rekomendasi RPTKA</div><div class="stat-value">{{ $stats['total'] }}</div></div>
                 <div class="stat-icon-sm"><i class="bi bi-folder2-open"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><div class="stat-label">Dokumen Lengkap</div><div class="stat-value">{{ $stats['lengkap'] }}</div></div>
+                <div class="stat-icon-sm"><i class="bi bi-clipboard-check"></i></div>
             </div>
         </div>
     </div>
@@ -142,17 +150,9 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stat-card p-3" style="background:linear-gradient(135deg,#16a34a,#15803d);">
-            <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Terekomendasi</div><div class="stat-value">{{ $stats['diterima'] }}</div></div>
-                <div class="stat-icon-sm"><i class="bi bi-check-circle"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
         <div class="stat-card p-3" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
             <div class="d-flex justify-content-between align-items-start">
-                <div><div class="stat-label">Disetujui</div><div class="stat-value">{{ $stats['terverifikasi'] }}</div></div>
+                <div><div class="stat-label">Diterima</div><div class="stat-value">{{ $stats['diterima'] }}</div></div>
                 <div class="stat-icon-sm"><i class="bi bi-patch-check"></i></div>
             </div>
         </div>

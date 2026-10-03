@@ -424,7 +424,7 @@
             @else
                 @php $lksSuperAdminActive = request()->routeIs('lks.terdaftar') || request()->routeIs('lks.index') || request()->routeIs('superadmin.index') || request()->routeIs('superadmin.verification'); @endphp
                 <button class="nav-link dd-toggle {{ $lksSuperAdminActive ? 'dd-open active' : '' }}" data-target="lksSuperAdminSubmenu">
-                    <i class="bi bi-patch-check"></i><span>Kelola LKS</span>
+                    <i class="bi bi-patch-check"></i><span>Pendaftaran LKS</span>
                     <i class="bi bi-chevron-down dd-arrow"></i>
                 </button>
                 <div class="submenu {{ $lksSuperAdminActive ? 'open' : '' }}" id="lksSuperAdminSubmenu">
