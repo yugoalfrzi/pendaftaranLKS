@@ -118,7 +118,7 @@ class SuperAdminController extends Controller
         ]);
 
         $request->validate([
-            'status_permohonan'   => 'required|in:Terekomendasi,Ditolak,Dikembalikan',
+            'status_permohonan'   => 'required|in:Terekomendasi,Disetujui,Ditolak,Dikembalikan',
             'alasan_penolakan'    => 'required_if:status_permohonan,Ditolak',
             'alasan_dikembalikan' => 'required_if:status_permohonan,Dikembalikan',
             'sertifikat'          => 'nullable|file|mimes:pdf|max:5120',
