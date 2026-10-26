@@ -46,11 +46,10 @@ class RptkaController extends Controller
             : Rptka::query();
 
         $stats = [
-            'total'        => (clone $baseQuery)->count(),
-            'menunggu'     => (clone $baseQuery)->where('status_permohonan', 'Menunggu')->count(),
-            'diterima'     => (clone $baseQuery)->where('status_permohonan', 'Terekomendasi')->count(),
-            'terverifikasi'=> (clone $baseQuery)->where('status_permohonan', 'Disetujui')->count(),
-            'ditolak'      => (clone $baseQuery)->where('status_permohonan', 'Ditolak')->count(),
+            'total'    => (clone $baseQuery)->count(),
+            'lengkap'  => (clone $baseQuery)->whereNotNull('tanggal_persyaratan_lengkap')->count(),
+            'menunggu' => (clone $baseQuery)->where('status_permohonan', 'Menunggu')->count(),
+            'diterima' => (clone $baseQuery)->whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])->count(),
         ];
 
         return view('RPTKA.index', compact('rptkas', 'stats'));
