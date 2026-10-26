@@ -287,7 +287,22 @@ class LKSController extends Controller
      */
     public function show($id)
     {
-        $lks = LKS::with('checklists')->findOrFail($id);
+        $lks = LKS::with(['checklists' => function($q) {
+            // Ambil satu checklist per document_id (yang terbaru) untuk hindari tampil duplikat
+            $q->orderBy('id', 'desc');
+        }])->findOrFail($id);
+
+        // Hapus duplikat: hanya simpan satu checklist per document_id
+        $seen = [];
+        $uniqueChecklists = $lks->checklists->filter(function($checklist) use (&$seen) {
+            if (in_array($checklist->document_id, $seen)) {
+                return false;
+            }
+            $seen[] = $checklist->document_id;
+            return true;
+        });
+        $lks->setRelation('checklists', $uniqueChecklists);
+
         $documents = Document::all();
 
         return view('lks.show', compact('lks', 'documents'));

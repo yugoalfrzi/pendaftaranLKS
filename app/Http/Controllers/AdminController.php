@@ -67,7 +67,12 @@ class AdminController extends Controller
 
     public function showVerification($id)
     {
-        $lks = LKS::with(['checklists.document', 'user'])->findOrFail($id);
+        $lks = LKS::with(['checklists' => fn($q) => $q->orderBy('id', 'desc'), 'user'])->findOrFail($id);
+        $seen = [];
+        $lks->setRelation('checklists', $lks->checklists->filter(function($c) use (&$seen) {
+            if (in_array($c->document_id, $seen)) return false;
+            $seen[] = $c->document_id; return true;
+        })->load('document'));
         return view('admin.verification', compact('lks'));
     }
 
@@ -160,7 +165,12 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $lks = LKS::with(['checklists.document', 'user'])->findOrFail($id);
+        $lks = LKS::with(['checklists' => fn($q) => $q->orderBy('id', 'desc'), 'user'])->findOrFail($id);
+        $seen = [];
+        $lks->setRelation('checklists', $lks->checklists->filter(function($c) use (&$seen) {
+            if (in_array($c->document_id, $seen)) return false;
+            $seen[] = $c->document_id; return true;
+        })->load('document'));
         return view('lks.show', compact('lks'));
     }
 
