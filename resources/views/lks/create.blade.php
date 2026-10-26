@@ -754,26 +754,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const isProvinsi = document.querySelector('input[name="kewenangan_type"]:checked')?.value === 'provinsi';
         const isPerpanjangan = tandaPendaftaranSelect?.value === 'Perpanjangan';
 
+        // Helper: toggle semua input (termasuk hidden) dalam sebuah row
+        function toggleRow(row, show) {
+            row.style.display = show ? '' : 'none';
+            // Disable semua input termasuk type="hidden" agar tidak dikirim saat hidden
+            row.querySelectorAll('input, textarea, select').forEach(el => {
+                el.disabled = !show;
+            });
+        }
+
         // Baris provinsi-only biasa (urutan >= 17, bukan perpanjangan)
         document.querySelectorAll('tr.doc-provinsi-only').forEach(row => {
             if (row.classList.contains('doc-perpanjangan-provinsi')) return;
-            const show = isProvinsi;
-            row.style.display = show ? '' : 'none';
-            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+            toggleRow(row, isProvinsi);
         });
 
         // Baris perpanjangan kabkota: tampil hanya jika kabkota + perpanjangan
         document.querySelectorAll('tr.doc-perpanjangan-kabkota').forEach(row => {
-            const show = !isProvinsi && isPerpanjangan;
-            row.style.display = show ? '' : 'none';
-            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+            toggleRow(row, !isProvinsi && isPerpanjangan);
         });
 
         // Baris perpanjangan provinsi: tampil hanya jika provinsi + perpanjangan
         document.querySelectorAll('tr.doc-perpanjangan-provinsi').forEach(row => {
-            const show = isProvinsi && isPerpanjangan;
-            row.style.display = show ? '' : 'none';
-            row.querySelectorAll('input, textarea, select').forEach(el => el.disabled = !show);
+            toggleRow(row, isProvinsi && isPerpanjangan);
         });
 
         // Toggle pusat & cabang LKS

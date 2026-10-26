@@ -215,21 +215,33 @@ class LKSController extends Controller
             ]);
 
             // Create checklists dengan multiple files
+            // Kelompokkan per document_id untuk hindari duplikat
+            $groupedDocuments = [];
             foreach ($request->documents as $index => $documentData) {
+                if (!isset($documentData['document_id'])) continue;
+                $docId = $documentData['document_id'];
+                // Jika document_id sudah ada, merge file-nya
+                if (!isset($groupedDocuments[$docId])) {
+                    $groupedDocuments[$docId] = ['index' => $index, 'keterangan' => $documentData['keterangan'] ?? null];
+                }
+            }
+
+            $allFiles = $request->file('documents') ?? [];
+
+            foreach ($groupedDocuments as $docId => $docMeta) {
+                $index = $docMeta['index'];
                 $kelengkapan = 'Tidak Ada';
                 $filePaths = [];
                 $originalFilenames = [];
                 $fileCount = 0;
 
-                // Akses file dari nested array dengan cara yang benar
-                $allFiles = $request->file('documents') ?? [];
                 $uploadedFiles = isset($allFiles[$index]['files']) ? $allFiles[$index]['files'] : [];
                 if (!is_array($uploadedFiles)) $uploadedFiles = [$uploadedFiles];
 
                 foreach ($uploadedFiles as $fileIndex => $file) {
                     if ($file && $file->isValid()) {
                         $originalFilename = $file->getClientOriginalName();
-                        $fileName = time() . '_' . $lks->id . '_' . ($documentData['document_id'] ?? $index) . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
+                        $fileName = time() . '_' . $lks->id . '_' . $docId . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
                         $filePath = 'documents/' . $fileName;
 
                         Storage::disk('public')->put($filePath, file_get_contents($file));
@@ -241,15 +253,17 @@ class LKSController extends Controller
                     }
                 }
 
-                Checklist::create([
-                    'lks_id' => $lks->id,
-                    'document_id' => $documentData['document_id'],
-                    'kelengkapan' => $kelengkapan,
-                    'keterangan' => $documentData['keterangan'] ?? null,
-                    'file_paths' => !empty($filePaths) ? $filePaths : null,
-                    'original_filenames' => !empty($originalFilenames) ? $originalFilenames : null,
-                    'file_count' => $fileCount,
-                ]);
+                // updateOrCreate mencegah duplikat berdasarkan unique constraint lks_id + document_id
+                Checklist::updateOrCreate(
+                    ['lks_id' => $lks->id, 'document_id' => $docId],
+                    [
+                        'kelengkapan'        => $kelengkapan,
+                        'keterangan'         => $docMeta['keterangan'],
+                        'file_paths'         => !empty($filePaths) ? $filePaths : null,
+                        'original_filenames' => !empty($originalFilenames) ? $originalFilenames : null,
+                        'file_count'         => $fileCount,
+                    ]
+                );
             }
 
             // Check if all required documents are complete
