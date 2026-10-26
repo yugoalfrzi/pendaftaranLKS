@@ -754,12 +754,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const isProvinsi = document.querySelector('input[name="kewenangan_type"]:checked')?.value === 'provinsi';
         const isPerpanjangan = tandaPendaftaranSelect?.value === 'Perpanjangan';
 
-        // Helper: toggle semua input (termasuk hidden) dalam sebuah row
+        // Helper: toggle semua input dalam sebuah row
+        // Gunakan removeAttribute('name') agar hidden input benar-benar tidak ikut terkirim
         function toggleRow(row, show) {
             row.style.display = show ? '' : 'none';
-            // Disable semua input termasuk type="hidden" agar tidak dikirim saat hidden
             row.querySelectorAll('input, textarea, select').forEach(el => {
-                el.disabled = !show;
+                if (show) {
+                    // Kembalikan name dari data-name jika ada
+                    if (el.dataset.origName) {
+                        el.name = el.dataset.origName;
+                        delete el.dataset.origName;
+                    }
+                    el.disabled = false;
+                } else {
+                    // Simpan name ke data-name, lalu hapus name agar tidak ikut POST
+                    if (el.name && !el.dataset.origName) {
+                        el.dataset.origName = el.name;
+                        el.removeAttribute('name');
+                    }
+                    el.disabled = true;
+                }
             });
         }
 
