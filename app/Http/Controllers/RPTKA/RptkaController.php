@@ -366,9 +366,8 @@ class RptkaController extends Controller
 
     public function superAdminIndex(Request $request)
     {
-        // Hanya tampilkan yang sudah ada surat rekomendasi dari admin (status Terekomendasi)
+        // Tampilkan semua RPTKA yang sudah ada surat rekomendasi dari admin
         $query = Rptka::with('user')
-            ->where('status_permohonan', 'Terekomendasi')
             ->whereNotNull('surat_rekomendasi_rptka_path');
 
         if ($request->filled('search')) {
@@ -390,10 +389,10 @@ class RptkaController extends Controller
         $rptkas = $query->latest()->paginate(15);
 
         $stats = [
-            'total'         => Rptka::where('status_permohonan', 'Terekomendasi')->whereNotNull('surat_rekomendasi_rptka_path')->count(),
-            'belum_verval'  => Rptka::where('status_permohonan', 'Terekomendasi')->whereNotNull('surat_rekomendasi_rptka_path')->whereNull('surat_rekomendasi_rptka_final_path')->count(),
-            'sudah_verval'  => Rptka::where('status_permohonan', 'Terekomendasi')->whereNotNull('surat_rekomendasi_rptka_final_path')->count(),
-            'terverifikasi' => Rptka::where('status_permohonan', 'Disetujui')->count(),
+            'total'    => Rptka::count(),
+            'lengkap'  => Rptka::whereNotNull('tanggal_persyaratan_lengkap')->count(),
+            'menunggu' => Rptka::where('status_permohonan', 'Menunggu')->count(),
+            'diterima' => Rptka::whereIn('status_permohonan', ['Terekomendasi', 'Disetujui'])->count(),
         ];
 
         return view('superadmin.rptka.index', compact('rptkas', 'stats'));
@@ -403,7 +402,8 @@ class RptkaController extends Controller
     {
         $rptka = Rptka::with(['documentStatuses.masterDocument', 'user'])->findOrFail($id);
 
-        if (!$rptka->surat_rekomendasi_rptka_path || $rptka->status_permohonan !== 'Terekomendasi') {
+        // Izinkan akses jika sudah ada surat rekomendasi dari admin
+        if (!$rptka->surat_rekomendasi_rptka_path) {
             return redirect()->route('superadmin.rptka.index')
                 ->with('error', 'RPTKA ini belum memiliki surat rekomendasi dari admin.');
         }
