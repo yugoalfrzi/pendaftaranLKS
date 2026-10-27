@@ -489,7 +489,7 @@
             @endif
             @if(Auth::user()->hasRole('super_admin'))
                 <a class="nav-link {{ request()->routeIs('superadmin.rptka.*') ? 'active' : '' }}" href="{{ route('superadmin.rptka.index') }}">
-                    <i class="bi bi-file-earmark-person"></i><span>Verval RPTKA</span>
+                    <i class="bi bi-file-earmark-person"></i><span>Rekomendasi RPTKA</span>
                 </a>
             @endif
 
